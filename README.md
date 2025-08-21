@@ -8,13 +8,13 @@ Unlike basic flashlight apps, Walklight gives you intelligent dual-intensity con
 
 ## Features
 
-- **Basic flashlight on/off toggle** - Works on all Android devices with flashlight
-- **Flashlight intensity control** - Automatic device capability detection (Samsung: 1-5 levels, others: 1-100)
-- **Screen brightness feedback** - Visual intensity indicator with smooth brightness changes
-- **Device compatibility** - Optimized for Samsung devices and other Android manufacturers
-- **Clean Material Design UI** - Simple toggle button and intensity slider
-- **Proper permissions handling** - Camera permission with user-friendly prompts
-- **Free and ad-free** - No ads, no tracking, no premium features
+✅ **Smart dual lighting** - LED flashlight + screen brightness with precise intensity control  
+✅ **Adaptive sync mode** - Control both lights together or independently as needed  
+✅ **Three intelligent layouts** - Interface adapts to show only relevant controls  
+✅ **Night vision friendly** - Fine intensity control prevents eye strain  
+✅ **Walking optimized** - Designed for outdoor safety and comfort  
+✅ **Free & Ad-Free** - No subscriptions, no ads, completely free to use  
+✅ **Open Source** - MIT License, built with community transparency
 
 ## Technical Details
 
