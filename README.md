@@ -30,7 +30,11 @@ This is a native Android app built with:
 
 ## Status
 
-✅ **Stable Release v1.0** - Ready for production use and app store submission
+✅ **Stable Release v1.1** - Complete dual-slider system with Samsung optimization
+
+### Version History
+- **v1.1** - Dual-slider system (LED + screen brightness), smooth operation, visual syncing, "Pay It Forward" icon
+- **v1.0** - Basic flashlight with intensity control and device compatibility
 
 ## Development Credits
 
