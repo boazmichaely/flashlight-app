@@ -2,9 +2,9 @@
 
 **The smart safety light for outdoor walking and running.**
 
-Unlike basic flashlight apps, Walklight gives you intelligent dual-intensity control for both your phone's LED flashlight AND screen brightness. Perfect for evening walks, early morning runs, or any time you need safe, adaptable lighting that won't blind you or drain your battery.
+While holding your phone naturally, your hand movements leverage both the LED flashlight and screen to make sure you are visible to others. Perfect for evening walks, early morning runs, or any time you need safe, adaptable lighting that won't blind you or drain your battery.
 
-**Why Walklight?** Most flashlight apps are either too bright (destroying your night vision) or too basic (just on/off). Walklight adapts to your needs with precise intensity control and an innovative sync feature for seamless lighting transitions.
+**What makes Walklight special?** Unlike most flashlight apps, Walklight gives you intelligent dual control for both your phone's LED flashlight and screen brightness. Plus it's 100% free, open source, with no ads. 
 
 ## Features
 
