@@ -50,7 +50,7 @@ flowchart TD
     C["INDEPENDENT<br/><br/>Two sliders<br/>35% LED + 65% Screen"]
     
     A -->|sync OFF| B
-    A -->|flashlight<br/>ON/OFF| A
+    A -->|flashlight ON/OFF| A
     
     B -->|sync ON| A
     B -->|flashlight ON| C
