@@ -6,6 +6,10 @@ While holding your phone naturally, your hand movements leverage both the LED fl
 
 **What makes Walklight special?** Unlike most flashlight apps, Walklight gives you intelligent dual control for both your phone's LED flashlight and screen brightness. Plus it's 100% free, open source, with no ads. 
 
+## Screenshots
+
+![Walklight App Interface](Walkinglight%20screen.png)
+
 ## Features
 
 ✅ **Smart dual lighting** - LED flashlight + screen brightness with precise intensity control  
