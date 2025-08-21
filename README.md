@@ -1,6 +1,10 @@
-# Flashlight App
+# Walklight - Safety Flashlight
 
-A simple native Android flashlight app with intensity control for both the flashlight and the screen.
+**The smart safety light for outdoor walking and running.**
+
+Unlike basic flashlight apps, Walklight gives you intelligent dual-intensity control for both your phone's LED flashlight AND screen brightness. Perfect for evening walks, early morning runs, or any time you need safe, adaptable lighting that won't blind you or drain your battery.
+
+**Why Walklight?** Most flashlight apps are either too bright (destroying your night vision) or too basic (just on/off). Walklight adapts to your needs with precise intensity control and an innovative sync feature for seamless lighting transitions.
 
 ## Features
 
