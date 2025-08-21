@@ -30,12 +30,42 @@ This is a native Android app built with:
 
 ## Status
 
-🚀 **Revolutionary Release v1.2** - Industry-leading Three-State Adaptive Layout System
+✨ **Latest Release v1.2** - Smart Three-State Adaptive Layout System
 
 ### Version History
-- **v1.2** - **BREAKTHROUGH:** Three-state adaptive layout (sync/independent/screen-only modes), intelligent UI that hides inactive controls, compact horizontal layout, enhanced accessibility
-- **v1.1** - Dual-slider system (LED + screen brightness), smooth operation, visual syncing, "Pay It Forward" icon
+- **v1.2** - Three-state adaptive layout (sync/independent/screen-only modes), intelligent UI that hides inactive controls, compact horizontal layout, enhanced accessibility
+- **v1.1** - Dual-slider system (LED + screen brightness), smooth operation, visual syncing, "Pay It Forward" icon  
 - **v1.0** - Basic flashlight with intensity control and device compatibility
+
+## How the Smart Layout System Works
+
+Our app features an intelligent three-state layout system that adapts based on user context, showing only the controls you actually need:
+
+```mermaid
+graph TD
+    A["App Starts<br/>Sync: ON<br/>Flashlight: OFF"] --> B["SYNC MODE<br/>One 'Intensity' slider<br/>(full width)"]
+    
+    B --> C["Toggle Sync OFF"]
+    C --> D["SCREEN ONLY MODE<br/>One 'Screen Brightness' slider<br/>(full width, LED hidden)"]
+    
+    D --> E["Turn Flashlight ON"]
+    E --> F["INDEPENDENT MODE<br/>Two sliders side-by-side<br/>(35% LED + 65% Screen)"]
+    
+    F --> G["Turn Flashlight OFF"]
+    G --> D
+    
+    F --> H["Toggle Sync ON"]
+    H --> B
+    
+    D --> I["Toggle Sync ON"]
+    I --> B
+    
+    style B fill:#4CAF50,stroke:#333,stroke-width:2px,color:#fff
+    style D fill:#2196F3,stroke:#333,stroke-width:2px,color:#fff
+    style F fill:#FF9800,stroke:#333,stroke-width:2px,color:#fff
+```
+
+**Why this matters:** Instead of cluttering the screen with disabled controls (like most apps), ours intelligently shows only what's functional. When the flashlight is off, why show a grayed-out LED slider? Our interface adapts to give you maximum precision where it counts.
 
 ## Development Credits
 
