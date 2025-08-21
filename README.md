@@ -1,6 +1,6 @@
 # Flashlight App
 
-A simple native Android flashlight app with intensity control and colored display.
+A simple native Android flashlight app with intensity control for both the flashlight and the screen.
 
 ## Features
 
