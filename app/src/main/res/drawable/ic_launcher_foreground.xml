@@ -10,73 +10,73 @@
         android:fillColor="@android:color/black"
         android:pathData="M54,54m-54,0a54,54 0,1 1,108 0a54,54 0,1 1,-108 0" />
 
-    <!-- Person silhouette - head -->
+    <!-- Person silhouette - head (smaller, centered) -->
     <path
         android:fillColor="#E2E8F0"
-        android:pathData="M42,28 A6,6 0 1,1 42,40 A6,6 0 1,1 42,28 Z" />
+        android:pathData="M50,35 A4,4 0 1,1 50,43 A4,4 0 1,1 50,35 Z" />
 
-    <!-- Person silhouette - body/torso -->
+    <!-- Person silhouette - body/torso (smaller) -->
     <path
         android:fillColor="#A0AEC0"
-        android:pathData="M36,40 L48,40 L46,65 L38,65 Z" />
+        android:pathData="M47,43 L53,43 L52,58 L48,58 Z" />
 
-    <!-- Person silhouette - legs (walking stride) -->
+    <!-- Person silhouette - legs (walking stride, smaller) -->
     <path
         android:fillColor="#A0AEC0"
-        android:pathData="M38,65 L40,65 L41,80 L39,80 Z" />
+        android:pathData="M48,58 L49,58 L49,68 L48,68 Z" />
     <path
         android:fillColor="#A0AEC0"
-        android:pathData="M44,65 L46,65 L49,78 L47,78 Z" />
+        android:pathData="M51,58 L52,58 L54,66 L53,66 Z" />
 
-    <!-- Phone in hand (LED source) -->
+    <!-- Phone in hand (smaller, repositioned) -->
     <path
         android:fillColor="#2D3748"
-        android:pathData="M49,45 L55,45 L55,58 L49,58 Z" />
+        android:pathData="M54,47 L58,47 L58,55 L54,55 Z" />
     
-    <!-- Phone screen glow -->
+    <!-- Phone screen glow (smaller) -->
     <path
         android:fillColor="#64B5F6"
         android:fillAlpha="0.8"
-        android:pathData="M50,46 L54,46 L54,57 L50,57 Z" />
+        android:pathData="M54.5,47.5 L57.5,47.5 L57.5,54.5 L54.5,54.5 Z" />
 
-    <!-- LED flashlight beam (from phone) -->
+    <!-- LED flashlight beam (from phone, properly positioned) -->
     <path
         android:fillColor="#FBD38D"
         android:fillAlpha="0.9"
-        android:pathData="M55,48 L75,38 L75,65 L55,55 Z" />
+        android:pathData="M58,48 L75,42 L75,58 L58,54 Z" />
 
     <!-- LED beam - brighter center -->
     <path
         android:fillColor="#F6E05E"
         android:fillAlpha="0.8"
-        android:pathData="M55,50 L68,42 L68,61 L55,53 Z" />
+        android:pathData="M58,49 L68,46 L68,56 L58,53 Z" />
 
-    <!-- Safety visibility rays - spreading from person -->
+    <!-- Safety visibility rays - from person body (properly positioned) -->
     <path
         android:fillColor="#64B5F6"
         android:fillAlpha="0.6"
-        android:pathData="M30,35 L25,30 L27,28 L32,33 Z" />
+        android:pathData="M42,45 L37,42 L38,40 L43,43 Z" />
         
     <path
         android:fillColor="#64B5F6"
         android:fillAlpha="0.5"
-        android:pathData="M32,25 L28,20 L30,18 L34,23 Z" />
+        android:pathData="M40,40 L35,37 L36,35 L41,38 Z" />
 
-    <!-- Visibility rays - lower -->
+    <!-- Visibility rays - lower from person -->
     <path
         android:fillColor="#64B5F6"
         android:fillAlpha="0.6"
-        android:pathData="M28,75 L23,80 L25,82 L30,77 Z" />
+        android:pathData="M45,62 L40,65 L41,67 L46,64 Z" />
         
     <path
         android:fillColor="#64B5F6"
         android:fillAlpha="0.5"
-        android:pathData="M30,82 L26,87 L28,89 L32,84 Z" />
+        android:pathData="M43,67 L38,70 L39,72 L44,69 Z" />
 
-    <!-- Movement indicator (subtle forward motion lines) -->
+    <!-- Movement indicator (repositioned) -->
     <path
         android:fillColor="#A0AEC0"
         android:fillAlpha="0.4"
-        android:pathData="M75,45 L80,47 L75,49 L78,47 Z" />
+        android:pathData="M75,50 L78,51 L75,52 L77,51 Z" />
 
 </vector>
