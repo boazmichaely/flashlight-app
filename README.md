@@ -34,10 +34,11 @@ This is a native Android app built with:
 
 ## Status
 
-✨ **Latest Release v1.3.2** - Polished Unified Toggle Interface
+✨ **Latest Release v1.4.0** - Walklight Icon: Person with Dual Safety Lighting
 
 ### Version History
-- **v1.3.2** - **POLISHED:** Unified light blue toggle design, perfect size consistency, superior UX discovery flow (sync OFF by default), refined visual language
+- **v1.4.0** - **NEW ICON:** Person walking with dual safety lighting - clearly shows LED + screen functionality, perfect Walklight brand alignment
+- **v1.3.2** - Polished unified light blue toggle design, perfect size consistency, superior UX discovery flow
 - **v1.2** - Three-state adaptive layout (sync/independent/screen-only modes), intelligent UI that hides inactive controls, compact horizontal layout
 - **v1.1** - Dual-slider system (LED + screen brightness), smooth operation, visual syncing, "Pay It Forward" icon  
 - **v1.0** - Basic flashlight with intensity control and device compatibility
