@@ -3,7 +3,8 @@
     <string name="turn_on_flashlight">Turn On</string>
     <string name="turn_off_flashlight">Turn Off</string>
     <string name="intensity">Intensity</string>
-    <string name="led_intensity">LED</string>
+    <string name="light_intensity">Light</string>
+    <string name="light_toggle">Light</string>
     <string name="screen_brightness">Screen</string>
     <string name="sync_controls">Sync</string>
     <string name="permission_camera_rationale">Camera permission is needed to control the flashlight.</string>

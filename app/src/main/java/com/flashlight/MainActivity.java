@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.Toast;
+import android.content.res.ColorStateList;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -31,7 +32,7 @@ public class MainActivity extends AppCompatActivity {
     private boolean hasFlash = false;
     private int maxTorchStrength = 100; // Default, will be updated from device capabilities
     
-    private MaterialButton flashlightToggle;
+    private SwitchMaterial lightToggle;
     private Slider ledIntensitySlider;
     private Slider screenBrightnessSlider;
     private Slider syncedIntensitySlider;
@@ -55,7 +56,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initializeViews() {
-        flashlightToggle = findViewById(R.id.flashlightToggle);
+        lightToggle = findViewById(R.id.lightToggle);
         ledIntensitySlider = findViewById(R.id.ledIntensitySlider);
         screenBrightnessSlider = findViewById(R.id.screenBrightnessSlider);
         syncedIntensitySlider = findViewById(R.id.syncedIntensitySlider);
@@ -66,11 +67,17 @@ public class MainActivity extends AppCompatActivity {
         independentModeContainer = findViewById(R.id.independentModeContainer);
         screenOnlyModeContainer = findViewById(R.id.screenOnlyModeContainer);
         
-        // Show initial screen brightness (app starts in sync mode)
-        updateColorRectangleBrightness(syncedIntensitySlider.getValue());
+        // Show initial screen brightness (app starts in screen-only mode)
+        updateColorRectangleBrightness(screenOnlySlider.getValue());
         
         // Set initial layout mode based on sync switch state
         updateLayoutMode();
+        
+        // Set initial light toggle appearance (starts OFF)
+        updateLightToggleAppearance(false);
+        
+        // Set initial sync toggle appearance (starts OFF)
+        updateSyncToggleAppearance(false);
     }
 
     private void initializeCamera() {
@@ -79,7 +86,7 @@ public class MainActivity extends AppCompatActivity {
         
         if (!hasFlash) {
             showToast("Device doesn't have flash!");
-            flashlightToggle.setEnabled(false);
+            lightToggle.setEnabled(false);
             return;
         }
 
@@ -107,28 +114,42 @@ public class MainActivity extends AppCompatActivity {
                     }
                 } else {
                     showToast("No camera found!");
-                    flashlightToggle.setEnabled(false);
+                    lightToggle.setEnabled(false);
                     hasFlash = false;
                 }
             } else {
                 showToast("Camera service not available!");
-                flashlightToggle.setEnabled(false);
+                lightToggle.setEnabled(false);
                 hasFlash = false;
             }
         } catch (Exception e) {
             e.printStackTrace();
             showToast("Error initializing camera: " + e.getMessage());
-            flashlightToggle.setEnabled(false);
+            lightToggle.setEnabled(false);
             hasFlash = false;
         }
     }
 
     private void setupClickListeners() {
-        flashlightToggle.setOnClickListener(v -> {
-            if (checkCameraPermission()) {
-                toggleFlashlight();
-            } else {
-                requestCameraPermission();
+        // Light toggle switch
+        lightToggle.setOnCheckedChangeListener((button, isChecked) -> {
+            try {
+                if (checkCameraPermission()) {
+                    if (isChecked) {
+                        turnOnFlashlight();
+                    } else {
+                        turnOffFlashlight();
+                    }
+                } else {
+                    requestCameraPermission();
+                    // Reset toggle if permission denied
+                    lightToggle.setChecked(false);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                showToast("Error controlling flashlight: " + e.getMessage());
+                // Reset toggle on error
+                lightToggle.setChecked(false);
             }
         });
 
@@ -203,6 +224,7 @@ public class MainActivity extends AppCompatActivity {
 
         // Sync Switch - toggle between layouts and sync values
         syncSwitch.setOnCheckedChangeListener((button, isChecked) -> {
+            updateSyncToggleAppearance(isChecked); // Update visual appearance
             updateLayoutMode(); // Switch between sync/independent layouts
             if (isChecked) {
                 // Entering sync mode - sync both sliders to the current synced slider value
@@ -235,25 +257,10 @@ public class MainActivity extends AppCompatActivity {
         
         if (requestCode == CAMERA_PERMISSION_REQUEST) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                toggleFlashlight();
+                showToast("Camera permission granted. You can now control the light.");
             } else {
                 showToast(getString(R.string.permission_denied));
             }
-        }
-    }
-
-    private void toggleFlashlight() {
-        if (!hasFlash) return;
-
-        try {
-            if (isFlashlightOn) {
-                turnOffFlashlight();
-            } else {
-                turnOnFlashlight();
-            }
-        } catch (CameraAccessException e) {
-            e.printStackTrace();
-            showToast("Error controlling flashlight");
         }
     }
 
@@ -288,7 +295,8 @@ public class MainActivity extends AppCompatActivity {
         // Update UI only if basic flashlight succeeded
         if (torchSuccess) {
             isFlashlightOn = true;
-            flashlightToggle.setText(getString(R.string.turn_off_flashlight));
+            lightToggle.setChecked(true);
+            updateLightToggleAppearance(true); // Yellow track when ON
             float currentScreenBrightness = getCurrentScreenBrightness();
             updateColorRectangleBrightness(currentScreenBrightness);
             updateLayoutMode(); // Update layout based on new flashlight state
@@ -305,7 +313,8 @@ public class MainActivity extends AppCompatActivity {
         
         // Update UI regardless of hardware success
         isFlashlightOn = false;
-        flashlightToggle.setText(getString(R.string.turn_on_flashlight));
+        lightToggle.setChecked(false);
+        updateLightToggleAppearance(false); // Gray track when OFF
         // Maintain current screen brightness setting when torch turns off
         float currentScreenBrightness = getCurrentScreenBrightness();
         updateColorRectangleBrightness(currentScreenBrightness);
@@ -440,6 +449,38 @@ public class MainActivity extends AppCompatActivity {
         } catch (Exception e) {
             e.printStackTrace();
             return 1.0f; // Safe default
+        }
+    }
+
+    private void updateLightToggleAppearance(boolean isLightOn) {
+        try {
+            if (lightToggle != null) {
+                if (isLightOn) {
+                    // Light blue track when light is ON - consistent with sync toggle
+                    lightToggle.setTrackTintList(ColorStateList.valueOf(getColor(R.color.toggle_on_track)));
+                } else {
+                    // Gray track when light is OFF
+                    lightToggle.setTrackTintList(ColorStateList.valueOf(getColor(R.color.toggle_off_track)));
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void updateSyncToggleAppearance(boolean isSyncOn) {
+        try {
+            if (syncSwitch != null) {
+                if (isSyncOn) {
+                    // Light blue track when sync is ON - consistent with light toggle
+                    syncSwitch.setTrackTintList(ColorStateList.valueOf(getColor(R.color.toggle_on_track)));
+                } else {
+                    // Gray track when sync is OFF
+                    syncSwitch.setTrackTintList(ColorStateList.valueOf(getColor(R.color.toggle_off_track)));
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
