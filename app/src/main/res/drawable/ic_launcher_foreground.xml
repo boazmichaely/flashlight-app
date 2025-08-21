@@ -10,69 +10,69 @@
         android:fillColor="@android:color/black"
         android:pathData="M54,54m-54,0a54,54 0,1 1,108 0a54,54 0,1 1,-108 0" />
 
-    <!-- Flashlight body (main tube) - shifted left for better centering -->
+    <!-- Flashlight body (main tube) - shifted left and down for better centering -->
     <path
         android:fillColor="#4A5568"
-        android:pathData="M28,50 L43,50 L43,65 L28,65 Z" />
+        android:pathData="M28,54 L43,54 L43,69 L28,69 Z" />
 
     <!-- Flashlight head (wider front section) -->
     <path
         android:fillColor="#2D3748"
-        android:pathData="M26,45 L45,45 L45,55 L26,55 Z" />
+        android:pathData="M26,49 L45,49 L45,59 L26,59 Z" />
 
     <!-- Light beam - main cone (warm amber) -->
     <path
         android:fillColor="#FBD38D"
         android:fillAlpha="0.9"
-        android:pathData="M45,47 L66,35 L66,65 L45,53 Z" />
+        android:pathData="M45,51 L66,39 L66,69 L45,57 Z" />
 
     <!-- Light beam - inner brighter area -->
     <path
         android:fillColor="#F6E05E"
         android:fillAlpha="0.8"
-        android:pathData="M45,48 L58,40 L58,60 L45,52 Z" />
+        android:pathData="M45,52 L58,44 L58,64 L45,56 Z" />
 
     <!-- Light beam - brightest center -->
     <path
         android:fillColor="#ECC94B"
-        android:pathData="M45,49 L53,45 L53,55 L45,51 Z" />
+        android:pathData="M45,53 L53,49 L53,59 L45,55 Z" />
 
-    <!-- "Pay it forward" light rays - spreading upward (shifted left) -->
+    <!-- "Pay it forward" light rays - spreading upward (shifted left and down) -->
     <path
         android:fillColor="#FBD38D"
         android:fillAlpha="0.6"
-        android:pathData="M54,30 L57,25 L59,27 L56,32 Z" />
+        android:pathData="M54,34 L57,29 L59,31 L56,36 Z" />
 
     <path
         android:fillColor="#FBD38D"
         android:fillAlpha="0.5"
-        android:pathData="M61,28 L64,24 L66,26 L63,30 Z" />
+        android:pathData="M61,32 L64,28 L66,30 L63,34 Z" />
 
-    <!-- "Pay it forward" light rays - spreading downward (shifted left) -->
+    <!-- "Pay it forward" light rays - spreading downward (shifted left and down) -->
     <path
         android:fillColor="#FBD38D"
         android:fillAlpha="0.6"
-        android:pathData="M54,70 L57,75 L59,73 L56,68 Z" />
+        android:pathData="M54,74 L57,79 L59,77 L56,72 Z" />
 
     <path
         android:fillColor="#FBD38D"
         android:fillAlpha="0.5"
-        android:pathData="M61,72 L64,76 L66,74 L63,70 Z" />
+        android:pathData="M61,76 L64,80 L66,78 L63,74 Z" />
 
-    <!-- Small forward arrow (subtle, shifted left) -->
+    <!-- Small forward arrow (subtle, shifted left and down) -->
     <path
         android:fillColor="#F6E05E"
         android:fillAlpha="0.7"
-        android:pathData="M64,47 L70,50 L64,53 L67,50 Z" />
+        android:pathData="M64,51 L70,54 L64,57 L67,54 Z" />
 
     <!-- Flashlight lens/reflector -->
     <path
         android:fillColor="#E2E8F0"
-        android:pathData="M35,47 A3,3 0 1,1 35,53 A3,3 0 1,1 35,47 Z" />
+        android:pathData="M35,51 A3,3 0 1,1 35,57 A3,3 0 1,1 35,51 Z" />
 
     <!-- Flashlight switch -->
     <path
         android:fillColor="#718096"
-        android:pathData="M40,60 L40,64 L38,64 L38,60 Z" />
+        android:pathData="M40,64 L40,68 L38,68 L38,64 Z" />
 
 </vector>

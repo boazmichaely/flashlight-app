@@ -9,6 +9,7 @@ import android.hardware.camera2.CameraCharacteristics;
 import android.hardware.camera2.CameraManager;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -33,8 +34,13 @@ public class MainActivity extends AppCompatActivity {
     private MaterialButton flashlightToggle;
     private Slider ledIntensitySlider;
     private Slider screenBrightnessSlider;
+    private Slider syncedIntensitySlider;
+    private Slider screenOnlySlider;
     private SwitchMaterial syncSwitch;
     private View colorRectangle;
+    private LinearLayout syncModeContainer;
+    private LinearLayout independentModeContainer;
+    private LinearLayout screenOnlyModeContainer;
     
     private boolean isUpdatingSliders = false; // Prevent infinite loops during sync
 
@@ -52,11 +58,19 @@ public class MainActivity extends AppCompatActivity {
         flashlightToggle = findViewById(R.id.flashlightToggle);
         ledIntensitySlider = findViewById(R.id.ledIntensitySlider);
         screenBrightnessSlider = findViewById(R.id.screenBrightnessSlider);
+        syncedIntensitySlider = findViewById(R.id.syncedIntensitySlider);
+        screenOnlySlider = findViewById(R.id.screenOnlySlider);
         syncSwitch = findViewById(R.id.syncSwitch);
         colorRectangle = findViewById(R.id.colorRectangle);
+        syncModeContainer = findViewById(R.id.syncModeContainer);
+        independentModeContainer = findViewById(R.id.independentModeContainer);
+        screenOnlyModeContainer = findViewById(R.id.screenOnlyModeContainer);
         
-        // Show initial screen brightness based on screen slider default value
-        updateColorRectangleBrightness(screenBrightnessSlider.getValue());
+        // Show initial screen brightness (app starts in sync mode)
+        updateColorRectangleBrightness(syncedIntensitySlider.getValue());
+        
+        // Set initial layout mode based on sync switch state
+        updateLayoutMode();
     }
 
     private void initializeCamera() {
@@ -164,9 +178,39 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        // Sync Switch - keep it simple
+        // Synced Intensity Slider (for sync mode)
+        syncedIntensitySlider.addOnChangeListener((slider, value, fromUser) -> {
+            try {
+                if (fromUser && !isUpdatingSliders) {
+                    updateFlashlightIntensity(value);
+                    updateColorRectangleBrightness(value);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
+
+        // Screen Only Slider (for screen-only mode)
+        screenOnlySlider.addOnChangeListener((slider, value, fromUser) -> {
+            try {
+                if (fromUser && !isUpdatingSliders) {
+                    updateColorRectangleBrightness(value);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
+
+        // Sync Switch - toggle between layouts and sync values
         syncSwitch.setOnCheckedChangeListener((button, isChecked) -> {
-            // Just enable/disable sync mode - don't force values to match immediately
+            updateLayoutMode(); // Switch between sync/independent layouts
+            if (isChecked) {
+                // Entering sync mode - sync both sliders to the current synced slider value
+                syncSlidersToSyncedValue();
+            } else {
+                // Leaving sync mode - set synced slider to match current LED value
+                syncSyncedSliderToCurrentValues();
+            }
         });
     }
 
@@ -224,7 +268,7 @@ public class MainActivity extends AppCompatActivity {
             // If basic torch worked, try to apply intensity (if supported)
             if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
                 try {
-                    float intensity = ledIntensitySlider.getValue();
+                    float intensity = getCurrentLedIntensity();
                     // Use the actual device's max strength level (Samsung devices often use 1-99, not 1-100)
                     int strengthLevel = Math.max(1, Math.min(maxTorchStrength, Math.round(intensity * maxTorchStrength)));
                     cameraManager.turnOnTorchWithStrengthLevel(cameraId, strengthLevel);
@@ -245,7 +289,9 @@ public class MainActivity extends AppCompatActivity {
         if (torchSuccess) {
             isFlashlightOn = true;
             flashlightToggle.setText(getString(R.string.turn_off_flashlight));
-            updateColorRectangleBrightness(screenBrightnessSlider.getValue());
+            float currentScreenBrightness = getCurrentScreenBrightness();
+            updateColorRectangleBrightness(currentScreenBrightness);
+            updateLayoutMode(); // Update layout based on new flashlight state
         }
     }
 
@@ -261,7 +307,9 @@ public class MainActivity extends AppCompatActivity {
         isFlashlightOn = false;
         flashlightToggle.setText(getString(R.string.turn_on_flashlight));
         // Maintain current screen brightness setting when torch turns off
-        updateColorRectangleBrightness(screenBrightnessSlider.getValue());
+        float currentScreenBrightness = getCurrentScreenBrightness();
+        updateColorRectangleBrightness(currentScreenBrightness);
+        updateLayoutMode(); // Update layout based on new flashlight state
     }
 
     private void updateFlashlightIntensity(float intensity) {
@@ -288,6 +336,110 @@ public class MainActivity extends AppCompatActivity {
             colorRectangle.setBackgroundColor(color);
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+    private void updateLayoutMode() {
+        try {
+            if (syncSwitch != null && syncModeContainer != null && independentModeContainer != null && screenOnlyModeContainer != null) {
+                boolean isSyncMode = syncSwitch.isChecked();
+                boolean isFlashlightOn = this.isFlashlightOn;
+                
+                // Debug logging
+                android.util.Log.d("FlashlightApp", "updateLayoutMode: sync=" + isSyncMode + ", flashlight=" + isFlashlightOn);
+                
+                // Three-state layout logic:
+                // 1. Sync ON -> Single full-width "Intensity" slider
+                // 2. Sync OFF + Flashlight ON -> Dual sliders (35% LED + 65% Screen) 
+                // 3. Sync OFF + Flashlight OFF -> Single full-width "Screen" slider (hide inactive LED)
+                
+                if (isSyncMode) {
+                    // SYNC MODE: Single full-width slider
+                    android.util.Log.d("FlashlightApp", "Setting SYNC mode");
+                    syncModeContainer.setVisibility(View.VISIBLE);
+                    independentModeContainer.setVisibility(View.GONE);
+                    screenOnlyModeContainer.setVisibility(View.GONE);
+                } else if (isFlashlightOn) {
+                    // INDEPENDENT MODE: Dual sliders (flashlight is on, so LED is functional)
+                    android.util.Log.d("FlashlightApp", "Setting INDEPENDENT mode (dual sliders)");
+                    syncModeContainer.setVisibility(View.GONE);
+                    independentModeContainer.setVisibility(View.VISIBLE);
+                    screenOnlyModeContainer.setVisibility(View.GONE);
+                } else {
+                    // SCREEN ONLY MODE: Hide inactive LED, show full-width screen slider
+                    android.util.Log.d("FlashlightApp", "Setting SCREEN ONLY mode");
+                    syncModeContainer.setVisibility(View.GONE);
+                    independentModeContainer.setVisibility(View.GONE);
+                    screenOnlyModeContainer.setVisibility(View.VISIBLE);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            android.util.Log.e("FlashlightApp", "Error in updateLayoutMode", e);
+        }
+    }
+
+    private void syncSlidersToSyncedValue() {
+        try {
+            if (syncedIntensitySlider != null && ledIntensitySlider != null && screenBrightnessSlider != null && screenOnlySlider != null) {
+                isUpdatingSliders = true;
+                float syncedValue = syncedIntensitySlider.getValue();
+                ledIntensitySlider.setValue(syncedValue);
+                screenBrightnessSlider.setValue(syncedValue);
+                screenOnlySlider.setValue(syncedValue);
+                isUpdatingSliders = false;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            isUpdatingSliders = false;
+        }
+    }
+
+    private void syncSyncedSliderToCurrentValues() {
+        try {
+            if (syncedIntensitySlider != null) {
+                isUpdatingSliders = true;
+                // Use current screen brightness as reference when leaving sync mode
+                float currentScreenValue = getCurrentScreenBrightness();
+                syncedIntensitySlider.setValue(currentScreenValue);
+                isUpdatingSliders = false;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            isUpdatingSliders = false;
+        }
+    }
+
+    private float getCurrentLedIntensity() {
+        try {
+            if (syncSwitch != null && syncSwitch.isChecked()) {
+                // Sync mode - use synced slider
+                return syncedIntensitySlider != null ? syncedIntensitySlider.getValue() : 1.0f;
+            } else {
+                // Independent mode - use LED slider
+                return ledIntensitySlider != null ? ledIntensitySlider.getValue() : 1.0f;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return 1.0f; // Safe default
+        }
+    }
+
+    private float getCurrentScreenBrightness() {
+        try {
+            if (syncSwitch != null && syncSwitch.isChecked()) {
+                // Sync mode - use synced slider
+                return syncedIntensitySlider != null ? syncedIntensitySlider.getValue() : 1.0f;
+            } else if (isFlashlightOn) {
+                // Independent mode (flashlight on) - use screen brightness slider
+                return screenBrightnessSlider != null ? screenBrightnessSlider.getValue() : 1.0f;
+            } else {
+                // Screen-only mode (flashlight off) - use screen-only slider
+                return screenOnlySlider != null ? screenOnlySlider.getValue() : 1.0f;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return 1.0f; // Safe default
         }
     }
 
