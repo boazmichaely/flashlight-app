@@ -25,7 +25,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="24dp"
+        android:padding="16dp"
         android:background="@android:color/black"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -35,31 +35,71 @@
         <com.google.android.material.button.MaterialButton
             android:id="@+id/flashlightToggle"
             android:layout_width="match_parent"
-            android:layout_height="56dp"
-            android:layout_marginBottom="16dp"
+            android:layout_height="48dp"
+            android:layout_marginBottom="12dp"
             android:text="@string/turn_on_flashlight"
-            android:textSize="18sp"
+            android:textSize="16sp"
             android:textColor="@android:color/white"
             style="@style/Widget.Material3.Button.OutlinedButton" />
 
-        <!-- Intensity Label -->
+        <!-- Sync Controls Toggle -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginBottom="8dp"
+            android:gravity="center_vertical">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/sync_controls"
+                android:textColor="@android:color/white"
+                android:textSize="14sp" />
+
+            <com.google.android.material.switchmaterial.SwitchMaterial
+                android:id="@+id/syncSwitch"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checked="true" />
+
+        </LinearLayout>
+
+        <!-- LED Intensity Section -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
-            android:text="@string/intensity"
+            android:layout_marginBottom="4dp"
+            android:text="@string/led_intensity"
             android:textColor="@android:color/white"
-            android:textSize="16sp" />
+            android:textSize="14sp" />
 
-        <!-- Intensity Slider -->
         <com.google.android.material.slider.Slider
-            android:id="@+id/intensitySlider"
+            android:id="@+id/ledIntensitySlider"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:valueFrom="0.1"
+            android:valueTo="1.0"
+            android:value="1.0" />
+
+        <!-- Screen Brightness Section -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="4dp"
+            android:text="@string/screen_brightness"
+            android:textColor="@android:color/white"
+            android:textSize="14sp" />
+
+        <com.google.android.material.slider.Slider
+            android:id="@+id/screenBrightnessSlider"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:valueFrom="0.1"
             android:valueTo="1.0"
-            android:value="1.0"
-            android:stepSize="0.1" />
+            android:value="1.0" />
 
     </LinearLayout>
 

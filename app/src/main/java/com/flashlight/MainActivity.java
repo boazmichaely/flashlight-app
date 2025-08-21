@@ -18,6 +18,7 @@ import androidx.core.content.ContextCompat;
 
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.slider.Slider;
+import com.google.android.material.switchmaterial.SwitchMaterial;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -30,8 +31,12 @@ public class MainActivity extends AppCompatActivity {
     private int maxTorchStrength = 100; // Default, will be updated from device capabilities
     
     private MaterialButton flashlightToggle;
-    private Slider intensitySlider;
+    private Slider ledIntensitySlider;
+    private Slider screenBrightnessSlider;
+    private SwitchMaterial syncSwitch;
     private View colorRectangle;
+    
+    private boolean isUpdatingSliders = false; // Prevent infinite loops during sync
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,11 +50,13 @@ public class MainActivity extends AppCompatActivity {
 
     private void initializeViews() {
         flashlightToggle = findViewById(R.id.flashlightToggle);
-        intensitySlider = findViewById(R.id.intensitySlider);
+        ledIntensitySlider = findViewById(R.id.ledIntensitySlider);
+        screenBrightnessSlider = findViewById(R.id.screenBrightnessSlider);
+        syncSwitch = findViewById(R.id.syncSwitch);
         colorRectangle = findViewById(R.id.colorRectangle);
         
-        // Show initial screen brightness based on slider default value
-        updateColorRectangleBrightness(intensitySlider.getValue());
+        // Show initial screen brightness based on screen slider default value
+        updateColorRectangleBrightness(screenBrightnessSlider.getValue());
     }
 
     private void initializeCamera() {
@@ -111,16 +118,55 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        intensitySlider.addOnChangeListener((slider, value, fromUser) -> {
+        // LED Intensity Slider
+        ledIntensitySlider.addOnChangeListener((slider, value, fromUser) -> {
+            if (isUpdatingSliders) return; // Prevent callback loops
+            
             try {
                 if (fromUser && isFlashlightOn) {
                     updateFlashlightIntensity(value);
                 }
-                updateColorRectangleBrightness(value);
+                
+                // If sync is enabled, update screen brightness AND move screen slider
+                if (fromUser && syncSwitch != null && syncSwitch.isChecked()) {
+                    updateColorRectangleBrightness(value);
+                    // Safely move screen slider to match
+                    isUpdatingSliders = true;
+                    screenBrightnessSlider.setValue(value);
+                    isUpdatingSliders = false;
+                }
             } catch (Exception e) {
                 e.printStackTrace();
-                showToast("Error updating intensity");
+                isUpdatingSliders = false; // Reset flag on error
             }
+        });
+
+        // Screen Brightness Slider  
+        screenBrightnessSlider.addOnChangeListener((slider, value, fromUser) -> {
+            if (isUpdatingSliders) return; // Prevent callback loops
+            
+            try {
+                updateColorRectangleBrightness(value);
+                
+                // If sync is enabled, update LED intensity AND move LED slider
+                if (fromUser && syncSwitch != null && syncSwitch.isChecked()) {
+                    if (isFlashlightOn) {
+                        updateFlashlightIntensity(value);
+                    }
+                    // Safely move LED slider to match
+                    isUpdatingSliders = true;
+                    ledIntensitySlider.setValue(value);
+                    isUpdatingSliders = false;
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                isUpdatingSliders = false; // Reset flag on error
+            }
+        });
+
+        // Sync Switch - keep it simple
+        syncSwitch.setOnCheckedChangeListener((button, isChecked) -> {
+            // Just enable/disable sync mode - don't force values to match immediately
         });
     }
 
@@ -178,7 +224,7 @@ public class MainActivity extends AppCompatActivity {
             // If basic torch worked, try to apply intensity (if supported)
             if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
                 try {
-                    float intensity = intensitySlider.getValue();
+                    float intensity = ledIntensitySlider.getValue();
                     // Use the actual device's max strength level (Samsung devices often use 1-99, not 1-100)
                     int strengthLevel = Math.max(1, Math.min(maxTorchStrength, Math.round(intensity * maxTorchStrength)));
                     cameraManager.turnOnTorchWithStrengthLevel(cameraId, strengthLevel);
@@ -199,7 +245,7 @@ public class MainActivity extends AppCompatActivity {
         if (torchSuccess) {
             isFlashlightOn = true;
             flashlightToggle.setText(getString(R.string.turn_off_flashlight));
-            updateColorRectangleBrightness(intensitySlider.getValue());
+            updateColorRectangleBrightness(screenBrightnessSlider.getValue());
         }
     }
 
@@ -214,7 +260,8 @@ public class MainActivity extends AppCompatActivity {
         // Update UI regardless of hardware success
         isFlashlightOn = false;
         flashlightToggle.setText(getString(R.string.turn_on_flashlight));
-        colorRectangle.setBackgroundColor(Color.BLACK);
+        // Maintain current screen brightness setting when torch turns off
+        updateColorRectangleBrightness(screenBrightnessSlider.getValue());
     }
 
     private void updateFlashlightIntensity(float intensity) {
@@ -234,16 +281,13 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void updateColorRectangleBrightness(float intensity) {
-        if (isFlashlightOn) {
-            // Show white brightness when flashlight is on
+        try {
+            // Always use full brightness scale - screen brightness should match slider position consistently
             int brightness = (int)(255 * intensity);
             int color = Color.rgb(brightness, brightness, brightness);
             colorRectangle.setBackgroundColor(color);
-        } else {
-            // Show dim preview when flashlight is off (so user can see the setting)
-            int brightness = (int)(100 * intensity); // Dimmer preview
-            int color = Color.rgb(brightness, brightness, brightness);
-            colorRectangle.setBackgroundColor(color);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
