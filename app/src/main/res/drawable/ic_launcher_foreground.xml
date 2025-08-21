@@ -10,69 +10,73 @@
         android:fillColor="@android:color/black"
         android:pathData="M54,54m-54,0a54,54 0,1 1,108 0a54,54 0,1 1,-108 0" />
 
-    <!-- Flashlight body (main tube) - shifted left and down for better centering -->
+    <!-- Person silhouette - head -->
     <path
-        android:fillColor="#4A5568"
-        android:pathData="M28,54 L43,54 L43,69 L28,69 Z" />
+        android:fillColor="#E2E8F0"
+        android:pathData="M42,28 A6,6 0 1,1 42,40 A6,6 0 1,1 42,28 Z" />
 
-    <!-- Flashlight head (wider front section) -->
+    <!-- Person silhouette - body/torso -->
+    <path
+        android:fillColor="#A0AEC0"
+        android:pathData="M36,40 L48,40 L46,65 L38,65 Z" />
+
+    <!-- Person silhouette - legs (walking stride) -->
+    <path
+        android:fillColor="#A0AEC0"
+        android:pathData="M38,65 L40,65 L41,80 L39,80 Z" />
+    <path
+        android:fillColor="#A0AEC0"
+        android:pathData="M44,65 L46,65 L49,78 L47,78 Z" />
+
+    <!-- Phone in hand (LED source) -->
     <path
         android:fillColor="#2D3748"
-        android:pathData="M26,49 L45,49 L45,59 L26,59 Z" />
+        android:pathData="M49,45 L55,45 L55,58 L49,58 Z" />
+    
+    <!-- Phone screen glow -->
+    <path
+        android:fillColor="#64B5F6"
+        android:fillAlpha="0.8"
+        android:pathData="M50,46 L54,46 L54,57 L50,57 Z" />
 
-    <!-- Light beam - main cone (warm amber) -->
+    <!-- LED flashlight beam (from phone) -->
     <path
         android:fillColor="#FBD38D"
         android:fillAlpha="0.9"
-        android:pathData="M45,51 L66,39 L66,69 L45,57 Z" />
+        android:pathData="M55,48 L75,38 L75,65 L55,55 Z" />
 
-    <!-- Light beam - inner brighter area -->
+    <!-- LED beam - brighter center -->
     <path
         android:fillColor="#F6E05E"
         android:fillAlpha="0.8"
-        android:pathData="M45,52 L58,44 L58,64 L45,56 Z" />
+        android:pathData="M55,50 L68,42 L68,61 L55,53 Z" />
 
-    <!-- Light beam - brightest center -->
+    <!-- Safety visibility rays - spreading from person -->
     <path
-        android:fillColor="#ECC94B"
-        android:pathData="M45,53 L53,49 L53,59 L45,55 Z" />
-
-    <!-- "Pay it forward" light rays - spreading upward (shifted left and down) -->
-    <path
-        android:fillColor="#FBD38D"
+        android:fillColor="#64B5F6"
         android:fillAlpha="0.6"
-        android:pathData="M54,34 L57,29 L59,31 L56,36 Z" />
-
+        android:pathData="M30,35 L25,30 L27,28 L32,33 Z" />
+        
     <path
-        android:fillColor="#FBD38D"
+        android:fillColor="#64B5F6"
         android:fillAlpha="0.5"
-        android:pathData="M61,32 L64,28 L66,30 L63,34 Z" />
+        android:pathData="M32,25 L28,20 L30,18 L34,23 Z" />
 
-    <!-- "Pay it forward" light rays - spreading downward (shifted left and down) -->
+    <!-- Visibility rays - lower -->
     <path
-        android:fillColor="#FBD38D"
+        android:fillColor="#64B5F6"
         android:fillAlpha="0.6"
-        android:pathData="M54,74 L57,79 L59,77 L56,72 Z" />
-
+        android:pathData="M28,75 L23,80 L25,82 L30,77 Z" />
+        
     <path
-        android:fillColor="#FBD38D"
+        android:fillColor="#64B5F6"
         android:fillAlpha="0.5"
-        android:pathData="M61,76 L64,80 L66,78 L63,74 Z" />
+        android:pathData="M30,82 L26,87 L28,89 L32,84 Z" />
 
-    <!-- Small forward arrow (subtle, shifted left and down) -->
+    <!-- Movement indicator (subtle forward motion lines) -->
     <path
-        android:fillColor="#F6E05E"
-        android:fillAlpha="0.7"
-        android:pathData="M64,51 L70,54 L64,57 L67,54 Z" />
-
-    <!-- Flashlight lens/reflector -->
-    <path
-        android:fillColor="#E2E8F0"
-        android:pathData="M35,51 A3,3 0 1,1 35,57 A3,3 0 1,1 35,51 Z" />
-
-    <!-- Flashlight switch -->
-    <path
-        android:fillColor="#718096"
-        android:pathData="M40,64 L40,68 L38,68 L38,64 Z" />
+        android:fillColor="#A0AEC0"
+        android:fillAlpha="0.4"
+        android:pathData="M75,45 L80,47 L75,49 L78,47 Z" />
 
 </vector>
