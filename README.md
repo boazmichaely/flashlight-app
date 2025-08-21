@@ -45,9 +45,9 @@ Our app features an intelligent three-state layout system that adapts based on u
 flowchart TD
     Start([Start]) --> A
     
-    A["🔄 SYNC MODE<br/><br/>Single 'Intensity' slider<br/>Controls LED + Screen"]
-    B["📱 SCREEN ONLY<br/><br/>Single 'Screen' slider<br/>LED hidden"]  
-    C["🎛️ INDEPENDENT<br/><br/>Two sliders<br/>35% LED + 65% Screen"]
+    A["SYNC MODE<br/><br/>Single 'Intensity' slider<br/>Controls LED + Screen"]
+    B["SCREEN ONLY<br/><br/>Single 'Screen' slider<br/>LED hidden"]  
+    C["INDEPENDENT<br/><br/>Two sliders<br/>35% LED + 65% Screen"]
     
     A -->|sync OFF| B
     A -->|flashlight<br/>ON/OFF| A
