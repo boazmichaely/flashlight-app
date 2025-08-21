@@ -30,9 +30,10 @@ This is a native Android app built with:
 
 ## Status
 
-✅ **Stable Release v1.1** - Complete dual-slider system with Samsung optimization
+🚀 **Revolutionary Release v1.2** - Industry-leading Three-State Adaptive Layout System
 
 ### Version History
+- **v1.2** - **BREAKTHROUGH:** Three-state adaptive layout (sync/independent/screen-only modes), intelligent UI that hides inactive controls, compact horizontal layout, enhanced accessibility
 - **v1.1** - Dual-slider system (LED + screen brightness), smooth operation, visual syncing, "Pay It Forward" icon
 - **v1.0** - Basic flashlight with intensity control and device compatibility
 
