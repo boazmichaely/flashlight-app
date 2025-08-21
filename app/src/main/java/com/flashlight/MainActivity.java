@@ -27,6 +27,7 @@ public class MainActivity extends AppCompatActivity {
     private String cameraId;
     private boolean isFlashlightOn = false;
     private boolean hasFlash = false;
+    private int maxTorchStrength = 100; // Default, will be updated from device capabilities
     
     private MaterialButton flashlightToggle;
     private Slider intensitySlider;
@@ -46,6 +47,9 @@ public class MainActivity extends AppCompatActivity {
         flashlightToggle = findViewById(R.id.flashlightToggle);
         intensitySlider = findViewById(R.id.intensitySlider);
         colorRectangle = findViewById(R.id.colorRectangle);
+        
+        // Show initial screen brightness based on slider default value
+        updateColorRectangleBrightness(intensitySlider.getValue());
     }
 
     private void initializeCamera() {
@@ -58,11 +62,43 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
 
-        cameraManager = (CameraManager) getSystemService(Context.CAMERA_SERVICE);
         try {
-            cameraId = cameraManager.getCameraIdList()[0];
-        } catch (CameraAccessException e) {
+            cameraManager = (CameraManager) getSystemService(Context.CAMERA_SERVICE);
+            if (cameraManager != null) {
+                String[] cameraIdList = cameraManager.getCameraIdList();
+                if (cameraIdList.length > 0) {
+                    cameraId = cameraIdList[0];
+                    
+                    // Check if device supports torch strength levels
+                    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
+                        try {
+                            CameraCharacteristics characteristics = cameraManager.getCameraCharacteristics(cameraId);
+                            Integer maxTorchStrengthObj = characteristics.get(CameraCharacteristics.FLASH_INFO_STRENGTH_MAXIMUM_LEVEL);
+                            Integer defaultTorchStrength = characteristics.get(CameraCharacteristics.FLASH_INFO_STRENGTH_DEFAULT_LEVEL);
+                            
+                            if (maxTorchStrengthObj != null) {
+                                maxTorchStrength = maxTorchStrengthObj;
+                                // Device supports intensity control - no need to show diagnostic message
+                            }
+                        } catch (Exception strengthCheckException) {
+                            // Torch strength check failed - silently fall back to basic flashlight
+                        }
+                    }
+                } else {
+                    showToast("No camera found!");
+                    flashlightToggle.setEnabled(false);
+                    hasFlash = false;
+                }
+            } else {
+                showToast("Camera service not available!");
+                flashlightToggle.setEnabled(false);
+                hasFlash = false;
+            }
+        } catch (Exception e) {
             e.printStackTrace();
+            showToast("Error initializing camera: " + e.getMessage());
+            flashlightToggle.setEnabled(false);
+            hasFlash = false;
         }
     }
 
@@ -76,10 +112,15 @@ public class MainActivity extends AppCompatActivity {
         });
 
         intensitySlider.addOnChangeListener((slider, value, fromUser) -> {
-            if (fromUser && isFlashlightOn) {
-                updateFlashlightIntensity(value);
+            try {
+                if (fromUser && isFlashlightOn) {
+                    updateFlashlightIntensity(value);
+                }
+                updateColorRectangleBrightness(value);
+            } catch (Exception e) {
+                e.printStackTrace();
+                showToast("Error updating intensity");
             }
-            updateColorRectangleBrightness(value);
         });
     }
 
@@ -127,22 +168,50 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void turnOnFlashlight() throws CameraAccessException {
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
-            // Android 13+ supports intensity control
-            float intensity = intensitySlider.getValue();
-            cameraManager.turnOnTorchWithStrengthLevel(cameraId, (int)(intensity * 100));
-        } else {
-            // Fallback for older devices
+        boolean torchSuccess = false;
+        
+        try {
+            // Try basic torch mode first - this is more reliable
             cameraManager.setTorchMode(cameraId, true);
+            torchSuccess = true;
+            
+            // If basic torch worked, try to apply intensity (if supported)
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
+                try {
+                    float intensity = intensitySlider.getValue();
+                    // Use the actual device's max strength level (Samsung devices often use 1-99, not 1-100)
+                    int strengthLevel = Math.max(1, Math.min(maxTorchStrength, Math.round(intensity * maxTorchStrength)));
+                    cameraManager.turnOnTorchWithStrengthLevel(cameraId, strengthLevel);
+                    // Intensity control is working - no need to show diagnostic message
+                } catch (Exception strengthException) {
+                    // Log the exact error for debugging
+                    android.util.Log.e("FlashlightApp", "Intensity control failed: " + strengthException.getClass().getSimpleName() + ": " + strengthException.getMessage(), strengthException);
+                    // Intensity control not supported - silently use basic flashlight (LED still works, screen brightness provides feedback)
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            showToast("Flashlight error: " + e.getMessage());
+            return; // Don't update UI if flashlight failed
         }
         
-        isFlashlightOn = true;
-        flashlightToggle.setText(getString(R.string.turn_off_flashlight));
-        updateColorRectangleBrightness(intensitySlider.getValue());
+        // Update UI only if basic flashlight succeeded
+        if (torchSuccess) {
+            isFlashlightOn = true;
+            flashlightToggle.setText(getString(R.string.turn_off_flashlight));
+            updateColorRectangleBrightness(intensitySlider.getValue());
+        }
     }
 
     private void turnOffFlashlight() throws CameraAccessException {
-        cameraManager.setTorchMode(cameraId, false);
+        try {
+            cameraManager.setTorchMode(cameraId, false);
+        } catch (Exception e) {
+            // Handle cases where flashlight hardware isn't available (like emulators)
+            e.printStackTrace();
+        }
+        
+        // Update UI regardless of hardware success
         isFlashlightOn = false;
         flashlightToggle.setText(getString(R.string.turn_on_flashlight));
         colorRectangle.setBackgroundColor(Color.BLACK);
@@ -153,18 +222,26 @@ public class MainActivity extends AppCompatActivity {
         
         try {
             if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
-                cameraManager.turnOnTorchWithStrengthLevel(cameraId, (int)(intensity * 100));
+                // Use device's actual max strength level (e.g., Samsung: 1-99, not 1-100)
+                int strengthLevel = Math.max(1, Math.min(maxTorchStrength, Math.round(intensity * maxTorchStrength)));
+                cameraManager.turnOnTorchWithStrengthLevel(cameraId, strengthLevel);
             }
-            // For older devices, intensity control isn't available
-        } catch (CameraAccessException e) {
-            e.printStackTrace();
+            // For older devices or devices that don't support intensity, only screen changes
+        } catch (Exception e) {
+            // Log slider intensity errors for debugging
+            android.util.Log.e("FlashlightApp", "Slider intensity update failed: " + e.getClass().getSimpleName() + ": " + e.getMessage(), e);
         }
     }
 
     private void updateColorRectangleBrightness(float intensity) {
         if (isFlashlightOn) {
-            // Calculate brightness based on intensity (0.1 to 1.0)
+            // Show white brightness when flashlight is on
             int brightness = (int)(255 * intensity);
+            int color = Color.rgb(brightness, brightness, brightness);
+            colorRectangle.setBackgroundColor(color);
+        } else {
+            // Show dim preview when flashlight is off (so user can see the setting)
+            int brightness = (int)(100 * intensity); // Dimmer preview
             int color = Color.rgb(brightness, brightness, brightness);
             colorRectangle.setBackgroundColor(color);
         }
