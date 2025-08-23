@@ -3,15 +3,15 @@ plugins {
 }
 
 android {
-    namespace 'com.flashlight'
-    compileSdk 34
+    namespace 'com.walklight.safety'
+    compileSdk 35
 
     defaultConfig {
-        applicationId "com.flashlight.app"
+        applicationId "com.walklight.safety"
         minSdk 26
-        targetSdk 34
-        versionCode 7
-        versionName "1.4.0"
+        targetSdk 35
+        versionCode 13
+        versionName "1.4.13"
     }
 
     buildTypes {
@@ -21,8 +21,12 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+    
+    buildFeatures {
+        buildConfig true
     }
 }
 

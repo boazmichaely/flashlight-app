@@ -87,6 +87,7 @@
             android:visibility="gone">
 
             <TextView
+                android:id="@+id/syncedIntensityLabel"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="4dp"
@@ -100,7 +101,7 @@
                 android:layout_height="wrap_content"
                 android:valueFrom="0.1"
                 android:valueTo="1.0"
-                android:value="1.0" />
+                android:value="0.5" />
 
         </LinearLayout>
 
@@ -122,7 +123,7 @@
                 <TextView
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="0.35"
+                    android:layout_weight="0.45"
                     android:text="@string/light_intensity"
                     android:textColor="@android:color/white"
                     android:textSize="14sp"
@@ -131,7 +132,7 @@
                 <TextView
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="0.65"
+                    android:layout_weight="0.55"
                     android:text="@string/screen_brightness"
                     android:textColor="@android:color/white"
                     android:textSize="14sp" />
@@ -148,20 +149,20 @@
                     android:id="@+id/ledIntensitySlider"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="0.35"
+                    android:layout_weight="0.45"
                     android:layout_marginEnd="8dp"
                     android:valueFrom="0.1"
                     android:valueTo="1.0"
-                    android:value="1.0" />
+                    android:value="0.5" />
 
                 <com.google.android.material.slider.Slider
                     android:id="@+id/screenBrightnessSlider"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="0.65"
+                    android:layout_weight="0.55"
                     android:valueFrom="0.1"
                     android:valueTo="1.0"
-                    android:value="1.0" />
+                    android:value="0.5" />
 
             </LinearLayout>
 
@@ -189,7 +190,7 @@
                 android:layout_height="wrap_content"
                 android:valueFrom="0.1"
                 android:valueTo="1.0"
-                android:value="1.0" />
+                android:value="0.5" />
 
         </LinearLayout>
 
