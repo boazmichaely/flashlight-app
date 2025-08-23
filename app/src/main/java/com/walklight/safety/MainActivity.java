@@ -658,20 +658,28 @@ public class MainActivity extends AppCompatActivity {
         android.util.Log.d("FlashlightLifecycle", "Multi-window mode: " + isInMultiWindowMode());
         android.util.Log.d("FlashlightLifecycle", "Has window focus: " + hasWindowFocus());
         
-        // PHASE 2: Smart restore logic
+        // PHASE 2.1: Smart restore logic (with multi-window transition handling)
         if (wasFlashlightOnBeforePause && hasFlash && checkCameraPermission()) {
             if (isFlashlightOn) {
-                // Light was kept on during pause (smart behavior worked!)
-                android.util.Log.d("FlashlightLifecycle", "🌟 Light was KEPT ON during pause (smart behavior)");
-                android.util.Log.d("FlashlightLifecycle", "➡️ No restore needed - light never went off");
+                // Light is already on - either kept on during pause OR restored by onMultiWindowModeChanged()
+                if (isInMultiWindowMode()) {
+                    android.util.Log.d("FlashlightLifecycle", "🌟 Light restored by multi-window transition");
+                } else {
+                    android.util.Log.d("FlashlightLifecycle", "🌟 Light was KEPT ON during pause (smart behavior)");
+                }
+                android.util.Log.d("FlashlightLifecycle", "➡️ No restore needed - light is already on");
             } else {
-                // Light was turned off during pause, restore it
-                try {
-                    turnOnFlashlight();
-                    android.util.Log.d("FlashlightLifecycle", "✅ Light restored (was turned off)");
-                } catch (CameraAccessException e) {
-                    android.util.Log.e("FlashlightLifecycle", "❌ Error restoring light", e);
-                    e.printStackTrace();
+                // Light is still off - restore it (for non-multi-window scenarios)
+                if (!isInMultiWindowMode()) {
+                    try {
+                        turnOnFlashlight();
+                        android.util.Log.d("FlashlightLifecycle", "✅ Light restored (normal resume)");
+                    } catch (CameraAccessException e) {
+                        android.util.Log.e("FlashlightLifecycle", "❌ Error restoring light", e);
+                        e.printStackTrace();
+                    }
+                } else {
+                    android.util.Log.d("FlashlightLifecycle", "➡️ Multi-window mode - light should have been restored already");
                 }
             }
         } else {
@@ -750,6 +758,37 @@ public class MainActivity extends AppCompatActivity {
         } catch (Exception e) {
             return "Error detecting state: " + e.getMessage();
         }
+    }
+
+    // ================================
+    // PHASE 2.1: MULTI-WINDOW TRANSITION DETECTION
+    // ================================
+    
+    /**
+     * Called when multi-window mode changes - this is the RIGHT time to detect transitions!
+     * This fires exactly when entering/exiting split-screen, before onPause/onResume
+     */
+    @Override
+    public void onMultiWindowModeChanged(boolean isInMultiWindowMode) {
+        super.onMultiWindowModeChanged(isInMultiWindowMode);
+        
+        android.util.Log.d("FlashlightLifecycle", "=== onMultiWindowModeChanged() ===");
+        android.util.Log.d("FlashlightLifecycle", "New multi-window mode: " + isInMultiWindowMode);
+        android.util.Log.d("FlashlightLifecycle", "Current light state: " + isFlashlightOn);
+        
+        // If entering multi-window mode and light was turned off during transition, restore it!
+        if (isInMultiWindowMode && wasFlashlightOnBeforePause && !isFlashlightOn) {
+            android.util.Log.d("FlashlightLifecycle", "🌟 ENTERING MULTI-WINDOW: Restoring light!");
+            try {
+                turnOnFlashlight();
+                android.util.Log.d("FlashlightLifecycle", "✅ Light restored for multi-window mode");
+            } catch (CameraAccessException e) {
+                android.util.Log.e("FlashlightLifecycle", "❌ Error restoring light in multi-window", e);
+                e.printStackTrace();
+            }
+        }
+        
+        android.util.Log.d("FlashlightLifecycle", "=====================================");
     }
 
     private void showAboutDialog() {
