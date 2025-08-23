@@ -612,32 +612,32 @@ public class MainActivity extends AppCompatActivity {
     protected void onPause() {
         super.onPause();
         
-        // PHASE 2: Apply smart detection logic to actual flashlight behavior
+        // PHASE 2.2: Apply consistent behavior logic - keep light on for ALL pause scenarios
         boolean shouldKeepOn = shouldKeepLightOnDuringPause();
         String reason = getPauseDecisionReason();
         
-        android.util.Log.d("FlashlightLifecycle", "=== onPause() PHASE 2: SMART BEHAVIOR ===");
+        android.util.Log.d("FlashlightLifecycle", "=== onPause() PHASE 2.2: CONSISTENT BEHAVIOR ===");
         android.util.Log.d("FlashlightLifecycle", "Multi-window mode: " + isInMultiWindowMode());
         android.util.Log.d("FlashlightLifecycle", "Picture-in-Picture: " + isInPictureInPictureMode());  
         android.util.Log.d("FlashlightLifecycle", "Has window focus: " + hasWindowFocus());
         android.util.Log.d("FlashlightLifecycle", "Current light state: " + isFlashlightOn);
         android.util.Log.d("FlashlightLifecycle", "Decision reason: " + reason);
-        android.util.Log.d("FlashlightLifecycle", "🎯 SMART DECISION: " + (shouldKeepOn ? "KEEP ON" : "TURN OFF"));
+        android.util.Log.d("FlashlightLifecycle", "🎯 CONSISTENT DECISION: " + (shouldKeepOn ? "KEEP ON" : "TURN OFF"));
         
         // Save current flashlight state
         wasFlashlightOnBeforePause = isFlashlightOn;
         
-        // PHASE 2: Apply detection logic to actual behavior
+        // PHASE 2.2: Apply consistent behavior logic to actual behavior
         if (isFlashlightOn) {
             if (shouldKeepOn) {
-                // NEW BEHAVIOR: Keep light on (split-screen, PiP, has focus)
-                android.util.Log.d("FlashlightLifecycle", "🌟 Light KEPT ON (new smart behavior)");
+                // CONSISTENT BEHAVIOR: Keep light on for ALL pause scenarios  
+                android.util.Log.d("FlashlightLifecycle", "🌟 Light KEPT ON (consistent behavior)");
                 android.util.Log.d("FlashlightLifecycle", "💡 Reason: " + reason);
             } else {
-                // OLD BEHAVIOR: Turn off light (truly backgrounded)
+                // FALLBACK: Only turn off light in exceptional cases (should not happen with consistent behavior)
                 try {
                     turnOffFlashlight();
-                    android.util.Log.d("FlashlightLifecycle", "✅ Light turned OFF (backgrounded)");
+                    android.util.Log.d("FlashlightLifecycle", "⚠️ Light turned OFF (fallback - should not happen)");
                 } catch (CameraAccessException e) {
                     android.util.Log.e("FlashlightLifecycle", "❌ Error turning off light", e);
                     e.printStackTrace();
@@ -693,67 +693,62 @@ public class MainActivity extends AppCompatActivity {
     }
 
     // ================================
-    // PHASE 1: SMART PAUSE DETECTION LOGIC 
+    // PHASE 2.2: CONSISTENT PAUSE BEHAVIOR LOGIC 
     // ================================
     
     /**
-     * PHASE 1: Determine if we should keep the flashlight on during onPause()
+     * PHASE 2.2: Determine if we should keep the flashlight on during onPause()
      * 
-     * This logic detects different types of pause events:
+     * CONSISTENT BEHAVIOR: Keep light on for ALL pause scenarios
      * - Multi-window mode (split-screen) → KEEP ON
      * - Picture-in-Picture mode → KEEP ON  
      * - Still has window focus (notifications, dialogs) → KEEP ON
-     * - Truly backgrounded (home, app switcher) → TURN OFF
+     * - Home button / app switcher → KEEP ON (consistent behavior)
+     * - Only turn OFF for system-forced scenarios (low battery, etc.)
      * 
      * @return true if light should stay on, false if it should turn off
      */
     private boolean shouldKeepLightOnDuringPause() {
         try {
-            // Check if we're in multi-window mode (split-screen)
-            if (isInMultiWindowMode()) {
-                return true; // Keep light on in split-screen
-            }
+            // NEW APPROACH: Keep light on for ALL user-initiated pause scenarios
+            // This provides consistent behavior whether user:
+            // - Presses home button
+            // - Uses split-screen  
+            // - Opens notifications
+            // - Switches apps
             
-            // Check if we're in Picture-in-Picture mode
-            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N 
-                && isInPictureInPictureMode()) {
-                return true; // Keep light on in PiP
-            }
+            android.util.Log.d("FlashlightLifecycle", "🔄 Using CONSISTENT behavior: Always keep light on during pause");
+            return true; // Keep light on for consistent UX
             
-            // Check if we still have window focus (notifications, system dialogs, etc.)
-            if (hasWindowFocus()) {
-                return true; // Keep light on if we still have focus
-            }
-            
-            // If none of the above, we're truly backgrounded
-            return false; // Turn off light
+            // Note: We still have the multi-window callback as a safety net
+            // and onDestroy() will turn off light when app is actually closed
             
         } catch (Exception e) {
             android.util.Log.e("FlashlightLifecycle", "Error in pause detection", e);
-            // Fallback to safe default (current behavior)
-            return false;
+            // Fallback to safe default - keep light on
+            return true;
         }
     }
     
     /**
-     * PHASE 1: Get human-readable reason for pause decision (for logging)
+     * PHASE 2.2: Get human-readable reason for pause decision (for logging)
      */
     private String getPauseDecisionReason() {
         try {
             if (isInMultiWindowMode()) {
-                return "Multi-window mode (split-screen)";
+                return "Multi-window mode (split-screen) - consistent behavior";
             }
             
             if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N 
                 && isInPictureInPictureMode()) {
-                return "Picture-in-Picture mode";
+                return "Picture-in-Picture mode - consistent behavior";
             }
             
             if (hasWindowFocus()) {
-                return "Still has window focus (notification/dialog)";
+                return "Still has window focus - consistent behavior";
             }
             
-            return "Truly backgrounded (home/app switcher)";
+            return "Home button/app switcher - consistent behavior (keep light on)";
             
         } catch (Exception e) {
             return "Error detecting state: " + e.getMessage();
