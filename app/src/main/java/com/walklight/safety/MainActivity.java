@@ -45,6 +45,7 @@ public class MainActivity extends AppCompatActivity {
     private Slider syncedIntensitySlider;
     private Slider screenOnlySlider;
     private SwitchMaterial syncSwitch;
+    private TextView syncLabel;
     private View colorRectangle;
     private LinearLayout syncModeContainer;
     private LinearLayout independentModeContainer;
@@ -54,6 +55,7 @@ public class MainActivity extends AppCompatActivity {
     
     private boolean isUpdatingSliders = false; // Prevent infinite loops during sync
     private boolean wasFlashlightOnBeforePause = false; // Track state for resume
+    private boolean lastSyncState = false; // Remember sync state when flashlight is off
     
     // Track actual current values for proper sync initialization
     private float currentActualScreenBrightness = 1.0f;
@@ -115,6 +117,7 @@ public class MainActivity extends AppCompatActivity {
         syncedIntensitySlider = findViewById(R.id.syncedIntensitySlider);
         screenOnlySlider = findViewById(R.id.screenOnlySlider);
         syncSwitch = findViewById(R.id.syncSwitch);
+        syncLabel = findViewById(R.id.syncLabel);
         colorRectangle = findViewById(R.id.colorRectangle);
         syncModeContainer = findViewById(R.id.syncModeContainer);
         independentModeContainer = findViewById(R.id.independentModeContainer);
@@ -131,8 +134,10 @@ public class MainActivity extends AppCompatActivity {
         // Set initial light toggle appearance (starts OFF)
         updateLightToggleAppearance(false);
         
-        // Set initial sync toggle appearance (starts OFF)
+        // Set initial sync toggle appearance (starts OFF) and hide since flashlight starts OFF
         updateSyncToggleAppearance(false);
+        syncSwitch.setVisibility(View.GONE);  // Hidden initially since flashlight starts OFF
+        syncLabel.setVisibility(View.GONE);   // Hidden initially since flashlight starts OFF
         
         // Set initial synced intensity label
         updateSyncedIntensityLabel();
@@ -282,6 +287,9 @@ public class MainActivity extends AppCompatActivity {
 
         // Sync Switch - toggle between layouts and sync values
         syncSwitch.setOnCheckedChangeListener((button, isChecked) -> {
+            // Save sync state for when flashlight turns off/on
+            lastSyncState = isChecked;
+            
             updateSyncToggleAppearance(isChecked);
             updateLayoutMode(); // This now handles all slider synchronization
             updateSyncedIntensityLabel();
@@ -446,70 +454,72 @@ public class MainActivity extends AppCompatActivity {
     private void updateLayoutMode() {
         try {
             if (syncSwitch != null && syncModeContainer != null && independentModeContainer != null && screenOnlyModeContainer != null) {
-                boolean isSyncMode = syncSwitch.isChecked();
                 boolean isFlashlightOn = this.isFlashlightOn;
-                
-                // Get current actual screen brightness for form factor transitions
                 float currentBrightness = getCurrentActualScreenBrightness();
                 
-                // Three-state layout logic with slider synchronization:
-                if (isSyncMode) {
-                    // PLAN A: Set slider value BEFORE visibility change to prevent visual jump
-                    if (syncedIntensitySlider != null) {
-                        isUpdatingSliders = true;
-                        syncedIntensitySlider.setValue(currentBrightness);
-                        isUpdatingSliders = false;
-                    }
+                if (isFlashlightOn) {
+                    // FLASHLIGHT ON: Show sync button + restore last sync state
+                    syncSwitch.setVisibility(View.VISIBLE);
+                    syncLabel.setVisibility(View.VISIBLE); // Show sync label too
                     
-                    // SYNC MODE: Single full-width slider
-                    syncModeContainer.setVisibility(View.VISIBLE);
-                    independentModeContainer.setVisibility(View.GONE);
-                    screenOnlyModeContainer.setVisibility(View.GONE);
+                    // Restore last sync state
+                    syncSwitch.setChecked(lastSyncState);
+                    boolean isSyncMode = lastSyncState;
                     
-                    // FORM FACTOR CHANGE: Apply values to hardware (post for timing)
-                    syncModeContainer.post(() -> {
-                        updateColorRectangleBrightness(currentBrightness);
-                        if (isFlashlightOn) {
-                            updateFlashlightIntensity(currentBrightness);
+                    if (isSyncMode) {
+                        // SYNC MODE: Single full-width slider controlling both
+                        if (syncedIntensitySlider != null) {
+                            isUpdatingSliders = true;
+                            syncedIntensitySlider.setValue(currentBrightness);
+                            isUpdatingSliders = false;
                         }
-                    });
-                    
-                } else if (isFlashlightOn) {
-                    // PLAN A: Set slider values BEFORE visibility change to prevent visual jump
-                    isUpdatingSliders = true;
-                    if (screenBrightnessSlider != null) {
-                        screenBrightnessSlider.setValue(currentBrightness);
+                        
+                        syncModeContainer.setVisibility(View.VISIBLE);
+                        independentModeContainer.setVisibility(View.GONE);
+                        screenOnlyModeContainer.setVisibility(View.GONE);
+                        
+                        syncModeContainer.post(() -> {
+                            updateColorRectangleBrightness(currentBrightness);
+                            updateFlashlightIntensity(currentBrightness);
+                        });
+                        
+                    } else {
+                        // INDEPENDENT MODE: Dual sliders (LED + Screen separate)
+                        isUpdatingSliders = true;
+                        if (screenBrightnessSlider != null) {
+                            screenBrightnessSlider.setValue(currentBrightness);
+                        }
+                        if (ledIntensitySlider != null) {
+                            ledIntensitySlider.setValue(currentActualLedIntensity);
+                        }
+                        isUpdatingSliders = false;
+                        
+                        syncModeContainer.setVisibility(View.GONE);
+                        independentModeContainer.setVisibility(View.VISIBLE);
+                        screenOnlyModeContainer.setVisibility(View.GONE);
+                        
+                        independentModeContainer.post(() -> {
+                            updateColorRectangleBrightness(currentBrightness);
+                            updateFlashlightIntensity(currentActualLedIntensity);
+                        });
                     }
-                    if (ledIntensitySlider != null) {
-                        ledIntensitySlider.setValue(currentActualLedIntensity);
-                    }
-                    isUpdatingSliders = false;
-                    
-                    // INDEPENDENT MODE: Dual sliders (flashlight is on, so LED is functional)
-                    syncModeContainer.setVisibility(View.GONE);
-                    independentModeContainer.setVisibility(View.VISIBLE);
-                    screenOnlyModeContainer.setVisibility(View.GONE);
-                    
-                    // FORM FACTOR CHANGE: Apply values to hardware (post for timing)
-                    independentModeContainer.post(() -> {
-                        updateColorRectangleBrightness(currentBrightness);
-                        updateFlashlightIntensity(currentActualLedIntensity);
-                    });
                     
                 } else {
-                    // PLAN A: Set slider value BEFORE visibility change to prevent visual jump
+                    // FLASHLIGHT OFF: Hide sync button completely, show single screen slider
+                    syncSwitch.setVisibility(View.GONE);
+                    syncLabel.setVisibility(View.GONE); // Hide sync label too
+                    
+                    // SCREEN ONLY MODE: Just screen brightness control
                     if (screenOnlySlider != null) {
                         isUpdatingSliders = true;
                         screenOnlySlider.setValue(currentBrightness);
                         isUpdatingSliders = false;
                     }
                     
-                    // SCREEN ONLY MODE: Hide inactive LED, show full-width screen slider
                     syncModeContainer.setVisibility(View.GONE);
                     independentModeContainer.setVisibility(View.GONE);
                     screenOnlyModeContainer.setVisibility(View.VISIBLE);
                     
-                    // FORM FACTOR CHANGE: Apply values to hardware (post for timing)
                     screenOnlyModeContainer.post(() -> {
                         updateColorRectangleBrightness(currentBrightness);
                     });
