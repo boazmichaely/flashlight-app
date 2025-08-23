@@ -448,61 +448,64 @@ public class MainActivity extends AppCompatActivity {
                 
                 // Three-state layout logic with slider synchronization:
                 if (isSyncMode) {
+                    // PLAN A: Set slider value BEFORE visibility change to prevent visual jump
+                    if (syncedIntensitySlider != null) {
+                        isUpdatingSliders = true;
+                        syncedIntensitySlider.setValue(currentBrightness);
+                        isUpdatingSliders = false;
+                    }
+                    
                     // SYNC MODE: Single full-width slider
                     syncModeContainer.setVisibility(View.VISIBLE);
                     independentModeContainer.setVisibility(View.GONE);
                     screenOnlyModeContainer.setVisibility(View.GONE);
                     
-                    // FORM FACTOR CHANGE: Sync the intensity slider to current screen brightness
+                    // FORM FACTOR CHANGE: Apply values to hardware (post for timing)
                     syncModeContainer.post(() -> {
-                        if (syncedIntensitySlider != null) {
-                            isUpdatingSliders = true;
-                            syncedIntensitySlider.setValue(currentBrightness);
-                            isUpdatingSliders = false;
-                            // Apply to ensure perfect consistency
-                            updateColorRectangleBrightness(currentBrightness);
-                            if (isFlashlightOn) {
-                                updateFlashlightIntensity(currentBrightness);
-                            }
+                        updateColorRectangleBrightness(currentBrightness);
+                        if (isFlashlightOn) {
+                            updateFlashlightIntensity(currentBrightness);
                         }
                     });
                     
                 } else if (isFlashlightOn) {
+                    // PLAN A: Set slider values BEFORE visibility change to prevent visual jump
+                    isUpdatingSliders = true;
+                    if (screenBrightnessSlider != null) {
+                        screenBrightnessSlider.setValue(currentBrightness);
+                    }
+                    if (ledIntensitySlider != null) {
+                        ledIntensitySlider.setValue(currentActualLedIntensity);
+                    }
+                    isUpdatingSliders = false;
+                    
                     // INDEPENDENT MODE: Dual sliders (flashlight is on, so LED is functional)
                     syncModeContainer.setVisibility(View.GONE);
                     independentModeContainer.setVisibility(View.VISIBLE);
                     screenOnlyModeContainer.setVisibility(View.GONE);
                     
-                    // FORM FACTOR CHANGE: Sync both sliders to current values
+                    // FORM FACTOR CHANGE: Apply values to hardware (post for timing)
                     independentModeContainer.post(() -> {
-                        isUpdatingSliders = true;
-                        if (screenBrightnessSlider != null) {
-                            screenBrightnessSlider.setValue(currentBrightness);
-                        }
-                        if (ledIntensitySlider != null) {
-                            ledIntensitySlider.setValue(currentActualLedIntensity);
-                        }
-                        isUpdatingSliders = false;
-                        // Apply to ensure perfect consistency
                         updateColorRectangleBrightness(currentBrightness);
                         updateFlashlightIntensity(currentActualLedIntensity);
                     });
                     
                 } else {
+                    // PLAN A: Set slider value BEFORE visibility change to prevent visual jump
+                    if (screenOnlySlider != null) {
+                        isUpdatingSliders = true;
+                        screenOnlySlider.setValue(currentBrightness);
+                        isUpdatingSliders = false;
+                    }
+                    
                     // SCREEN ONLY MODE: Hide inactive LED, show full-width screen slider
                     syncModeContainer.setVisibility(View.GONE);
                     independentModeContainer.setVisibility(View.GONE);
                     screenOnlyModeContainer.setVisibility(View.VISIBLE);
                     
-                    // FORM FACTOR CHANGE: Sync screen-only slider to current brightness
+                    // FORM FACTOR CHANGE: Apply values to hardware (post for timing)
                     screenOnlyModeContainer.post(() -> {
-                        if (screenOnlySlider != null) {
-                            isUpdatingSliders = true;
-                            screenOnlySlider.setValue(currentBrightness);
-                            isUpdatingSliders = false;
-                            // Apply to ensure perfect consistency
-                            updateColorRectangleBrightness(currentBrightness);
-                        }
+                        updateColorRectangleBrightness(currentBrightness);
                     });
                 }
             }
