@@ -611,29 +611,131 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
+        
+        // PHASE 1: Add detection logic with comprehensive logging (no behavior change yet)
+        boolean shouldKeepOn = shouldKeepLightOnDuringPause();
+        String reason = getPauseDecisionReason();
+        
+        android.util.Log.d("FlashlightLifecycle", "=== onPause() Analysis ===");
+        android.util.Log.d("FlashlightLifecycle", "Multi-window mode: " + isInMultiWindowMode());
+        android.util.Log.d("FlashlightLifecycle", "Picture-in-Picture: " + isInPictureInPictureMode());  
+        android.util.Log.d("FlashlightLifecycle", "Has window focus: " + hasWindowFocus());
+        android.util.Log.d("FlashlightLifecycle", "Current light state: " + isFlashlightOn);
+        android.util.Log.d("FlashlightLifecycle", "Decision reason: " + reason);
+        android.util.Log.d("FlashlightLifecycle", "🎯 NEW LOGIC would: " + (shouldKeepOn ? "KEEP ON" : "TURN OFF"));
+        android.util.Log.d("FlashlightLifecycle", "❌ OLD LOGIC will: " + (isFlashlightOn ? "TURN OFF" : "STAY OFF"));
+        
         // Save current flashlight state
         wasFlashlightOnBeforePause = isFlashlightOn;
         
-        // Turn off flashlight when pausing
+        // CURRENT BEHAVIOR: Always turn off flashlight when pausing (unchanged for Phase 1)
         if (isFlashlightOn) {
             try {
                 turnOffFlashlight();
+                android.util.Log.d("FlashlightLifecycle", "✅ Light turned OFF (current behavior)");
             } catch (CameraAccessException e) {
+                android.util.Log.e("FlashlightLifecycle", "❌ Error turning off light", e);
                 e.printStackTrace();
             }
         }
+        
+        android.util.Log.d("FlashlightLifecycle", "=========================");
     }
     
     @Override
     protected void onResume() {
         super.onResume();
+        
+        android.util.Log.d("FlashlightLifecycle", "=== onResume() Analysis ===");
+        android.util.Log.d("FlashlightLifecycle", "Was light on before pause: " + wasFlashlightOnBeforePause);
+        android.util.Log.d("FlashlightLifecycle", "Current light state: " + isFlashlightOn);
+        android.util.Log.d("FlashlightLifecycle", "Multi-window mode: " + isInMultiWindowMode());
+        android.util.Log.d("FlashlightLifecycle", "Has window focus: " + hasWindowFocus());
+        
         // Restore flashlight state if it was on before pause
         if (wasFlashlightOnBeforePause && hasFlash && checkCameraPermission()) {
             try {
                 turnOnFlashlight();
+                android.util.Log.d("FlashlightLifecycle", "✅ Light restored (current behavior)");
             } catch (CameraAccessException e) {
+                android.util.Log.e("FlashlightLifecycle", "❌ Error restoring light", e);
                 e.printStackTrace();
             }
+        } else {
+            String reason = !wasFlashlightOnBeforePause ? "wasn't on before" : 
+                           !hasFlash ? "no flash capability" : 
+                           "no camera permission";
+            android.util.Log.d("FlashlightLifecycle", "➡️ Not restoring light: " + reason);
+        }
+        
+        android.util.Log.d("FlashlightLifecycle", "==========================");
+    }
+
+    // ================================
+    // PHASE 1: SMART PAUSE DETECTION LOGIC 
+    // ================================
+    
+    /**
+     * PHASE 1: Determine if we should keep the flashlight on during onPause()
+     * 
+     * This logic detects different types of pause events:
+     * - Multi-window mode (split-screen) → KEEP ON
+     * - Picture-in-Picture mode → KEEP ON  
+     * - Still has window focus (notifications, dialogs) → KEEP ON
+     * - Truly backgrounded (home, app switcher) → TURN OFF
+     * 
+     * @return true if light should stay on, false if it should turn off
+     */
+    private boolean shouldKeepLightOnDuringPause() {
+        try {
+            // Check if we're in multi-window mode (split-screen)
+            if (isInMultiWindowMode()) {
+                return true; // Keep light on in split-screen
+            }
+            
+            // Check if we're in Picture-in-Picture mode
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N 
+                && isInPictureInPictureMode()) {
+                return true; // Keep light on in PiP
+            }
+            
+            // Check if we still have window focus (notifications, system dialogs, etc.)
+            if (hasWindowFocus()) {
+                return true; // Keep light on if we still have focus
+            }
+            
+            // If none of the above, we're truly backgrounded
+            return false; // Turn off light
+            
+        } catch (Exception e) {
+            android.util.Log.e("FlashlightLifecycle", "Error in pause detection", e);
+            // Fallback to safe default (current behavior)
+            return false;
+        }
+    }
+    
+    /**
+     * PHASE 1: Get human-readable reason for pause decision (for logging)
+     */
+    private String getPauseDecisionReason() {
+        try {
+            if (isInMultiWindowMode()) {
+                return "Multi-window mode (split-screen)";
+            }
+            
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N 
+                && isInPictureInPictureMode()) {
+                return "Picture-in-Picture mode";
+            }
+            
+            if (hasWindowFocus()) {
+                return "Still has window focus (notification/dialog)";
+            }
+            
+            return "Truly backgrounded (home/app switcher)";
+            
+        } catch (Exception e) {
+            return "Error detecting state: " + e.getMessage();
         }
     }
 
