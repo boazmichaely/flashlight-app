@@ -612,30 +612,36 @@ public class MainActivity extends AppCompatActivity {
     protected void onPause() {
         super.onPause();
         
-        // PHASE 1: Add detection logic with comprehensive logging (no behavior change yet)
+        // PHASE 2: Apply smart detection logic to actual flashlight behavior
         boolean shouldKeepOn = shouldKeepLightOnDuringPause();
         String reason = getPauseDecisionReason();
         
-        android.util.Log.d("FlashlightLifecycle", "=== onPause() Analysis ===");
+        android.util.Log.d("FlashlightLifecycle", "=== onPause() PHASE 2: SMART BEHAVIOR ===");
         android.util.Log.d("FlashlightLifecycle", "Multi-window mode: " + isInMultiWindowMode());
         android.util.Log.d("FlashlightLifecycle", "Picture-in-Picture: " + isInPictureInPictureMode());  
         android.util.Log.d("FlashlightLifecycle", "Has window focus: " + hasWindowFocus());
         android.util.Log.d("FlashlightLifecycle", "Current light state: " + isFlashlightOn);
         android.util.Log.d("FlashlightLifecycle", "Decision reason: " + reason);
-        android.util.Log.d("FlashlightLifecycle", "🎯 NEW LOGIC would: " + (shouldKeepOn ? "KEEP ON" : "TURN OFF"));
-        android.util.Log.d("FlashlightLifecycle", "❌ OLD LOGIC will: " + (isFlashlightOn ? "TURN OFF" : "STAY OFF"));
+        android.util.Log.d("FlashlightLifecycle", "🎯 SMART DECISION: " + (shouldKeepOn ? "KEEP ON" : "TURN OFF"));
         
         // Save current flashlight state
         wasFlashlightOnBeforePause = isFlashlightOn;
         
-        // CURRENT BEHAVIOR: Always turn off flashlight when pausing (unchanged for Phase 1)
+        // PHASE 2: Apply detection logic to actual behavior
         if (isFlashlightOn) {
-            try {
-                turnOffFlashlight();
-                android.util.Log.d("FlashlightLifecycle", "✅ Light turned OFF (current behavior)");
-            } catch (CameraAccessException e) {
-                android.util.Log.e("FlashlightLifecycle", "❌ Error turning off light", e);
-                e.printStackTrace();
+            if (shouldKeepOn) {
+                // NEW BEHAVIOR: Keep light on (split-screen, PiP, has focus)
+                android.util.Log.d("FlashlightLifecycle", "🌟 Light KEPT ON (new smart behavior)");
+                android.util.Log.d("FlashlightLifecycle", "💡 Reason: " + reason);
+            } else {
+                // OLD BEHAVIOR: Turn off light (truly backgrounded)
+                try {
+                    turnOffFlashlight();
+                    android.util.Log.d("FlashlightLifecycle", "✅ Light turned OFF (backgrounded)");
+                } catch (CameraAccessException e) {
+                    android.util.Log.e("FlashlightLifecycle", "❌ Error turning off light", e);
+                    e.printStackTrace();
+                }
             }
         }
         
@@ -652,14 +658,21 @@ public class MainActivity extends AppCompatActivity {
         android.util.Log.d("FlashlightLifecycle", "Multi-window mode: " + isInMultiWindowMode());
         android.util.Log.d("FlashlightLifecycle", "Has window focus: " + hasWindowFocus());
         
-        // Restore flashlight state if it was on before pause
+        // PHASE 2: Smart restore logic
         if (wasFlashlightOnBeforePause && hasFlash && checkCameraPermission()) {
-            try {
-                turnOnFlashlight();
-                android.util.Log.d("FlashlightLifecycle", "✅ Light restored (current behavior)");
-            } catch (CameraAccessException e) {
-                android.util.Log.e("FlashlightLifecycle", "❌ Error restoring light", e);
-                e.printStackTrace();
+            if (isFlashlightOn) {
+                // Light was kept on during pause (smart behavior worked!)
+                android.util.Log.d("FlashlightLifecycle", "🌟 Light was KEPT ON during pause (smart behavior)");
+                android.util.Log.d("FlashlightLifecycle", "➡️ No restore needed - light never went off");
+            } else {
+                // Light was turned off during pause, restore it
+                try {
+                    turnOnFlashlight();
+                    android.util.Log.d("FlashlightLifecycle", "✅ Light restored (was turned off)");
+                } catch (CameraAccessException e) {
+                    android.util.Log.e("FlashlightLifecycle", "❌ Error restoring light", e);
+                    e.printStackTrace();
+                }
             }
         } else {
             String reason = !wasFlashlightOnBeforePause ? "wasn't on before" : 
