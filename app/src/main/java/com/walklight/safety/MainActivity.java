@@ -27,6 +27,7 @@ import androidx.core.content.ContextCompat;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.slider.Slider;
 import com.google.android.material.switchmaterial.SwitchMaterial;
+import androidx.appcompat.app.AlertDialog;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -49,13 +50,14 @@ public class MainActivity extends AppCompatActivity {
     private LinearLayout independentModeContainer;
     private LinearLayout screenOnlyModeContainer;
     private TextView syncedIntensityLabel;
+    private LinearLayout aboutButton;
     
     private boolean isUpdatingSliders = false; // Prevent infinite loops during sync
     private boolean wasFlashlightOnBeforePause = false; // Track state for resume
     
     // Track actual current values for proper sync initialization
-    private float currentActualScreenBrightness = 0.5f;
-    private float currentActualLedIntensity = 0.5f;
+    private float currentActualScreenBrightness = 1.0f;
+    private float currentActualLedIntensity = 1.0f;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -118,6 +120,7 @@ public class MainActivity extends AppCompatActivity {
         independentModeContainer = findViewById(R.id.independentModeContainer);
         screenOnlyModeContainer = findViewById(R.id.screenOnlyModeContainer);
         syncedIntensityLabel = findViewById(R.id.syncedIntensityLabel);
+        aboutButton = findViewById(R.id.aboutButton);
         
         // Initialize all sliders consistently using centralized logic
         initializeAllSlidersToCurrentState();
@@ -283,6 +286,9 @@ public class MainActivity extends AppCompatActivity {
             updateLayoutMode(); // This now handles all slider synchronization
             updateSyncedIntensityLabel();
         });
+
+        // About Button
+        aboutButton.setOnClickListener(v -> showAboutDialog());
     }
     
 
@@ -292,7 +298,7 @@ public class MainActivity extends AppCompatActivity {
     private void initializeAllSlidersToCurrentState() {
         try {
             // Initialize all sliders to match the screen-only slider (the visible one at startup)
-            float initialValue = screenOnlySlider != null ? screenOnlySlider.getValue() : 0.5f;
+            float initialValue = screenOnlySlider != null ? screenOnlySlider.getValue() : 1.0f;
             
             isUpdatingSliders = true;
             if (syncedIntensitySlider != null) {
@@ -618,6 +624,21 @@ public class MainActivity extends AppCompatActivity {
             } catch (CameraAccessException e) {
                 e.printStackTrace();
             }
+        }
+    }
+
+    private void showAboutDialog() {
+        try {
+            String versionName = getPackageManager().getPackageInfo(getPackageName(), 0).versionName;
+            String message = getString(R.string.about_version, versionName);
+
+            new AlertDialog.Builder(this)
+                    .setTitle(getString(R.string.about_title))
+                    .setMessage(message)
+                    .setPositiveButton("OK", null)
+                    .show();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 }
