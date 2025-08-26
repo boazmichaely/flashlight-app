@@ -5,6 +5,18 @@
     <!-- Show/Hide Custom PNG Exit Button -->
     <bool name="show_custom_exit">true</bool>
     
+    <!-- Top Corner Exit Button Config -->
+    <dimen name="top_exit_width">60dp</dimen>
+    <dimen name="top_exit_height">36dp</dimen>
+    <dimen name="top_exit_margin_top">48dp</dimen>
+    <dimen name="top_exit_margin_start">16dp</dimen>
+    <dimen name="top_exit_stroke_width">1dp</dimen>
+    <dimen name="top_exit_corner_radius">8dp</dimen>
+    <color name="top_exit_text_color">@android:color/white</color>
+    <color name="top_exit_bg_color">@android:color/holo_red_dark</color>
+    <color name="top_exit_stroke_color">@android:color/white</color>
+    <string name="top_exit_text">EXIT</string>
+    
     <!-- Custom PNG Exit Button Config -->
     <dimen name="custom_exit_width">56dp</dimen>
     <dimen name="custom_exit_height">56dp</dimen>
