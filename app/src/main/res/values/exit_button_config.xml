@@ -3,7 +3,7 @@
     <!-- EXIT BUTTON CONFIGURATION -->
     
     <!-- Show/Hide Buttons (true/false) -->
-    <bool name="show_top_corner_exit">true</bool>
+    <bool name="show_top_corner_exit">false</bool>
     <bool name="show_floating_exit">true</bool>
     
     <!-- Top Corner Button Config -->
@@ -18,9 +18,11 @@
     <dimen name="top_exit_stroke_width">2dp</dimen>
     <dimen name="top_exit_corner_radius">8dp</dimen>
     
-    <!-- Floating Button Config -->
-    <dimen name="floating_exit_margin_end">16dp</dimen>
-    <dimen name="floating_exit_margin_bottom">120dp</dimen>  <!-- Above control panel -->
-    <color name="floating_exit_bg_color">#D32F2F</color>
-    <color name="floating_exit_icon_color">#FFFFFF</color>
+    <!-- Custom PNG Button Config -->
+    <dimen name="custom_exit_width">56dp</dimen>
+    <dimen name="custom_exit_height">56dp</dimen>
+    <dimen name="custom_exit_margin_top">48dp</dimen>
+    <dimen name="custom_exit_margin_end">16dp</dimen>
+    <dimen name="custom_exit_padding">8dp</dimen>
+    <color name="custom_exit_bg_color">@android:color/transparent</color>
 </resources>

@@ -25,7 +25,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import com.google.android.material.button.MaterialButton;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import android.widget.ImageButton;
 import com.google.android.material.slider.Slider;
 import com.google.android.material.switchmaterial.SwitchMaterial;
 import androidx.appcompat.app.AlertDialog;
@@ -57,7 +57,7 @@ public class MainActivity extends AppCompatActivity {
     private TextView syncedIntensityLabel;
     private LinearLayout aboutButton;
     private MaterialButton exitButtonTopCorner; // OPTION B: Top corner exit button
-    private FloatingActionButton exitButtonFloating; // OPTION C: Floating exit button
+    private ImageButton exitButtonFloating; // OPTION C: Custom PNG exit button
     
     private boolean isUpdatingSliders = false; // Prevent infinite loops during sync
     private boolean wasFlashlightOnBeforePause = false; // Track state for resume
