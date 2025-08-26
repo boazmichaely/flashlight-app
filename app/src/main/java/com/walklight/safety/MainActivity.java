@@ -34,31 +34,7 @@ public class MainActivity extends AppCompatActivity {
 
     private static final int CAMERA_PERMISSION_REQUEST = 100;
     
-    // ================================
-    // EXIT BUTTON CONFIGURATION - Easy to modify!
-    // ================================
-    
-    // Which exit button to show (set to false to hide, true to show)
-    private static final boolean SHOW_TOP_CORNER_EXIT = true;
-    private static final boolean SHOW_FLOATING_EXIT = true;
-    
-    // Top Corner Button Config
-    private static final String TOP_EXIT_TEXT = "Exit";
-    private static final int TOP_EXIT_WIDTH_DP = 80;
-    private static final int TOP_EXIT_HEIGHT_DP = 40;
-    private static final int TOP_EXIT_MARGIN_TOP_DP = 48;
-    private static final int TOP_EXIT_MARGIN_START_DP = 16;
-    private static final String TOP_EXIT_BG_COLOR = "#D32F2F"; // red - VISIBLE!
-    private static final String TOP_EXIT_TEXT_COLOR = "#FFFFFF"; // white
-    private static final String TOP_EXIT_STROKE_COLOR = "#FFFFFF"; // white
-    private static final int TOP_EXIT_STROKE_WIDTH = 2; // thicker border
-    private static final int TOP_EXIT_CORNER_RADIUS = 8;
-    
-    // Floating Button Config  
-    private static final int FLOATING_EXIT_MARGIN_END_DP = 16;
-    private static final int FLOATING_EXIT_MARGIN_BOTTOM_DP = 100;
-    private static final String FLOATING_EXIT_BG_COLOR = "#D32F2F"; // red
-    private static final String FLOATING_EXIT_ICON_COLOR = "#FFFFFF"; // white
+    // Configuration now lives in: app/src/main/res/values/exit_button_config.xml
     
     private CameraManager cameraManager;
     private String cameraId;
@@ -155,12 +131,20 @@ public class MainActivity extends AppCompatActivity {
         syncedIntensityLabel = findViewById(R.id.syncedIntensityLabel);
         aboutButton = findViewById(R.id.aboutButton);
         
-        // Initialize exit buttons
+        // Initialize exit buttons (configuration now in exit_button_config.xml)
         exitButtonTopCorner = findViewById(R.id.exitButtonTopCorner);
         exitButtonFloating = findViewById(R.id.exitButtonFloating);
         
-        // Configure exit buttons based on config
-        configureExitButtons();
+        // Apply show/hide configuration from resources
+        if (exitButtonTopCorner != null) {
+            boolean showTopCorner = getResources().getBoolean(R.bool.show_top_corner_exit);
+            exitButtonTopCorner.setVisibility(showTopCorner ? View.VISIBLE : View.GONE);
+        }
+        
+        if (exitButtonFloating != null) {
+            boolean showFloating = getResources().getBoolean(R.bool.show_floating_exit);
+            exitButtonFloating.setVisibility(showFloating ? View.VISIBLE : View.GONE);
+        }
         
         // PHASE 1: TEMPORARILY DISABLED - Apply hardware-based UI configuration BEFORE initializing sliders
         // TODO: Re-enable after testing
@@ -184,44 +168,7 @@ public class MainActivity extends AppCompatActivity {
         updateSyncedIntensityLabel();
     }
 
-    // ================================
-    // EXIT BUTTON CONFIGURATION AND SETUP
-    // ================================
-    
-    /**
-     * Configure exit buttons based on the configuration constants
-     * This allows easy customization without code changes - just modify the constants above!
-     */
-    private void configureExitButtons() {
-        android.util.Log.d("FlashlightApp", "🎨 Configuring exit buttons...");
-        
-        // Configure Top Corner Exit Button (Option B)
-        if (exitButtonTopCorner != null) {
-            if (SHOW_TOP_CORNER_EXIT) {
-                exitButtonTopCorner.setVisibility(View.VISIBLE);
-                exitButtonTopCorner.setText(TOP_EXIT_TEXT);
-                exitButtonTopCorner.setTextColor(Color.parseColor(TOP_EXIT_TEXT_COLOR));
-                exitButtonTopCorner.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor(TOP_EXIT_BG_COLOR)));
-                exitButtonTopCorner.setStrokeColor(ColorStateList.valueOf(Color.parseColor(TOP_EXIT_STROKE_COLOR)));
-                android.util.Log.d("FlashlightApp", "✅ Top corner exit button configured and visible");
-            } else {
-                exitButtonTopCorner.setVisibility(View.GONE);
-                android.util.Log.d("FlashlightApp", "⚪ Top corner exit button hidden by config");
-            }
-        }
-        
-        // Configure Floating Exit Button (Option C)
-        if (exitButtonFloating != null) {
-            if (SHOW_FLOATING_EXIT) {
-                exitButtonFloating.setVisibility(View.VISIBLE);
-                exitButtonFloating.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor(FLOATING_EXIT_BG_COLOR)));
-                android.util.Log.d("FlashlightApp", "✅ Floating exit button configured and visible");
-            } else {
-                exitButtonFloating.setVisibility(View.GONE);
-                android.util.Log.d("FlashlightApp", "⚪ Floating exit button hidden by config");
-            }
-        }
-    }
+    // Exit button configuration now handled by resources in exit_button_config.xml
 
     // ================================
     // PHASE 1: HARDWARE-BASED UI CONFIGURATION
@@ -454,13 +401,13 @@ public class MainActivity extends AppCompatActivity {
         // About Button
         aboutButton.setOnClickListener(v -> showAboutDialog());
         
-        // Exit Button Click Listeners
-        if (exitButtonTopCorner != null && SHOW_TOP_CORNER_EXIT) {
+        // Exit Button Click Listeners  
+        if (exitButtonTopCorner != null) {
             exitButtonTopCorner.setOnClickListener(v -> exitApp());
             android.util.Log.d("FlashlightApp", "✅ Top corner exit button click listener set");
         }
         
-        if (exitButtonFloating != null && SHOW_FLOATING_EXIT) {
+        if (exitButtonFloating != null) {
             exitButtonFloating.setOnClickListener(v -> exitApp());
             android.util.Log.d("FlashlightApp", "✅ Floating exit button click listener set");
         }
