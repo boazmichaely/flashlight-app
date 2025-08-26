@@ -71,8 +71,8 @@ public class MainActivity extends AppCompatActivity {
         // Handle system insets for proper layout positioning
         setupWindowInsets();
 
+        initializeCamera(); // MUST come before initializeViews() to set hardware capabilities
         initializeViews();
-        initializeCamera();
         setupClickListeners();
         
         // Auto-turn on flashlight when app launches (AFTER camera initialization)
@@ -128,8 +128,16 @@ public class MainActivity extends AppCompatActivity {
         aboutButton = findViewById(R.id.aboutButton);
         exitButton = findViewById(R.id.exitButton); // PHASE 1: Exit button
         
-        // PHASE 1: Apply hardware-based UI configuration BEFORE initializing sliders
-        configureUIBasedOnHardware();
+        // DEBUG: Check if exit button was found
+        if (exitButton != null) {
+            android.util.Log.d("FlashlightApp", "✅ Exit button found and initialized");
+        } else {
+            android.util.Log.e("FlashlightApp", "❌ Exit button NOT found in layout!");
+        }
+        
+        // PHASE 1: TEMPORARILY DISABLED - Apply hardware-based UI configuration BEFORE initializing sliders
+        // TODO: Re-enable after testing
+        // configureUIBasedOnHardware();
         
         // Initialize all sliders consistently using centralized logic
         initializeAllSlidersToCurrentState();
@@ -381,7 +389,12 @@ public class MainActivity extends AppCompatActivity {
         aboutButton.setOnClickListener(v -> showAboutDialog());
         
         // PHASE 1: Exit Button
-        exitButton.setOnClickListener(v -> exitApp());
+        if (exitButton != null) {
+            exitButton.setOnClickListener(v -> exitApp());
+            android.util.Log.d("FlashlightApp", "✅ Exit button click listener set");
+        } else {
+            android.util.Log.e("FlashlightApp", "❌ Cannot set exit button listener - button is null!");
+        }
     }
     
 
@@ -542,8 +555,9 @@ public class MainActivity extends AppCompatActivity {
                 boolean isFlashlightOn = this.isFlashlightOn;
                 float currentBrightness = getCurrentActualScreenBrightness();
                 
-                // PHASE 1: For devices without intensity control, always use simple mode
-                if (!hasFlashIntensityControl) {
+                // PHASE 1: TEMPORARILY DISABLED - For devices without intensity control, always use simple mode
+                // TODO: Re-enable after testing that hardware detection works correctly
+                if (false && !hasFlashIntensityControl) {
                     // Simple mode: Just light on/off + screen brightness
                     syncModeContainer.setVisibility(View.GONE);
                     independentModeContainer.setVisibility(View.GONE);
