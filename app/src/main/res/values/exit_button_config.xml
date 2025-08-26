@@ -20,7 +20,7 @@
     
     <!-- Floating Button Config -->
     <dimen name="floating_exit_margin_end">16dp</dimen>
-    <dimen name="floating_exit_margin_top">100dp</dimen>
+    <dimen name="floating_exit_margin_bottom">120dp</dimen>  <!-- Above control panel -->
     <color name="floating_exit_bg_color">#D32F2F</color>
     <color name="floating_exit_icon_color">#FFFFFF</color>
 </resources>

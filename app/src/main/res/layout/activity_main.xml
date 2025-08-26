@@ -8,7 +8,7 @@
     android:background="@android:color/black"
     tools:context=".MainActivity">
 
-    <!-- OPTION B: Top Corner Exit Button -->
+    <!-- OPTION B: Top Corner Exit Button - FORCE VISIBLE -->
     <com.google.android.material.button.MaterialButton
         android:id="@+id/exitButtonTopCorner"
         android:layout_width="@dimen/top_exit_width"
@@ -18,25 +18,28 @@
         android:text="@string/top_exit_text"
         android:textSize="14sp"
         android:textColor="@color/top_exit_text_color"
+        android:textStyle="bold"
         app:backgroundTint="@color/top_exit_bg_color"
         app:strokeColor="@color/top_exit_stroke_color"
         app:strokeWidth="@dimen/top_exit_stroke_width"
         app:cornerRadius="@dimen/top_exit_corner_radius"
+        android:elevation="8dp"
+        android:translationZ="8dp"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         android:contentDescription="Exit App (Top Corner)" />
 
-    <!-- OPTION C: Floating Corner Button -->
+    <!-- OPTION C: Floating Corner Button (positioned above control panel) -->
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/exitButtonFloating"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="@dimen/floating_exit_margin_end"
-        android:layout_marginBottom="@dimen/floating_exit_margin_bottom"
+        android:layout_marginBottom="16dp"
         android:src="@android:drawable/ic_menu_close_clear_cancel"
         app:backgroundTint="@color/floating_exit_bg_color"
         app:tint="@color/floating_exit_icon_color"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/controlPanel"
         app:layout_constraintEnd_toEndOf="parent"
         android:contentDescription="Exit App (Floating)" />
 

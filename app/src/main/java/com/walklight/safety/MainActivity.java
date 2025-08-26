@@ -139,11 +139,17 @@ public class MainActivity extends AppCompatActivity {
         if (exitButtonTopCorner != null) {
             boolean showTopCorner = getResources().getBoolean(R.bool.show_top_corner_exit);
             exitButtonTopCorner.setVisibility(showTopCorner ? View.VISIBLE : View.GONE);
+            android.util.Log.d("FlashlightApp", "✅ Top corner button found! Show: " + showTopCorner + ", Text: " + exitButtonTopCorner.getText());
+        } else {
+            android.util.Log.e("FlashlightApp", "❌ Top corner button is NULL!");
         }
         
         if (exitButtonFloating != null) {
             boolean showFloating = getResources().getBoolean(R.bool.show_floating_exit);
             exitButtonFloating.setVisibility(showFloating ? View.VISIBLE : View.GONE);
+            android.util.Log.d("FlashlightApp", "✅ Floating button found! Show: " + showFloating);
+        } else {
+            android.util.Log.e("FlashlightApp", "❌ Floating button is NULL!");
         }
         
         // PHASE 1: TEMPORARILY DISABLED - Apply hardware-based UI configuration BEFORE initializing sliders
