@@ -8,6 +8,22 @@
     android:background="@android:color/black"
     tools:context=".MainActivity">
 
+    <!-- Exit Button at Top -->
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/exitButton"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
+        android:text="✕"
+        android:textSize="18sp"
+        android:textColor="@android:color/white"
+        app:backgroundTint="@android:color/darker_gray"
+        app:cornerRadius="24dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:contentDescription="Exit App" />
+
     <!-- Full Screen Color Rectangle -->
     <View
         android:id="@+id/colorRectangle"

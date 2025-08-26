@@ -37,6 +37,7 @@ public class MainActivity extends AppCompatActivity {
     private String cameraId;
     private boolean isFlashlightOn = false;
     private boolean hasFlash = false;
+    private boolean hasFlashIntensityControl = false; // PHASE 1: Track if device supports variable intensity
     private int maxTorchStrength = 100; // Default, will be updated from device capabilities
     
     private SwitchMaterial lightToggle;
@@ -52,6 +53,7 @@ public class MainActivity extends AppCompatActivity {
     private LinearLayout screenOnlyModeContainer;
     private TextView syncedIntensityLabel;
     private LinearLayout aboutButton;
+    private MaterialButton exitButton; // PHASE 1: Exit button
     
     private boolean isUpdatingSliders = false; // Prevent infinite loops during sync
     private boolean wasFlashlightOnBeforePause = false; // Track state for resume
@@ -124,6 +126,10 @@ public class MainActivity extends AppCompatActivity {
         screenOnlyModeContainer = findViewById(R.id.screenOnlyModeContainer);
         syncedIntensityLabel = findViewById(R.id.syncedIntensityLabel);
         aboutButton = findViewById(R.id.aboutButton);
+        exitButton = findViewById(R.id.exitButton); // PHASE 1: Exit button
+        
+        // PHASE 1: Apply hardware-based UI configuration BEFORE initializing sliders
+        configureUIBasedOnHardware();
         
         // Initialize all sliders consistently using centralized logic
         initializeAllSlidersToCurrentState();
@@ -143,6 +149,62 @@ public class MainActivity extends AppCompatActivity {
         updateSyncedIntensityLabel();
     }
 
+    // ================================
+    // PHASE 1: HARDWARE-BASED UI CONFIGURATION
+    // ================================
+    
+    /**
+     * PHASE 1: Configure UI elements based on device hardware capabilities
+     * Hides LED intensity controls and sync functionality if device doesn't support intensity control
+     */
+    private void configureUIBasedOnHardware() {
+        android.util.Log.d("FlashlightHardware", "🎨 Configuring UI based on hardware capabilities...");
+        
+        if (!hasFlashIntensityControl) {
+            // Device only supports basic on/off flash - hide intensity-related controls
+            android.util.Log.d("FlashlightHardware", "⚠️ No intensity control - hiding LED slider and sync controls");
+            
+            // Hide LED intensity slider (in independent mode)
+            if (ledIntensitySlider != null) {
+                ledIntensitySlider.setVisibility(View.GONE);
+            }
+            
+            // Hide synced intensity slider (in sync mode)  
+            if (syncedIntensitySlider != null) {
+                syncedIntensitySlider.setVisibility(View.GONE);
+            }
+            
+            // Hide sync controls completely since there's nothing to sync
+            if (syncSwitch != null) {
+                syncSwitch.setVisibility(View.GONE);
+            }
+            if (syncLabel != null) {
+                syncLabel.setVisibility(View.GONE);
+            }
+            
+            // Hide sync mode container
+            if (syncModeContainer != null) {
+                syncModeContainer.setVisibility(View.GONE);
+            }
+            
+            // Hide independent mode container  
+            if (independentModeContainer != null) {
+                independentModeContainer.setVisibility(View.GONE);
+            }
+            
+            // Ensure screen-only mode is always visible for devices without intensity control
+            if (screenOnlyModeContainer != null) {
+                screenOnlyModeContainer.setVisibility(View.VISIBLE);
+            }
+            
+            android.util.Log.d("FlashlightHardware", "✅ Simple UI configured: Light ON/OFF + Screen brightness only");
+            
+        } else {
+            // Device supports intensity control - show all controls
+            android.util.Log.d("FlashlightHardware", "✅ Full UI configured: All intensity controls available");
+        }
+    }
+
     private void initializeCamera() {
         // Check if device has flash
         hasFlash = getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA_FLASH);
@@ -150,6 +212,7 @@ public class MainActivity extends AppCompatActivity {
         if (!hasFlash) {
             showToast("Device doesn't have flash!");
             lightToggle.setEnabled(false);
+            hasFlashIntensityControl = false;
             return;
         }
 
@@ -160,36 +223,55 @@ public class MainActivity extends AppCompatActivity {
                 if (cameraIdList.length > 0) {
                     cameraId = cameraIdList[0];
                     
-                    // Check if device supports torch strength levels
+                    // PHASE 1: Check if device supports torch strength levels
                     if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
                         try {
                             CameraCharacteristics characteristics = cameraManager.getCameraCharacteristics(cameraId);
                             Integer maxTorchStrengthObj = characteristics.get(CameraCharacteristics.FLASH_INFO_STRENGTH_MAXIMUM_LEVEL);
                             Integer defaultTorchStrength = characteristics.get(CameraCharacteristics.FLASH_INFO_STRENGTH_DEFAULT_LEVEL);
                             
-                            if (maxTorchStrengthObj != null) {
+                            if (maxTorchStrengthObj != null && maxTorchStrengthObj > 1) {
                                 maxTorchStrength = maxTorchStrengthObj;
-                                // Device supports intensity control - no need to show diagnostic message
+                                hasFlashIntensityControl = true;
+                                android.util.Log.d("FlashlightHardware", "✅ Device supports intensity control - Max strength: " + maxTorchStrength);
+                            } else {
+                                hasFlashIntensityControl = false;
+                                android.util.Log.d("FlashlightHardware", "⚠️ Device has flash but NO intensity control (simple on/off only)");
                             }
                         } catch (Exception strengthCheckException) {
-                            // Torch strength check failed - silently fall back to basic flashlight
+                            // Torch strength check failed - assume no intensity control
+                            hasFlashIntensityControl = false;
+                            android.util.Log.d("FlashlightHardware", "⚠️ Torch strength check failed - assuming no intensity control");
                         }
+                    } else {
+                        // Older Android versions don't support intensity control
+                        hasFlashIntensityControl = false;
+                        android.util.Log.d("FlashlightHardware", "⚠️ Android version < API 33 - no intensity control available");
                     }
+                    
+                    // Log hardware capabilities summary
+                    android.util.Log.d("FlashlightHardware", "🔍 Hardware Detection Summary:");
+                    android.util.Log.d("FlashlightHardware", "- Has Flash: " + hasFlash);
+                    android.util.Log.d("FlashlightHardware", "- Has Intensity Control: " + hasFlashIntensityControl);
+                    android.util.Log.d("FlashlightHardware", "- Max Torch Strength: " + maxTorchStrength);
                 } else {
                     showToast("No camera found!");
                     lightToggle.setEnabled(false);
                     hasFlash = false;
+                    hasFlashIntensityControl = false;
                 }
             } else {
                 showToast("Camera service not available!");
                 lightToggle.setEnabled(false);
                 hasFlash = false;
+                hasFlashIntensityControl = false;
             }
         } catch (Exception e) {
             e.printStackTrace();
             showToast("Error initializing camera: " + e.getMessage());
             lightToggle.setEnabled(false);
             hasFlash = false;
+            hasFlashIntensityControl = false;
         }
     }
 
@@ -297,6 +379,9 @@ public class MainActivity extends AppCompatActivity {
 
         // About Button
         aboutButton.setOnClickListener(v -> showAboutDialog());
+        
+        // PHASE 1: Exit Button
+        exitButton.setOnClickListener(v -> exitApp());
     }
     
 
@@ -456,6 +541,30 @@ public class MainActivity extends AppCompatActivity {
             if (syncSwitch != null && syncModeContainer != null && independentModeContainer != null && screenOnlyModeContainer != null) {
                 boolean isFlashlightOn = this.isFlashlightOn;
                 float currentBrightness = getCurrentActualScreenBrightness();
+                
+                // PHASE 1: For devices without intensity control, always use simple mode
+                if (!hasFlashIntensityControl) {
+                    // Simple mode: Just light on/off + screen brightness
+                    syncModeContainer.setVisibility(View.GONE);
+                    independentModeContainer.setVisibility(View.GONE);
+                    screenOnlyModeContainer.setVisibility(View.VISIBLE);
+                    
+                    // Hide sync controls
+                    syncSwitch.setVisibility(View.GONE);
+                    syncLabel.setVisibility(View.GONE);
+                    
+                    // Update screen-only slider
+                    if (screenOnlySlider != null) {
+                        screenOnlySlider.post(() -> {
+                            isUpdatingSliders = true;
+                            screenOnlySlider.setValue(currentBrightness);
+                            isUpdatingSliders = false;
+                        });
+                    }
+                    
+                    android.util.Log.d("FlashlightHardware", "📱 Simple layout mode: Light ON/OFF + Screen only");
+                    return; // Skip complex sync logic
+                }
                 
                 if (isFlashlightOn) {
                     // FLASHLIGHT ON: Show sync button + restore last sync state
@@ -784,6 +893,32 @@ public class MainActivity extends AppCompatActivity {
         }
         
         android.util.Log.d("FlashlightLifecycle", "=====================================");
+    }
+
+    // ================================
+    // PHASE 1: EXIT APP FUNCTIONALITY
+    // ================================
+    
+    /**
+     * PHASE 1: Exit the application completely
+     * Turns off flashlight before closing and removes from recent tasks
+     */
+    private void exitApp() {
+        android.util.Log.d("FlashlightApp", "🚪 User requested app exit");
+        
+        try {
+            // Turn off flashlight before exiting if it's on
+            if (isFlashlightOn) {
+                android.util.Log.d("FlashlightApp", "🔦 Turning off flashlight before exit");
+                turnOffFlashlight();
+            }
+        } catch (Exception e) {
+            android.util.Log.e("FlashlightApp", "Error turning off flashlight during exit", e);
+        }
+        
+        // Close app and remove from recent tasks
+        finishAndRemoveTask();
+        android.util.Log.d("FlashlightApp", "✅ App exit completed");
     }
 
     private void showAboutDialog() {
