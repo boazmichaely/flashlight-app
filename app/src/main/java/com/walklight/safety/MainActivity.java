@@ -56,8 +56,8 @@ public class MainActivity extends AppCompatActivity {
     private LinearLayout screenOnlyModeContainer;
     private TextView syncedIntensityLabel;
     private LinearLayout aboutButton;
-    private MaterialButton exitButtonTopCorner; // OPTION B: Top corner exit button
-    private ImageButton exitButtonFloating; // OPTION C: Custom PNG exit button
+    private MaterialButton exitButtonTopCorner; // UNUSED: Top corner exit button (kept for potential future use)
+    private ImageButton exitButtonFloating; // ACTIVE: Custom PNG exit button
     
     private boolean isUpdatingSliders = false; // Prevent infinite loops during sync
     private boolean wasFlashlightOnBeforePause = false; // Track state for resume
@@ -131,25 +131,18 @@ public class MainActivity extends AppCompatActivity {
         syncedIntensityLabel = findViewById(R.id.syncedIntensityLabel);
         aboutButton = findViewById(R.id.aboutButton);
         
-        // Initialize exit buttons (configuration now in exit_button_config.xml)
+        // Initialize exit button (configuration in exit_button_config.xml)
         exitButtonTopCorner = findViewById(R.id.exitButtonTopCorner);
         exitButtonFloating = findViewById(R.id.exitButtonFloating);
         
-        // Apply show/hide configuration from resources
+        // Hide unused top corner button
         if (exitButtonTopCorner != null) {
-            boolean showTopCorner = getResources().getBoolean(R.bool.show_top_corner_exit);
-            exitButtonTopCorner.setVisibility(showTopCorner ? View.VISIBLE : View.GONE);
-            android.util.Log.d("FlashlightApp", "✅ Top corner button found! Show: " + showTopCorner + ", Text: " + exitButtonTopCorner.getText());
-        } else {
-            android.util.Log.e("FlashlightApp", "❌ Top corner button is NULL!");
+            exitButtonTopCorner.setVisibility(View.GONE);
         }
         
         if (exitButtonFloating != null) {
-            boolean showFloating = getResources().getBoolean(R.bool.show_floating_exit);
-            exitButtonFloating.setVisibility(showFloating ? View.VISIBLE : View.GONE);
-            android.util.Log.d("FlashlightApp", "✅ Floating button found! Show: " + showFloating);
-        } else {
-            android.util.Log.e("FlashlightApp", "❌ Floating button is NULL!");
+            boolean showCustom = getResources().getBoolean(R.bool.show_custom_exit);
+            exitButtonFloating.setVisibility(showCustom ? View.VISIBLE : View.GONE);
         }
         
         // PHASE 1: TEMPORARILY DISABLED - Apply hardware-based UI configuration BEFORE initializing sliders
@@ -407,15 +400,9 @@ public class MainActivity extends AppCompatActivity {
         // About Button
         aboutButton.setOnClickListener(v -> showAboutDialog());
         
-        // Exit Button Click Listeners  
-        if (exitButtonTopCorner != null) {
-            exitButtonTopCorner.setOnClickListener(v -> exitApp());
-            android.util.Log.d("FlashlightApp", "✅ Top corner exit button click listener set");
-        }
-        
+        // Custom PNG Exit Button Click Listener  
         if (exitButtonFloating != null) {
             exitButtonFloating.setOnClickListener(v -> exitApp());
-            android.util.Log.d("FlashlightApp", "✅ Floating exit button click listener set");
         }
     }
     

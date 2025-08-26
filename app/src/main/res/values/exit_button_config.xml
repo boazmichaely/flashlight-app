@@ -2,23 +2,10 @@
 <resources>
     <!-- EXIT BUTTON CONFIGURATION -->
     
-    <!-- Show/Hide Buttons (true/false) -->
-    <bool name="show_top_corner_exit">false</bool>
-    <bool name="show_floating_exit">true</bool>
+    <!-- Show/Hide Custom PNG Exit Button -->
+    <bool name="show_custom_exit">true</bool>
     
-    <!-- Top Corner Button Config -->
-    <string name="top_exit_text">Exit</string>
-    <dimen name="top_exit_width">80dp</dimen>
-    <dimen name="top_exit_height">40dp</dimen>
-    <dimen name="top_exit_margin_top">48dp</dimen>
-    <dimen name="top_exit_margin_start">16dp</dimen>
-    <color name="top_exit_bg_color">#D32F2F</color>
-    <color name="top_exit_text_color">#FFFFFF</color>
-    <color name="top_exit_stroke_color">#FFFFFF</color>
-    <dimen name="top_exit_stroke_width">2dp</dimen>
-    <dimen name="top_exit_corner_radius">8dp</dimen>
-    
-    <!-- Custom PNG Button Config -->
+    <!-- Custom PNG Exit Button Config -->
     <dimen name="custom_exit_width">56dp</dimen>
     <dimen name="custom_exit_height">56dp</dimen>
     <dimen name="custom_exit_margin_top">48dp</dimen>
