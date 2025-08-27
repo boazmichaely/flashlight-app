@@ -151,22 +151,14 @@ public class MainActivity extends AppCompatActivity {
             exitButtonFloating.setVisibility(showCustom ? View.VISIBLE : View.GONE);
         }
         
-        // Initialize split-screen button
-        if (splitScreenButton != null) {
+        // Initialize split-screen controls
+        if (splitScreenButton != null && fullScreenButton != null) {
             boolean showSplitScreen = getResources().getBoolean(R.bool.show_split_screen_button);
             splitScreenButton.setVisibility(showSplitScreen ? View.VISIBLE : View.GONE);
-            Log.d(TAG, "Split-screen button initialized. Visible: " + (showSplitScreen ? "YES" : "NO"));
-        } else {
-            Log.e(TAG, "Split-screen button NOT FOUND in layout!");
-        }
-        
-        // Initialize fullscreen button
-        if (fullScreenButton != null) {
-            boolean showSplitScreen = getResources().getBoolean(R.bool.show_split_screen_button);
             fullScreenButton.setVisibility(showSplitScreen ? View.VISIBLE : View.GONE);
-            Log.d(TAG, "Fullscreen button initialized. Visible: " + (showSplitScreen ? "YES" : "NO"));
+            Log.d(TAG, "Split-screen controls initialized. Visible: " + (showSplitScreen ? "YES" : "NO"));
         } else {
-            Log.e(TAG, "Fullscreen button NOT FOUND in layout!");
+            Log.e(TAG, "Split-screen controls NOT FOUND in layout!");
         }
         
         // PHASE 1: TEMPORARILY DISABLED - Apply hardware-based UI configuration BEFORE initializing sliders
@@ -424,24 +416,23 @@ public class MainActivity extends AppCompatActivity {
         // About Button
         aboutButton.setOnClickListener(v -> showAboutDialog());
         
-        // Custom PNG Exit Button Click Listener  
+        // Button Click Listeners
         if (exitButtonFloating != null) {
             exitButtonFloating.setOnClickListener(v -> exitApp());
         }
         
-        // Split Screen Button Click Listener
+        // Phase 2: Split-screen functionality placeholders
         if (splitScreenButton != null) {
             splitScreenButton.setOnClickListener(v -> {
-                Log.d(TAG, "Split-screen button clicked!");
-                Toast.makeText(this, "SPLIT-SCREEN button clicked (blue icon)", Toast.LENGTH_SHORT).show();
+                // TODO: Launch Spotify and enter split-screen mode
+                Log.d(TAG, "Split-screen requested");
             });
         }
         
-        // Fullscreen Button Click Listener
         if (fullScreenButton != null) {
             fullScreenButton.setOnClickListener(v -> {
-                Log.d(TAG, "Fullscreen button clicked!");
-                Toast.makeText(this, "FULLSCREEN button clicked (your PNG icon)", Toast.LENGTH_SHORT).show();
+                // TODO: Exit split-screen mode and return to fullscreen
+                Log.d(TAG, "Fullscreen requested");
             });
         }
     }
