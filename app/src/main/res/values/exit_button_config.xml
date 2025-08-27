@@ -24,4 +24,13 @@
     <dimen name="custom_exit_margin_end">16dp</dimen>
     <dimen name="custom_exit_padding">8dp</dimen>
     <color name="custom_exit_bg_color">@android:color/transparent</color>
+    
+    <!-- Split Screen Button Config -->
+    <bool name="show_split_screen_button">true</bool>
+    <dimen name="split_screen_width">56dp</dimen>
+    <dimen name="split_screen_height">56dp</dimen>
+    <dimen name="split_screen_margin_top">48dp</dimen>
+    <dimen name="split_screen_margin_end">80dp</dimen>
+    <dimen name="split_screen_padding">8dp</dimen>
+    <color name="split_screen_bg_color">@android:color/transparent</color>
 </resources>

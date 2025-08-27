@@ -57,6 +57,24 @@
         app:layout_constraintEnd_toEndOf="parent"
         android:contentDescription="Exit App (Custom PNG)" />
 
+    <!-- Split Screen Button -->
+    <ImageButton
+        android:id="@+id/splitScreenButton"
+        android:layout_width="@dimen/split_screen_width"
+        android:layout_height="@dimen/split_screen_height"
+        android:layout_marginTop="@dimen/split_screen_margin_top"
+        android:layout_marginEnd="@dimen/split_screen_margin_end"
+        android:src="@drawable/split_screen_icon"
+        android:background="@color/split_screen_bg_color"
+        android:scaleType="centerInside"
+        android:padding="@dimen/split_screen_padding"
+        android:elevation="16dp"
+        android:translationZ="16dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:contentDescription="Split Screen Control"
+        android:visibility="visible" />
+
     <!-- Control Panel at Bottom -->
     <LinearLayout
         android:id="@+id/controlPanel"
