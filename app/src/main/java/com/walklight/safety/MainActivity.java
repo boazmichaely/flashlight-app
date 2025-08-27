@@ -1034,7 +1034,7 @@ public class MainActivity extends AppCompatActivity {
         if (!isInMultiWindow) {
             // MAGIC HAPPENS HERE: Force split-screen mode first (POC COMMENT)
             Log.d(TAG, "Not in split-screen - forcing split-screen then launching Spotify");
-            showUserFeedback("Auto-splitting screen and launching Spotify...");
+            // Auto-splitting screen and launching Spotify
             
             try {
                 // Small delay allows the system to process the split-screen transition (POC COMMENT)
@@ -1064,7 +1064,7 @@ public class MainActivity extends AppCompatActivity {
         }
         
         Log.d(TAG, "Executing task manipulation method to exit split-screen...");
-        showUserFeedback("Exiting split-screen mode...");
+        // Exiting split-screen mode
         
         try {
             // STEP 1: Move current task to background
@@ -1084,7 +1084,6 @@ public class MainActivity extends AppCompatActivity {
             
         } catch (Exception e) {
             Log.e(TAG, "Split-screen exit failed: " + e.getMessage());
-            showUserFeedback("Exit failed: " + e.getMessage());
             e.printStackTrace();
         }
     }
@@ -1117,7 +1116,6 @@ public class MainActivity extends AppCompatActivity {
             Intent spotifyIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("spotify:"));
             spotifyIntent.addFlags(Intent.FLAG_ACTIVITY_LAUNCH_ADJACENT | Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(spotifyIntent);
-            showUserFeedback("Spotify launched in split-screen!");
             Log.d(TAG, "Spotify launched in adjacent window");
         } catch (Exception e) {
             // Graceful fallback: launch Spotify web in split-screen
@@ -1125,7 +1123,6 @@ public class MainActivity extends AppCompatActivity {
             Intent webIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://open.spotify.com"));
             webIntent.addFlags(Intent.FLAG_ACTIVITY_LAUNCH_ADJACENT | Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(webIntent);
-            showUserFeedback("Spotify web opened in split-screen!");
         }
     }
     
@@ -1140,12 +1137,12 @@ public class MainActivity extends AppCompatActivity {
             // Standard launch without split-screen flags
             Intent spotifyIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("spotify:"));
             startActivity(spotifyIntent);
-            showUserFeedback("Spotify launched! Swipe up and tap split-screen.");
+            Log.d(TAG, "Spotify launched normally");
         } catch (Exception e) {
             // Web fallback for normal launch
             Intent webIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://open.spotify.com"));
             startActivity(webIntent);
-            showUserFeedback("Spotify web opened! Swipe up and tap split-screen.");
+            Log.d(TAG, "Spotify web opened as fallback");
         }
     }
     
