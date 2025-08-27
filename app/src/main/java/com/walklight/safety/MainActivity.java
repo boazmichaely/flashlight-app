@@ -61,6 +61,7 @@ public class MainActivity extends AppCompatActivity {
     private MaterialButton exitButtonTopCorner; // UNUSED: Top corner exit button (kept for potential future use)
     private ImageButton exitButtonFloating; // ACTIVE: Custom PNG exit button
     private ImageButton splitScreenButton; // ACTIVE: Split-screen control button
+    private ImageButton fullScreenButton; // ACTIVE: Fullscreen control button
     
     private boolean isUpdatingSliders = false; // Prevent infinite loops during sync
     private boolean wasFlashlightOnBeforePause = false; // Track state for resume
@@ -138,6 +139,7 @@ public class MainActivity extends AppCompatActivity {
         exitButtonTopCorner = findViewById(R.id.exitButtonTopCorner);
         exitButtonFloating = findViewById(R.id.exitButtonFloating);
         splitScreenButton = findViewById(R.id.splitScreenButton);
+        fullScreenButton = findViewById(R.id.fullScreenButton);
         
         // Hide unused top corner button
         if (exitButtonTopCorner != null) {
@@ -156,6 +158,15 @@ public class MainActivity extends AppCompatActivity {
             Log.d(TAG, "Split-screen button initialized. Visible: " + (showSplitScreen ? "YES" : "NO"));
         } else {
             Log.e(TAG, "Split-screen button NOT FOUND in layout!");
+        }
+        
+        // Initialize fullscreen button
+        if (fullScreenButton != null) {
+            boolean showSplitScreen = getResources().getBoolean(R.bool.show_split_screen_button);
+            fullScreenButton.setVisibility(showSplitScreen ? View.VISIBLE : View.GONE);
+            Log.d(TAG, "Fullscreen button initialized. Visible: " + (showSplitScreen ? "YES" : "NO"));
+        } else {
+            Log.e(TAG, "Fullscreen button NOT FOUND in layout!");
         }
         
         // PHASE 1: TEMPORARILY DISABLED - Apply hardware-based UI configuration BEFORE initializing sliders
@@ -422,9 +433,15 @@ public class MainActivity extends AppCompatActivity {
         if (splitScreenButton != null) {
             splitScreenButton.setOnClickListener(v -> {
                 Log.d(TAG, "Split-screen button clicked!");
-                // TODO Phase 2: Add actual split-screen functionality
-                // Using user's preferred icon (black tinted multi-window PNG)
-                Toast.makeText(this, "Split-screen ready for Phase 2!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "SPLIT-SCREEN button clicked (blue icon)", Toast.LENGTH_SHORT).show();
+            });
+        }
+        
+        // Fullscreen Button Click Listener
+        if (fullScreenButton != null) {
+            fullScreenButton.setOnClickListener(v -> {
+                Log.d(TAG, "Fullscreen button clicked!");
+                Toast.makeText(this, "FULLSCREEN button clicked (your PNG icon)", Toast.LENGTH_SHORT).show();
             });
         }
     }
