@@ -995,7 +995,7 @@ public class MainActivity extends AppCompatActivity {
         if (multiWindowButton == null) return;
         
         // Check current multi-window state
-        isInMultiWindowMode = isInMultiWindow();
+        isInMultiWindowMode = isInMultiWindowMode();
         
         if (isInMultiWindowMode) {
             // Currently in split-screen → show fullscreen icon (to exit)
