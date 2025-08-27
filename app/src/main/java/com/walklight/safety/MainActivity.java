@@ -2,13 +2,17 @@ package com.walklight.safety;
 
 import android.Manifest;
 import android.content.Context;
-import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.hardware.camera2.CameraAccessException;
 import android.hardware.camera2.CameraCharacteristics;
 import android.hardware.camera2.CameraManager;
 import android.os.Bundle;
 import android.util.Log;
+import android.content.Intent;
+import android.net.Uri;
+import android.os.Handler;
+import android.os.Looper;
+import android.content.pm.PackageManager;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
@@ -1021,18 +1025,184 @@ public class MainActivity extends AppCompatActivity {
     }
     
     private void enterSplitScreenMode() {
-        Log.d(TAG, "Entering split-screen mode...");
-        // TODO Phase 2: Implement split-screen entry
-        // - Launch Spotify
-        // - Use FLAG_ACTIVITY_LAUNCH_ADJACENT
-        // - Update button icon via onMultiWindowModeChanged callback
+        Log.d(TAG, "=== ENTERING SPLIT-SCREEN MODE ===");
+        
+        boolean isCurrentlyInMultiWindow = isInMultiWindowMode();
+        Log.d(TAG, "Current multi-window state: " + isCurrentlyInMultiWindow);
+        
+        if (!isCurrentlyInMultiWindow) {
+            // Force split-screen mode by launching app with LAUNCH_ADJACENT
+            Log.d(TAG, "Not in split-screen - forcing split-screen mode first");
+            showUserFeedback("Auto-splitting screen and launching music app...");
+            
+            // Small delay allows UI to update before launching
+            new Handler(Looper.getMainLooper()).postDelayed(() -> {
+                launchMusicAppInSplitScreen();
+            }, 300); // Slightly longer delay for better UX
+            
+        } else {
+            // Already in split-screen, launch in adjacent window
+            Log.d(TAG, "Already in split-screen - launching in adjacent window");
+            launchMusicAppInSplitScreen();
+        }
     }
     
     private void exitSplitScreenMode() {
-        Log.d(TAG, "Exiting split-screen mode...");
-        // TODO Phase 2: Implement split-screen exit
-        // - Return to fullscreen
-        // - Update button icon via onMultiWindowModeChanged callback
+        Log.d(TAG, "=== EXITING SPLIT-SCREEN MODE ===");
+        
+        if (!isInMultiWindowMode()) {
+            Log.d(TAG, "Not in split-screen mode - nothing to exit");
+            showUserFeedback("Already in fullscreen mode");
+            return;
+        }
+        
+        Log.d(TAG, "Executing task manipulation method to exit split-screen...");
+        showUserFeedback("Exiting split-screen mode...");
+        
+        try {
+            // STEP 1: Move current task to background
+            Log.d(TAG, "Task Manipulation: Moving to background then bringing to front");
+            moveTaskToBack(true);
+            
+            // STEP 2: Brief delay for Android's window manager
+            Handler handler = new Handler(Looper.getMainLooper());
+            handler.postDelayed(() -> {
+                // STEP 3: Bring app back to front in fullscreen
+                Intent bringBackIntent = new Intent(this, MainActivity.class);
+                bringBackIntent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+                Log.d(TAG, "Bringing app back to front with REORDER_TO_FRONT flag");
+                startActivity(bringBackIntent);
+                Log.d(TAG, "Split-screen exit completed successfully");
+            }, 150); // Proven timing from POC
+            
+        } catch (Exception e) {
+            Log.e(TAG, "Split-screen exit failed: " + e.getMessage());
+            showUserFeedback("Exit failed: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+    
+    // ================================
+    // MUSIC APP LAUNCH FUNCTIONALITY
+    // ================================
+    
+    /**
+     * Launch music app in split-screen mode with comprehensive fallbacks
+     * Tests multiple apps and methods to maximize success rate
+     */
+    private void launchMusicAppInSplitScreen() {
+        Log.d(TAG, "=== LAUNCHING MUSIC APP IN SPLIT-SCREEN ===");
+        
+        // Priority order: Native app -> Web fallback -> Generic app
+        String[] musicApps = {
+            "com.spotify.music",           // Spotify
+            "com.google.android.music",     // YouTube Music  
+            "com.amazon.mp3",              // Amazon Music
+            "com.apple.android.music"      // Apple Music
+        };
+        
+        String[] musicNames = {"Spotify", "YouTube Music", "Amazon Music", "Apple Music"};
+        
+        // Try each music app in order
+        for (int i = 0; i < musicApps.length; i++) {
+            if (isAppInstalled(musicApps[i])) {
+                Log.d(TAG, "Found installed music app: " + musicNames[i]);
+                launchAppInSplitScreen(musicApps[i], musicNames[i]);
+                return;
+            }
+        }
+        
+        // No music apps found - try Spotify web as fallback
+        Log.d(TAG, "No music apps installed - falling back to Spotify web");
+        launchSpotifyWebInSplitScreen();
+    }
+    
+    /**
+     * Launch specific app in split-screen mode
+     */
+    private void launchAppInSplitScreen(String packageName, String appName) {
+        try {
+            Log.d(TAG, "Launching " + appName + " in split-screen...");
+            
+            Intent appIntent = getPackageManager().getLaunchIntentForPackage(packageName);
+            if (appIntent == null) {
+                Log.e(TAG, "Cannot create launch intent for " + appName);
+                return;
+            }
+            
+            // Key flags for split-screen launch
+            appIntent.addFlags(Intent.FLAG_ACTIVITY_LAUNCH_ADJACENT | Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(appIntent);
+            
+            showUserFeedback(appName + " launched in split-screen!");
+            Log.d(TAG, appName + " launched successfully in adjacent window");
+            
+        } catch (Exception e) {
+            Log.e(TAG, "Failed to launch " + appName + ": " + e.getMessage());
+            showUserFeedback("Failed to launch " + appName + " - trying fallback");
+            
+            // Try Spotify URI as backup
+            if (packageName.equals("com.spotify.music")) {
+                launchSpotifyUriInSplitScreen();
+            }
+        }
+    }
+    
+    /**
+     * Launch Spotify using URI scheme in split-screen
+     */
+    private void launchSpotifyUriInSplitScreen() {
+        try {
+            Log.d(TAG, "Trying Spotify URI launch in split-screen...");
+            Intent spotifyIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("spotify:"));
+            spotifyIntent.addFlags(Intent.FLAG_ACTIVITY_LAUNCH_ADJACENT | Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(spotifyIntent);
+            showUserFeedback("Spotify launched via URI in split-screen!");
+            Log.d(TAG, "Spotify URI launch successful");
+        } catch (Exception e) {
+            Log.e(TAG, "Spotify URI launch failed: " + e.getMessage());
+            launchSpotifyWebInSplitScreen();
+        }
+    }
+    
+    /**
+     * Launch Spotify web as final fallback
+     */
+    private void launchSpotifyWebInSplitScreen() {
+        try {
+            Log.d(TAG, "Launching Spotify web as final fallback...");
+            Intent webIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://open.spotify.com"));
+            webIntent.addFlags(Intent.FLAG_ACTIVITY_LAUNCH_ADJACENT | Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(webIntent);
+            showUserFeedback("Spotify web opened in split-screen!");
+            Log.d(TAG, "Spotify web fallback successful");
+        } catch (Exception e) {
+            Log.e(TAG, "All music app launch methods failed: " + e.getMessage());
+            showUserFeedback("Unable to launch any music app - split-screen may still work manually");
+            e.printStackTrace();
+        }
+    }
+    
+    /**
+     * Check if app is installed on device
+     */
+    private boolean isAppInstalled(String packageName) {
+        try {
+            getPackageManager().getPackageInfo(packageName, 0);
+            Log.d(TAG, "App " + packageName + " is installed");
+            return true;
+        } catch (PackageManager.NameNotFoundException e) {
+            Log.d(TAG, "App " + packageName + " not installed");
+            return false;
+        }
+    }
+    
+    /**
+     * Show user feedback with consistent logging
+     */
+    private void showUserFeedback(String message) {
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+        Log.d(TAG, "User feedback: " + message);
     }
     
 }
