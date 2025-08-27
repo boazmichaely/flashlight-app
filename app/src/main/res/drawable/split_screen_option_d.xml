@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- OPTION D: Font Icon Style -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24"
+    android:tint="@android:color/white">
+    
+    <!-- Font-icon inspired design with spacing -->
+    <path
+        android:fillColor="@android:color/white"
+        android:pathData="M3,3h6v18H3V3z"/>
+    <path
+        android:fillColor="@android:color/white"
+        android:pathData="M15,3h6v18h-6V3z"/>
+    <!-- Small center line for clarity -->
+    <path
+        android:fillColor="@android:color/white"
+        android:pathData="M11.5,8h1v8h-1V8z"/>
+</vector>

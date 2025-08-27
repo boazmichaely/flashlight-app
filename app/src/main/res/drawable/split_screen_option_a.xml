@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- OPTION A: Material Design Style -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24"
+    android:tint="@android:color/white">
+    
+    <!-- Material Design inspired split-screen icon -->
+    <path
+        android:fillColor="@android:color/white"
+        android:pathData="M3,4h7v16H3V4zM14,4h7v16h-7V4zM11,6h2v12h-2V6z"/>
+</vector>

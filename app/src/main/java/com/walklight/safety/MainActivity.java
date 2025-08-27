@@ -420,12 +420,22 @@ public class MainActivity extends AppCompatActivity {
         
         // Split Screen Button Click Listener
         if (splitScreenButton != null) {
+            final int[] iconOptions = {
+                R.drawable.split_screen_option_a,
+                R.drawable.split_screen_option_b, 
+                R.drawable.split_screen_option_c,
+                R.drawable.split_screen_option_d
+            };
+            final String[] iconNames = {"Material Design", "Custom PNG Style", "Built-in Android", "Font Icon Style"};
+            final int[] currentIcon = {0}; // Using array to modify in lambda
+            
             splitScreenButton.setOnClickListener(v -> {
-                Log.d(TAG, "Split-screen button clicked!");
-                // DEBUG: Show toast to confirm button works
-                runOnUiThread(() -> {
-                    Toast.makeText(this, "Split-screen button clicked!", Toast.LENGTH_SHORT).show();
-                });
+                // Cycle through icon options for preview
+                currentIcon[0] = (currentIcon[0] + 1) % iconOptions.length;
+                splitScreenButton.setImageResource(iconOptions[currentIcon[0]]);
+                
+                Toast.makeText(this, "Icon: " + iconNames[currentIcon[0]] + " (" + (currentIcon[0] + 1) + "/4)", 
+                             Toast.LENGTH_SHORT).show();
             });
         }
     }
