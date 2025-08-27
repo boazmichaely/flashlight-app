@@ -41,6 +41,7 @@ public class MainActivity extends AppCompatActivity {
     
     private static final String TAG = "MainActivity";
     private static final int CAMERA_PERMISSION_REQUEST = 100;
+    private static final int PICK_COMPANION_APP_REQUEST = 200;
     
     // Configuration now lives in: app/src/main/res/values/exit_button_config.xml
     
@@ -1012,8 +1013,9 @@ public class MainActivity extends AppCompatActivity {
             Button closeButton = dialogView.findViewById(R.id.settings_close);
             
             changeButton.setOnClickListener(v -> {
-                // TODO: Implement app picker in Step 2
-                Log.d(TAG, "Change companion app clicked");
+                Log.d(TAG, "Opening app picker for companion app selection");
+                openCompanionAppPicker();
+                dialog.dismiss();
             });
             
             keepLightToggle.setOnCheckedChangeListener((buttonView, isChecked) -> {
@@ -1032,8 +1034,8 @@ public class MainActivity extends AppCompatActivity {
     }
     
     private String getCurrentCompanionAppName() {
-        // TODO: Get from preferences in Step 2
-        return getString(R.string.settings_companion_current);
+        SharedPreferences prefs = getSharedPreferences("walklight_settings", MODE_PRIVATE);
+        return prefs.getString("companion_app_name", getString(R.string.settings_companion_current));
     }
     
     private boolean getKeepLightOnSetting() {
@@ -1044,6 +1046,51 @@ public class MainActivity extends AppCompatActivity {
     private void saveKeepLightOnSetting(boolean keepOn) {
         SharedPreferences prefs = getSharedPreferences("walklight_settings", MODE_PRIVATE);
         prefs.edit().putBoolean("keep_light_on_close", keepOn).apply();
+    }
+    
+    private void openCompanionAppPicker() {
+        try {
+            Intent pickIntent = new Intent(Intent.ACTION_MAIN);
+            pickIntent.addCategory(Intent.CATEGORY_LAUNCHER);
+            Intent chooser = Intent.createChooser(pickIntent, "Select companion app for split-screen");
+            startActivityForResult(chooser, PICK_COMPANION_APP_REQUEST);
+            Log.d(TAG, "App picker launched successfully");
+        } catch (Exception e) {
+            Log.e(TAG, "Error launching app picker", e);
+            showUserFeedback("Error opening app picker");
+        }
+    }
+    
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        
+        if (requestCode == PICK_COMPANION_APP_REQUEST && resultCode == RESULT_OK) {
+            if (data != null) {
+                String packageName = data.getComponent().getPackageName();
+                String appName = getAppName(packageName);
+                
+                // Save selected app
+                SharedPreferences prefs = getSharedPreferences("walklight_settings", MODE_PRIVATE);
+                prefs.edit()
+                    .putString("companion_app_package", packageName)
+                    .putString("companion_app_name", appName)
+                    .apply();
+                
+                Log.d(TAG, "Companion app selected: " + appName + " (" + packageName + ")");
+                showUserFeedback("Companion app set to: " + appName);
+            }
+        }
+    }
+    
+    private String getAppName(String packageName) {
+        try {
+            PackageManager pm = getPackageManager();
+            return pm.getApplicationLabel(pm.getApplicationInfo(packageName, 0)).toString();
+        } catch (Exception e) {
+            Log.e(TAG, "Error getting app name for " + packageName, e);
+            return packageName; // Fallback to package name
+        }
     }
     
     // Phase 2: Multi-window functionality
@@ -1145,7 +1192,7 @@ public class MainActivity extends AppCompatActivity {
     // ================================
     
     /**
-     * EXACT POC CODE: Launch Spotify with Split-Screen Intent Flags
+     * Launch selected companion app with Split-Screen Intent Flags
      * 
      * KEY FLAG COMBINATION (from proven POC):
      * - FLAG_ACTIVITY_LAUNCH_ADJACENT: Forces launch in split-screen mode
@@ -1154,24 +1201,55 @@ public class MainActivity extends AppCompatActivity {
      * This combination is the secret sauce that makes programmatic split-screen work!
      */
     private void launchMusicAppInSplitScreen() {
-        Log.d(TAG, "=== LAUNCHING SPOTIFY IN SPLIT-SCREEN (POC METHOD) ===");
-        launchSpotifyInSplitScreen();
+        Log.d(TAG, "=== LAUNCHING COMPANION APP IN SPLIT-SCREEN ===");
+        
+        // Get selected companion app
+        SharedPreferences prefs = getSharedPreferences("walklight_settings", MODE_PRIVATE);
+        String packageName = prefs.getString("companion_app_package", "com.spotify.music");
+        String appName = prefs.getString("companion_app_name", "Spotify");
+        
+        Log.d(TAG, "Launching companion app: " + appName + " (" + packageName + ")");
+        launchCompanionAppInSplitScreen(packageName, appName);
     }
     
     /**
-     * DIRECT FROM POC: Launch Spotify in split-screen mode
-     * Uses the exact working code from your proven POC
+     * Launch selected companion app in split-screen mode
+     * Uses the proven POC approach but with user-selected app
      */
-    private void launchSpotifyInSplitScreen() {
+    private void launchCompanionAppInSplitScreen(String packageName, String appName) {
+        try {
+            // Try launching the selected app
+            Intent appIntent = getPackageManager().getLaunchIntentForPackage(packageName);
+            if (appIntent != null) {
+                appIntent.addFlags(Intent.FLAG_ACTIVITY_LAUNCH_ADJACENT | Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(appIntent);
+                Log.d(TAG, appName + " launched in adjacent window");
+            } else {
+                Log.e(TAG, "Cannot create launch intent for " + appName);
+                // Fallback to Spotify if selected app fails
+                fallbackToSpotify();
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "Error launching " + appName + ": " + e.getMessage());
+            // Fallback to Spotify if selected app fails
+            fallbackToSpotify();
+        }
+    }
+    
+    /**
+     * Fallback to original Spotify implementation if selected app fails
+     */
+    private void fallbackToSpotify() {
+        Log.d(TAG, "Falling back to Spotify as companion app");
         try {
             // Try launching the native Spotify app first
             Intent spotifyIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("spotify:"));
             spotifyIntent.addFlags(Intent.FLAG_ACTIVITY_LAUNCH_ADJACENT | Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(spotifyIntent);
-            Log.d(TAG, "Spotify launched in adjacent window");
+            Log.d(TAG, "Spotify launched in adjacent window (fallback)");
         } catch (Exception e) {
-            // Graceful fallback: launch Spotify web in split-screen
-            Log.d(TAG, "Spotify app not available, opening web in split-screen");
+            // Final fallback: launch Spotify web in split-screen
+            Log.d(TAG, "Spotify app not available, opening web in split-screen (fallback)");
             Intent webIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://open.spotify.com"));
             webIntent.addFlags(Intent.FLAG_ACTIVITY_LAUNCH_ADJACENT | Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(webIntent);
