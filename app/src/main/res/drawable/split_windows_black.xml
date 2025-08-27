@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Windows-Style Split Icon (Black) -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24"
+    android:tint="@android:color/black">
+    
+    <!-- First window -->
+    <path
+        android:fillColor="@android:color/black"
+        android:pathData="M2,4c0,-1.1 0.9,-2 2,-2h8c1.1,0 2,0.9 2,2v8c0,1.1 -0.9,2 -2,2H4c-1.1,0 -2,-0.9 -2,-2V4z"/>
+    
+    <!-- Second window (overlapping) -->
+    <path
+        android:fillColor="@android:color/black"
+        android:pathData="M10,10c0,-1.1 0.9,-2 2,-2h8c1.1,0 2,0.9 2,2v8c0,1.1 -0.9,2 -2,2h-8c-1.1,0 -2,-0.9 -2,-2V10z"/>
+    
+    <!-- Window dividers -->
+    <path
+        android:fillColor="@android:color/white"
+        android:pathData="M4,6h8v1H4V6z"/>
+    <path
+        android:fillColor="@android:color/white"
+        android:pathData="M12,12h8v1h-8V12z"/>
+</vector>
