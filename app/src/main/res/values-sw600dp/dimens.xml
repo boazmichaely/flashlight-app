@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Responsive Layout Dimensions - Tablets (600dp+) -->
+    
+    <!-- Top Safe Area - Adjusted for larger screens -->
+    <dimen name="top_safe_area_percent">0.08</dimen>
+    
+    <!-- Control Panel Padding - More generous on tablets -->
+    <dimen name="control_panel_padding">24dp</dimen>
+    
+    <!-- Button Positioning - Larger touch targets and spacing for tablets -->
+    <dimen name="button_margin_from_guideline">12dp</dimen>
+    <dimen name="button_horizontal_spacing">20dp</dimen>
+</resources>

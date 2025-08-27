@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Responsive Layout Dimensions - Default (Phones) -->
+    
+    <!-- Top Safe Area - Percentage-based positioning for consistent layout -->
+    <dimen name="top_safe_area_percent">0.12</dimen>
+    
+    <!-- Control Panel Padding -->
+    <dimen name="control_panel_padding">16dp</dimen>
+    
+    <!-- Button Positioning (relative to safe area guideline) -->
+    <dimen name="button_margin_from_guideline">8dp</dimen>
+    <dimen name="button_horizontal_spacing">16dp</dimen>
+</resources>
