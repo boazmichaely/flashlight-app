@@ -420,22 +420,11 @@ public class MainActivity extends AppCompatActivity {
         
         // Split Screen Button Click Listener
         if (splitScreenButton != null) {
-            final int[] iconOptions = {
-                R.drawable.split_multiwindow_black,
-                R.drawable.split_windows_black, 
-                R.drawable.split_top_bottom_clean,
-                R.drawable.split_minimal_clean
-            };
-            final String[] iconNames = {"Multi-Window Black", "Windows Style Black", "Top/Bottom Clean", "Minimal Clean"};
-            final int[] currentIcon = {0}; // Using array to modify in lambda
-            
             splitScreenButton.setOnClickListener(v -> {
-                // Cycle through BETTER icon options for preview
-                currentIcon[0] = (currentIcon[0] + 1) % iconOptions.length;
-                splitScreenButton.setImageResource(iconOptions[currentIcon[0]]);
-                
-                Toast.makeText(this, "Icon: " + iconNames[currentIcon[0]] + " (" + (currentIcon[0] + 1) + "/4)", 
-                             Toast.LENGTH_SHORT).show();
+                Log.d(TAG, "Split-screen button clicked!");
+                // TODO Phase 2: Add actual split-screen functionality
+                // Using user's preferred icon (black tinted multi-window PNG)
+                Toast.makeText(this, "Split-screen ready for Phase 2!", Toast.LENGTH_SHORT).show();
             });
         }
     }
