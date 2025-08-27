@@ -60,12 +60,14 @@ public class MainActivity extends AppCompatActivity {
     private LinearLayout aboutButton;
     private MaterialButton exitButtonTopCorner; // UNUSED: Top corner exit button (kept for potential future use)
     private ImageButton exitButtonFloating; // ACTIVE: Custom PNG exit button
-    private ImageButton splitScreenButton; // ACTIVE: Split-screen control button
-    private ImageButton fullScreenButton; // ACTIVE: Fullscreen control button
+    private ImageButton multiWindowButton; // ACTIVE: Multi-window toggle button (changes icon based on mode)
     
     private boolean isUpdatingSliders = false; // Prevent infinite loops during sync
     private boolean wasFlashlightOnBeforePause = false; // Track state for resume
     private boolean lastSyncState = false; // Remember sync state when flashlight is off
+    
+    // Multi-window mode tracking
+    private boolean isInMultiWindowMode = false;
     
     // Track actual current values for proper sync initialization
     private float currentActualScreenBrightness = 1.0f;
@@ -138,8 +140,7 @@ public class MainActivity extends AppCompatActivity {
         // Initialize exit button (configuration in exit_button_config.xml)
         exitButtonTopCorner = findViewById(R.id.exitButtonTopCorner);
         exitButtonFloating = findViewById(R.id.exitButtonFloating);
-        splitScreenButton = findViewById(R.id.splitScreenButton);
-        fullScreenButton = findViewById(R.id.fullScreenButton);
+        multiWindowButton = findViewById(R.id.multiWindowButton);
         
         // Hide unused top corner button
         if (exitButtonTopCorner != null) {
@@ -151,14 +152,15 @@ public class MainActivity extends AppCompatActivity {
             exitButtonFloating.setVisibility(showCustom ? View.VISIBLE : View.GONE);
         }
         
-        // Initialize split-screen controls
-        if (splitScreenButton != null && fullScreenButton != null) {
+        // Initialize multi-window button
+        if (multiWindowButton != null) {
             boolean showSplitScreen = getResources().getBoolean(R.bool.show_split_screen_button);
-            splitScreenButton.setVisibility(showSplitScreen ? View.VISIBLE : View.GONE);
-            fullScreenButton.setVisibility(showSplitScreen ? View.VISIBLE : View.GONE);
-            Log.d(TAG, "Split-screen controls initialized. Visible: " + (showSplitScreen ? "YES" : "NO"));
+            multiWindowButton.setVisibility(showSplitScreen ? View.VISIBLE : View.GONE);
+            // Set initial icon based on current mode
+            updateMultiWindowButtonIcon();
+            Log.d(TAG, "Multi-window button initialized. Visible: " + (showSplitScreen ? "YES" : "NO"));
         } else {
-            Log.e(TAG, "Split-screen controls NOT FOUND in layout!");
+            Log.e(TAG, "Multi-window button NOT FOUND in layout!");
         }
         
         // PHASE 1: TEMPORARILY DISABLED - Apply hardware-based UI configuration BEFORE initializing sliders
@@ -421,19 +423,9 @@ public class MainActivity extends AppCompatActivity {
             exitButtonFloating.setOnClickListener(v -> exitApp());
         }
         
-        // Phase 2: Split-screen functionality placeholders
-        if (splitScreenButton != null) {
-            splitScreenButton.setOnClickListener(v -> {
-                // TODO: Launch Spotify and enter split-screen mode
-                Log.d(TAG, "Split-screen requested");
-            });
-        }
-        
-        if (fullScreenButton != null) {
-            fullScreenButton.setOnClickListener(v -> {
-                // TODO: Exit split-screen mode and return to fullscreen
-                Log.d(TAG, "Fullscreen requested");
-            });
+        // Multi-window toggle button
+        if (multiWindowButton != null) {
+            multiWindowButton.setOnClickListener(v -> toggleMultiWindowMode());
         }
     }
     
@@ -988,5 +980,59 @@ public class MainActivity extends AppCompatActivity {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+    
+    // Phase 2: Multi-window functionality
+    private void updateMultiWindowButtonIcon() {
+        if (multiWindowButton == null) return;
+        
+        // Check current multi-window state
+        isInMultiWindowMode = isInMultiWindow();
+        
+        if (isInMultiWindowMode) {
+            // Currently in split-screen → show fullscreen icon (to exit)
+            multiWindowButton.setImageResource(R.drawable.full_screen_icon);
+            multiWindowButton.setContentDescription("Exit Split-Screen");
+            Log.d(TAG, "Button updated: Showing fullscreen icon (currently in split-screen)");
+        } else {
+            // Currently fullscreen → show split-screen icon (to enter)
+            multiWindowButton.setImageResource(R.drawable.split_icon_blue_512x512);
+            multiWindowButton.setContentDescription("Enter Split-Screen");
+            Log.d(TAG, "Button updated: Showing split-screen icon (currently fullscreen)");
+        }
+    }
+    
+    private void toggleMultiWindowMode() {
+        if (isInMultiWindowMode) {
+            // Currently in split-screen → exit to fullscreen
+            exitSplitScreenMode();
+        } else {
+            // Currently fullscreen → enter split-screen
+            enterSplitScreenMode();
+        }
+    }
+    
+    private void enterSplitScreenMode() {
+        Log.d(TAG, "Entering split-screen mode...");
+        // TODO Phase 2: Implement split-screen entry
+        // - Launch Spotify
+        // - Use FLAG_ACTIVITY_LAUNCH_ADJACENT
+        // - Update button icon via onMultiWindowModeChanged callback
+    }
+    
+    private void exitSplitScreenMode() {
+        Log.d(TAG, "Exiting split-screen mode...");
+        // TODO Phase 2: Implement split-screen exit
+        // - Return to fullscreen
+        // - Update button icon via onMultiWindowModeChanged callback
+    }
+    
+    @Override
+    public void onMultiWindowModeChanged(boolean isInMultiWindow) {
+        super.onMultiWindowModeChanged(isInMultiWindow);
+        Log.d(TAG, "Multi-window mode changed: " + (isInMultiWindow ? "ENTERED" : "EXITED"));
+        
+        // Update button icon when mode changes
+        runOnUiThread(() -> updateMultiWindowButtonIcon());
     }
 }
