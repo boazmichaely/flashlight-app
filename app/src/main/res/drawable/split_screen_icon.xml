@@ -6,13 +6,8 @@
     android:viewportHeight="24"
     android:tint="@android:color/white">
     
-    <!-- Split screen icon - two rectangles side by side -->
+    <!-- Modern split screen icon - cleaner design -->
     <path
         android:fillColor="@android:color/white"
-        android:pathData="M3,4v16h7V4H3zM14,4v16h7V4H14z"/>
-    
-    <!-- Divider line -->
-    <path
-        android:fillColor="@android:color/white"
-        android:pathData="M11,3h2v18h-2z"/>
+        android:pathData="M2,3v18h8V3H2zM14,3v18h8V3H14z"/>
 </vector>
