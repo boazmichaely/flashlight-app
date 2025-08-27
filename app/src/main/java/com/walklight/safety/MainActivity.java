@@ -36,7 +36,7 @@ import com.google.android.material.switchmaterial.SwitchMaterial;
 import androidx.appcompat.app.AlertDialog;
 
 public class MainActivity extends AppCompatActivity {
-    
+
     private static final String TAG = "MainActivity";
     private static final int CAMERA_PERMISSION_REQUEST = 100;
     
@@ -94,7 +94,7 @@ public class MainActivity extends AppCompatActivity {
         if (hasFlash && !checkCameraPermission()) {
             requestCameraPermission();
         } else {
-            autoStartFlashlight();
+        autoStartFlashlight();
         }
     }
     
@@ -624,8 +624,8 @@ public class MainActivity extends AppCompatActivity {
                     // Restore last sync state
                     syncSwitch.setChecked(lastSyncState);
                     boolean isSyncMode = lastSyncState;
-                    
-                    if (isSyncMode) {
+                
+                if (isSyncMode) {
                         // SYNC MODE: Single full-width slider controlling both
                         if (syncedIntensitySlider != null) {
                             isUpdatingSliders = true;
@@ -633,9 +633,9 @@ public class MainActivity extends AppCompatActivity {
                             isUpdatingSliders = false;
                         }
                         
-                        syncModeContainer.setVisibility(View.VISIBLE);
-                        independentModeContainer.setVisibility(View.GONE);
-                        screenOnlyModeContainer.setVisibility(View.GONE);
+                    syncModeContainer.setVisibility(View.VISIBLE);
+                    independentModeContainer.setVisibility(View.GONE);
+                    screenOnlyModeContainer.setVisibility(View.GONE);
                         
                         syncModeContainer.post(() -> {
                             updateColorRectangleBrightness(currentBrightness);
@@ -653,9 +653,9 @@ public class MainActivity extends AppCompatActivity {
                         }
                         isUpdatingSliders = false;
                         
-                        syncModeContainer.setVisibility(View.GONE);
-                        independentModeContainer.setVisibility(View.VISIBLE);
-                        screenOnlyModeContainer.setVisibility(View.GONE);
+                    syncModeContainer.setVisibility(View.GONE);
+                    independentModeContainer.setVisibility(View.VISIBLE);
+                    screenOnlyModeContainer.setVisibility(View.GONE);
                         
                         independentModeContainer.post(() -> {
                             updateColorRectangleBrightness(currentBrightness);
@@ -794,19 +794,19 @@ public class MainActivity extends AppCompatActivity {
                 android.util.Log.d("FlashlightLifecycle", "💡 Reason: " + reason);
             } else {
                 // FALLBACK: Only turn off light in exceptional cases (should not happen with consistent behavior)
-                try {
-                    turnOffFlashlight();
+            try {
+                turnOffFlashlight();
                     android.util.Log.d("FlashlightLifecycle", "⚠️ Light turned OFF (fallback - should not happen)");
-                } catch (CameraAccessException e) {
+            } catch (CameraAccessException e) {
                     android.util.Log.e("FlashlightLifecycle", "❌ Error turning off light", e);
-                    e.printStackTrace();
-                }
+                e.printStackTrace();
             }
+        }
         }
         
         android.util.Log.d("FlashlightLifecycle", "=========================");
     }
-    
+
     @Override
     protected void onResume() {
         super.onResume();
@@ -1025,67 +1025,22 @@ public class MainActivity extends AppCompatActivity {
     }
     
     private void enterSplitScreenMode() {
-        Log.d(TAG, "Attempting to launch Spotify...");
-        
-        // Check current multi-window state (EXACT POC LOGIC)
+        SplitScreenController split = new SplitScreenController(this);
         boolean isInMultiWindow = isInMultiWindowMode();
-        Log.d(TAG, "Currently in multi-window mode: " + isInMultiWindow);
-        
-        if (!isInMultiWindow) {
-            // MAGIC HAPPENS HERE: Force split-screen mode first (POC COMMENT)
-            Log.d(TAG, "Not in split-screen - forcing split-screen then launching Spotify");
-            // Auto-splitting screen and launching Spotify
-            
-            try {
-                // Small delay allows the system to process the split-screen transition (POC COMMENT)
-                new Handler(Looper.getMainLooper()).postDelayed(() -> {
-                    launchMusicAppInSplitScreen();
-                }, 200); // 200ms delay for smooth transition (EXACT POC TIMING)
-                
-            } catch (Exception e) {
-                Log.e(TAG, "Failed to force split-screen: " + e.getMessage());
-                // Graceful fallback to normal launch (POC FALLBACK)
-                launchSpotifyNormally();
-            }
-        } else {
-            // Already in split-screen, just launch in adjacent window (POC COMMENT)
-            Log.d(TAG, "Already in split-screen - launching Spotify in adjacent window");
-            launchMusicAppInSplitScreen();
-        }
+        split.enterSplitScreen(isInMultiWindow, () -> {});
     }
     
     private void exitSplitScreenMode() {
-        Log.d(TAG, "=== EXITING SPLIT-SCREEN MODE ===");
-        
         if (!isInMultiWindowMode()) {
-            Log.d(TAG, "Not in split-screen mode - nothing to exit");
             showUserFeedback("Already in fullscreen mode");
             return;
         }
-        
-        Log.d(TAG, "Executing task manipulation method to exit split-screen...");
-        // Exiting split-screen mode
-        
-        try {
-            // STEP 1: Move current task to background
-            Log.d(TAG, "Task Manipulation: Moving to background then bringing to front");
-            moveTaskToBack(true);
-            
-            // STEP 2: Brief delay for Android's window manager
-            Handler handler = new Handler(Looper.getMainLooper());
-            handler.postDelayed(() -> {
-                // STEP 3: Bring app back to front in fullscreen
-                Intent bringBackIntent = new Intent(this, MainActivity.class);
-                bringBackIntent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-                Log.d(TAG, "Bringing app back to front with REORDER_TO_FRONT flag");
-                startActivity(bringBackIntent);
-                Log.d(TAG, "Split-screen exit completed successfully");
-            }, 150); // Proven timing from POC
-            
-        } catch (Exception e) {
-            Log.e(TAG, "Split-screen exit failed: " + e.getMessage());
-            e.printStackTrace();
-        }
+        SplitScreenController split = new SplitScreenController(this);
+        split.exitSplitScreen(() -> moveTaskToBack(true), () -> {
+            Intent bringBackIntent = new Intent(this, MainActivity.class);
+            bringBackIntent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+            startActivity(bringBackIntent);
+        });
     }
     
     // ================================
@@ -1102,8 +1057,7 @@ public class MainActivity extends AppCompatActivity {
      * This combination is the secret sauce that makes programmatic split-screen work!
      */
     private void launchMusicAppInSplitScreen() {
-        Log.d(TAG, "=== LAUNCHING SPOTIFY IN SPLIT-SCREEN (POC METHOD) ===");
-        launchSpotifyInSplitScreen();
+        new SplitScreenController(this).launchSpotifyInSplitScreen();
     }
     
     /**
