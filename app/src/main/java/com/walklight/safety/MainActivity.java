@@ -1025,24 +1025,31 @@ public class MainActivity extends AppCompatActivity {
     }
     
     private void enterSplitScreenMode() {
-        Log.d(TAG, "=== ENTERING SPLIT-SCREEN MODE ===");
+        Log.d(TAG, "Attempting to launch Spotify...");
         
-        boolean isCurrentlyInMultiWindow = isInMultiWindowMode();
-        Log.d(TAG, "Current multi-window state: " + isCurrentlyInMultiWindow);
+        // Check current multi-window state (EXACT POC LOGIC)
+        boolean isInMultiWindow = isInMultiWindowMode();
+        Log.d(TAG, "Currently in multi-window mode: " + isInMultiWindow);
         
-        if (!isCurrentlyInMultiWindow) {
-            // Force split-screen mode by launching app with LAUNCH_ADJACENT
-            Log.d(TAG, "Not in split-screen - forcing split-screen mode first");
-            showUserFeedback("Auto-splitting screen and launching music app...");
+        if (!isInMultiWindow) {
+            // MAGIC HAPPENS HERE: Force split-screen mode first (POC COMMENT)
+            Log.d(TAG, "Not in split-screen - forcing split-screen then launching Spotify");
+            showUserFeedback("Auto-splitting screen and launching Spotify...");
             
-            // Small delay allows UI to update before launching
-            new Handler(Looper.getMainLooper()).postDelayed(() -> {
-                launchMusicAppInSplitScreen();
-            }, 300); // Slightly longer delay for better UX
-            
+            try {
+                // Small delay allows the system to process the split-screen transition (POC COMMENT)
+                new Handler(Looper.getMainLooper()).postDelayed(() -> {
+                    launchMusicAppInSplitScreen();
+                }, 200); // 200ms delay for smooth transition (EXACT POC TIMING)
+                
+            } catch (Exception e) {
+                Log.e(TAG, "Failed to force split-screen: " + e.getMessage());
+                // Graceful fallback to normal launch (POC FALLBACK)
+                launchSpotifyNormally();
+            }
         } else {
-            // Already in split-screen, launch in adjacent window
-            Log.d(TAG, "Already in split-screen - launching in adjacent window");
+            // Already in split-screen, just launch in adjacent window (POC COMMENT)
+            Log.d(TAG, "Already in split-screen - launching Spotify in adjacent window");
             launchMusicAppInSplitScreen();
         }
     }
@@ -1087,113 +1094,58 @@ public class MainActivity extends AppCompatActivity {
     // ================================
     
     /**
-     * Launch music app in split-screen mode with comprehensive fallbacks
-     * Tests multiple apps and methods to maximize success rate
+     * EXACT POC CODE: Launch Spotify with Split-Screen Intent Flags
+     * 
+     * KEY FLAG COMBINATION (from proven POC):
+     * - FLAG_ACTIVITY_LAUNCH_ADJACENT: Forces launch in split-screen mode
+     * - FLAG_ACTIVITY_NEW_TASK: Creates new task stack for the target app
+     * 
+     * This combination is the secret sauce that makes programmatic split-screen work!
      */
     private void launchMusicAppInSplitScreen() {
-        Log.d(TAG, "=== LAUNCHING MUSIC APP IN SPLIT-SCREEN ===");
-        
-        // Priority order: Native app -> Web fallback -> Generic app
-        String[] musicApps = {
-            "com.spotify.music",           // Spotify
-            "com.google.android.music",     // YouTube Music  
-            "com.amazon.mp3",              // Amazon Music
-            "com.apple.android.music"      // Apple Music
-        };
-        
-        String[] musicNames = {"Spotify", "YouTube Music", "Amazon Music", "Apple Music"};
-        
-        // Try each music app in order
-        for (int i = 0; i < musicApps.length; i++) {
-            if (isAppInstalled(musicApps[i])) {
-                Log.d(TAG, "Found installed music app: " + musicNames[i]);
-                launchAppInSplitScreen(musicApps[i], musicNames[i]);
-                return;
-            }
-        }
-        
-        // No music apps found - try Spotify web as fallback
-        Log.d(TAG, "No music apps installed - falling back to Spotify web");
-        launchSpotifyWebInSplitScreen();
+        Log.d(TAG, "=== LAUNCHING SPOTIFY IN SPLIT-SCREEN (POC METHOD) ===");
+        launchSpotifyInSplitScreen();
     }
     
     /**
-     * Launch specific app in split-screen mode
+     * DIRECT FROM POC: Launch Spotify in split-screen mode
+     * Uses the exact working code from your proven POC
      */
-    private void launchAppInSplitScreen(String packageName, String appName) {
+    private void launchSpotifyInSplitScreen() {
         try {
-            Log.d(TAG, "Launching " + appName + " in split-screen...");
-            
-            Intent appIntent = getPackageManager().getLaunchIntentForPackage(packageName);
-            if (appIntent == null) {
-                Log.e(TAG, "Cannot create launch intent for " + appName);
-                return;
-            }
-            
-            // Key flags for split-screen launch
-            appIntent.addFlags(Intent.FLAG_ACTIVITY_LAUNCH_ADJACENT | Intent.FLAG_ACTIVITY_NEW_TASK);
-            startActivity(appIntent);
-            
-            showUserFeedback(appName + " launched in split-screen!");
-            Log.d(TAG, appName + " launched successfully in adjacent window");
-            
-        } catch (Exception e) {
-            Log.e(TAG, "Failed to launch " + appName + ": " + e.getMessage());
-            showUserFeedback("Failed to launch " + appName + " - trying fallback");
-            
-            // Try Spotify URI as backup
-            if (packageName.equals("com.spotify.music")) {
-                launchSpotifyUriInSplitScreen();
-            }
-        }
-    }
-    
-    /**
-     * Launch Spotify using URI scheme in split-screen
-     */
-    private void launchSpotifyUriInSplitScreen() {
-        try {
-            Log.d(TAG, "Trying Spotify URI launch in split-screen...");
+            // Try launching the native Spotify app first
             Intent spotifyIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("spotify:"));
             spotifyIntent.addFlags(Intent.FLAG_ACTIVITY_LAUNCH_ADJACENT | Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(spotifyIntent);
-            showUserFeedback("Spotify launched via URI in split-screen!");
-            Log.d(TAG, "Spotify URI launch successful");
+            showUserFeedback("Spotify launched in split-screen!");
+            Log.d(TAG, "Spotify launched in adjacent window");
         } catch (Exception e) {
-            Log.e(TAG, "Spotify URI launch failed: " + e.getMessage());
-            launchSpotifyWebInSplitScreen();
-        }
-    }
-    
-    /**
-     * Launch Spotify web as final fallback
-     */
-    private void launchSpotifyWebInSplitScreen() {
-        try {
-            Log.d(TAG, "Launching Spotify web as final fallback...");
+            // Graceful fallback: launch Spotify web in split-screen
+            Log.d(TAG, "Spotify app not available, opening web in split-screen");
             Intent webIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://open.spotify.com"));
             webIntent.addFlags(Intent.FLAG_ACTIVITY_LAUNCH_ADJACENT | Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(webIntent);
             showUserFeedback("Spotify web opened in split-screen!");
-            Log.d(TAG, "Spotify web fallback successful");
-        } catch (Exception e) {
-            Log.e(TAG, "All music app launch methods failed: " + e.getMessage());
-            showUserFeedback("Unable to launch any music app - split-screen may still work manually");
-            e.printStackTrace();
         }
     }
     
     /**
-     * Check if app is installed on device
+     * EXACT POC FALLBACK: Launch Spotify Normally (No Split-Screen Forcing)
+     * 
+     * This is the traditional app launch method when split-screen forcing fails.
+     * User would need to manually enter split-screen via system gestures.
      */
-    private boolean isAppInstalled(String packageName) {
+    private void launchSpotifyNormally() {
         try {
-            getPackageManager().getPackageInfo(packageName, 0);
-            Log.d(TAG, "App " + packageName + " is installed");
-            return true;
-        } catch (PackageManager.NameNotFoundException e) {
-            Log.d(TAG, "App " + packageName + " not installed");
-            return false;
+            // Standard launch without split-screen flags
+            Intent spotifyIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("spotify:"));
+            startActivity(spotifyIntent);
+            showUserFeedback("Spotify launched! Swipe up and tap split-screen.");
+        } catch (Exception e) {
+            // Web fallback for normal launch
+            Intent webIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://open.spotify.com"));
+            startActivity(webIntent);
+            showUserFeedback("Spotify web opened! Swipe up and tap split-screen.");
         }
     }
     
