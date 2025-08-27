@@ -422,8 +422,10 @@ public class MainActivity extends AppCompatActivity {
         if (splitScreenButton != null) {
             splitScreenButton.setOnClickListener(v -> {
                 Log.d(TAG, "Split-screen button clicked!");
-                // TODO Phase 2: Add actual split-screen functionality
-                // Placeholder for now - will be replaced with real functionality
+                // DEBUG: Show toast to confirm button works
+                runOnUiThread(() -> {
+                    Toast.makeText(this, "Split-screen button clicked!", Toast.LENGTH_SHORT).show();
+                });
             });
         }
     }
