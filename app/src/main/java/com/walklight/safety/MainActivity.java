@@ -421,16 +421,16 @@ public class MainActivity extends AppCompatActivity {
         // Split Screen Button Click Listener
         if (splitScreenButton != null) {
             final int[] iconOptions = {
-                R.drawable.split_screen_option_a,
-                R.drawable.split_screen_option_b, 
-                R.drawable.split_screen_option_c,
-                R.drawable.split_screen_option_d
+                R.drawable.split_vertical_modern,
+                R.drawable.split_minimal_clean, 
+                R.drawable.split_phone_style,
+                R.drawable.split_outline_clean
             };
-            final String[] iconNames = {"Material Design", "Custom PNG Style", "Built-in Android", "Font Icon Style"};
+            final String[] iconNames = {"Vertical Modern", "Minimal Clean", "Phone Style", "Outline Clean"};
             final int[] currentIcon = {0}; // Using array to modify in lambda
             
             splitScreenButton.setOnClickListener(v -> {
-                // Cycle through icon options for preview
+                // Cycle through BETTER icon options for preview
                 currentIcon[0] = (currentIcon[0] + 1) % iconOptions.length;
                 splitScreenButton.setImageResource(iconOptions[currentIcon[0]]);
                 
