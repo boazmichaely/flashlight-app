@@ -8,6 +8,7 @@ import android.hardware.camera2.CameraAccessException;
 import android.hardware.camera2.CameraCharacteristics;
 import android.hardware.camera2.CameraManager;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
@@ -31,7 +32,8 @@ import com.google.android.material.switchmaterial.SwitchMaterial;
 import androidx.appcompat.app.AlertDialog;
 
 public class MainActivity extends AppCompatActivity {
-
+    
+    private static final String TAG = "MainActivity";
     private static final int CAMERA_PERMISSION_REQUEST = 100;
     
     // Configuration now lives in: app/src/main/res/values/exit_button_config.xml
