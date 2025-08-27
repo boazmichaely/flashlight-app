@@ -926,6 +926,7 @@ public class MainActivity extends AppCompatActivity {
         android.util.Log.d("FlashlightLifecycle", "New multi-window mode: " + isInMultiWindowMode);
         android.util.Log.d("FlashlightLifecycle", "Current light state: " + isFlashlightOn);
         
+        // FLASHLIGHT RESTORATION LOGIC
         // If entering multi-window mode and light was turned off during transition, restore it!
         if (isInMultiWindowMode && wasFlashlightOnBeforePause && !isFlashlightOn) {
             android.util.Log.d("FlashlightLifecycle", "🌟 ENTERING MULTI-WINDOW: Restoring light!");
@@ -937,6 +938,13 @@ public class MainActivity extends AppCompatActivity {
                 e.printStackTrace();
             }
         }
+        
+        // MULTI-WINDOW BUTTON UPDATE LOGIC
+        // Update button icon when mode changes
+        runOnUiThread(() -> {
+            updateMultiWindowButtonIcon();
+            Log.d(TAG, "Multi-window button updated for mode: " + (isInMultiWindowMode ? "SPLIT-SCREEN" : "FULLSCREEN"));
+        });
         
         android.util.Log.d("FlashlightLifecycle", "=====================================");
     }
@@ -1027,12 +1035,4 @@ public class MainActivity extends AppCompatActivity {
         // - Update button icon via onMultiWindowModeChanged callback
     }
     
-    @Override
-    public void onMultiWindowModeChanged(boolean isInMultiWindow) {
-        super.onMultiWindowModeChanged(isInMultiWindow);
-        Log.d(TAG, "Multi-window mode changed: " + (isInMultiWindow ? "ENTERED" : "EXITED"));
-        
-        // Update button icon when mode changes
-        runOnUiThread(() -> updateMultiWindowButtonIcon());
-    }
 }
