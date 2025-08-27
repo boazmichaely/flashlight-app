@@ -11,4 +11,13 @@
     <string name="permission_denied">Camera permission is required for flashlight functionality.</string>
     <string name="about_title">Walklight - Safety light</string>
     <string name="about_version">Version %s</string>
+    
+    <!-- Settings Dialog -->
+    <string name="settings_title">Walklight - Safety Light</string>
+    <string name="settings_version">Version: %s</string>
+    <string name="settings_companion_app">Companion App:</string>
+    <string name="settings_companion_current">Spotify</string>
+    <string name="settings_companion_change">Change</string>
+    <string name="settings_keep_light_on">Keep light on when closed</string>
+    <string name="settings_close">Close</string>
 </resources>

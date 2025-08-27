@@ -15,6 +15,8 @@ import android.os.Looper;
 import android.content.pm.PackageManager;
 import android.view.View;
 import android.view.ViewGroup;
+import android.content.SharedPreferences;
+import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -419,8 +421,8 @@ public class MainActivity extends AppCompatActivity {
             updateSyncedIntensityLabel();
         });
 
-        // About Button
-        aboutButton.setOnClickListener(v -> showAboutDialog());
+        // Settings Button
+        aboutButton.setOnClickListener(v -> showSettingsDialog());
         
         // Button Click Listeners
         if (exitButtonFloating != null) {
@@ -979,19 +981,69 @@ public class MainActivity extends AppCompatActivity {
         android.util.Log.d("FlashlightApp", "✅ App exit completed");
     }
 
-    private void showAboutDialog() {
+    private void showSettingsDialog() {
         try {
+            // Inflate the custom settings layout
+            View dialogView = getLayoutInflater().inflate(R.layout.dialog_settings, null);
+            
+            // Get version name
             String versionName = getPackageManager().getPackageInfo(getPackageName(), 0).versionName;
-            String message = getString(R.string.about_version, versionName);
-
-            new AlertDialog.Builder(this)
-                    .setTitle(getString(R.string.about_title))
-                    .setMessage(message)
-                    .setPositiveButton("OK", null)
-                    .show();
+            
+            // Set version text
+            TextView versionText = dialogView.findViewById(R.id.settings_version);
+            versionText.setText(getString(R.string.settings_version, versionName));
+            
+            // Initialize companion app display
+            TextView companionCurrent = dialogView.findViewById(R.id.settings_companion_current);
+            companionCurrent.setText(getCurrentCompanionAppName());
+            
+            // Initialize keep light on toggle
+            SwitchMaterial keepLightToggle = dialogView.findViewById(R.id.settings_keep_light_toggle);
+            keepLightToggle.setChecked(getKeepLightOnSetting());
+            
+            // Create dialog
+            AlertDialog dialog = new AlertDialog.Builder(this)
+                    .setView(dialogView)
+                    .setCancelable(true)
+                    .create();
+            
+            // Set up button listeners
+            Button changeButton = dialogView.findViewById(R.id.settings_companion_change);
+            Button closeButton = dialogView.findViewById(R.id.settings_close);
+            
+            changeButton.setOnClickListener(v -> {
+                // TODO: Implement app picker in Step 2
+                Log.d(TAG, "Change companion app clicked");
+            });
+            
+            keepLightToggle.setOnCheckedChangeListener((buttonView, isChecked) -> {
+                saveKeepLightOnSetting(isChecked);
+                Log.d(TAG, "Keep light on setting changed: " + isChecked);
+            });
+            
+            closeButton.setOnClickListener(v -> dialog.dismiss());
+            
+            dialog.show();
+            
         } catch (Exception e) {
+            Log.e(TAG, "Error showing settings dialog", e);
             e.printStackTrace();
         }
+    }
+    
+    private String getCurrentCompanionAppName() {
+        // TODO: Get from preferences in Step 2
+        return getString(R.string.settings_companion_current);
+    }
+    
+    private boolean getKeepLightOnSetting() {
+        SharedPreferences prefs = getSharedPreferences("walklight_settings", MODE_PRIVATE);
+        return prefs.getBoolean("keep_light_on_close", false);
+    }
+    
+    private void saveKeepLightOnSetting(boolean keepOn) {
+        SharedPreferences prefs = getSharedPreferences("walklight_settings", MODE_PRIVATE);
+        prefs.edit().putBoolean("keep_light_on_close", keepOn).apply();
     }
     
     // Phase 2: Multi-window functionality
