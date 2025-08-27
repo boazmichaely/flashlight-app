@@ -58,6 +58,7 @@ public class MainActivity extends AppCompatActivity {
     private LinearLayout aboutButton;
     private MaterialButton exitButtonTopCorner; // UNUSED: Top corner exit button (kept for potential future use)
     private ImageButton exitButtonFloating; // ACTIVE: Custom PNG exit button
+    private ImageButton splitScreenButton; // ACTIVE: Split-screen control button
     
     private boolean isUpdatingSliders = false; // Prevent infinite loops during sync
     private boolean wasFlashlightOnBeforePause = false; // Track state for resume
@@ -134,6 +135,7 @@ public class MainActivity extends AppCompatActivity {
         // Initialize exit button (configuration in exit_button_config.xml)
         exitButtonTopCorner = findViewById(R.id.exitButtonTopCorner);
         exitButtonFloating = findViewById(R.id.exitButtonFloating);
+        splitScreenButton = findViewById(R.id.splitScreenButton);
         
         // Hide unused top corner button
         if (exitButtonTopCorner != null) {
@@ -143,6 +145,15 @@ public class MainActivity extends AppCompatActivity {
         if (exitButtonFloating != null) {
             boolean showCustom = getResources().getBoolean(R.bool.show_custom_exit);
             exitButtonFloating.setVisibility(showCustom ? View.VISIBLE : View.GONE);
+        }
+        
+        // Initialize split-screen button
+        if (splitScreenButton != null) {
+            boolean showSplitScreen = getResources().getBoolean(R.bool.show_split_screen_button);
+            splitScreenButton.setVisibility(showSplitScreen ? View.VISIBLE : View.GONE);
+            Log.d(TAG, "Split-screen button initialized. Visible: " + (showSplitScreen ? "YES" : "NO"));
+        } else {
+            Log.e(TAG, "Split-screen button NOT FOUND in layout!");
         }
         
         // PHASE 1: TEMPORARILY DISABLED - Apply hardware-based UI configuration BEFORE initializing sliders
@@ -403,6 +414,19 @@ public class MainActivity extends AppCompatActivity {
         // Custom PNG Exit Button Click Listener  
         if (exitButtonFloating != null) {
             exitButtonFloating.setOnClickListener(v -> exitApp());
+        }
+        
+        // Split Screen Button Click Listener
+        if (splitScreenButton != null) {
+            splitScreenButton.setOnClickListener(v -> {
+                Log.d(TAG, "Split-screen button clicked!");
+                // TODO Phase 2: Add actual split-screen functionality
+                // For now, just show a toast to confirm button is working
+                runOnUiThread(() -> {
+                    android.widget.Toast.makeText(this, "Split-screen button works! (Phase 2 coming soon)", 
+                                                 android.widget.Toast.LENGTH_SHORT).show();
+                });
+            });
         }
     }
     
