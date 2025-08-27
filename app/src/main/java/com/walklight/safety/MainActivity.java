@@ -498,7 +498,7 @@ public class MainActivity extends AppCompatActivity {
         
         try {
             // Try basic torch mode first - this is more reliable
-            cameraManager.setTorchMode(cameraId, true);
+            TorchController.setOn(cameraManager, cameraId);
             torchSuccess = true;
             
             // If basic torch worked, try to apply intensity (if supported)
@@ -507,7 +507,7 @@ public class MainActivity extends AppCompatActivity {
                     float intensity = getCurrentActualLedIntensity();
                     // Use the actual device's max strength level (Samsung devices often use 1-99, not 1-100)
                     int strengthLevel = Math.max(1, Math.min(maxTorchStrength, Math.round(intensity * maxTorchStrength)));
-                    cameraManager.turnOnTorchWithStrengthLevel(cameraId, strengthLevel);
+                    TorchController.setStrength(cameraManager, cameraId, strengthLevel);
                     // Track the intensity that was applied
                     currentActualLedIntensity = intensity;
                     // Intensity control is working - no need to show diagnostic message
@@ -537,7 +537,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void turnOffFlashlight() throws CameraAccessException {
         try {
-            cameraManager.setTorchMode(cameraId, false);
+            TorchController.setOff(cameraManager, cameraId);
         } catch (Exception e) {
             // Handle cases where flashlight hardware isn't available (like emulators)
             e.printStackTrace();
