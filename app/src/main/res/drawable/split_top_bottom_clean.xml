@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Clean Top/Bottom Split -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24"
+    android:tint="@android:color/white">
+    
+    <!-- Top rectangle -->
+    <path
+        android:fillColor="@android:color/white"
+        android:pathData="M5,4h14v7H5V4z"/>
+    
+    <!-- Bottom rectangle -->
+    <path
+        android:fillColor="@android:color/white"
+        android:pathData="M5,13h14v7H5V13z"/>
+</vector>
