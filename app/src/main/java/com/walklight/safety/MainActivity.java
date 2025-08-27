@@ -963,20 +963,7 @@ public class MainActivity extends AppCompatActivity {
      */
     private void exitApp() {
         android.util.Log.d("FlashlightApp", "🚪 User requested app exit");
-        
-        try {
-            // Turn off flashlight before exiting if it's on
-            if (isFlashlightOn) {
-                android.util.Log.d("FlashlightApp", "🔦 Turning off flashlight before exit");
-                turnOffFlashlight();
-            }
-        } catch (Exception e) {
-            android.util.Log.e("FlashlightApp", "Error turning off flashlight during exit", e);
-        }
-        
-        // Close app and remove from recent tasks
-        finishAndRemoveTask();
-        android.util.Log.d("FlashlightApp", "✅ App exit completed");
+        new ExitPolicy().onExitRequested(this);
     }
 
     private void showAboutDialog() {
