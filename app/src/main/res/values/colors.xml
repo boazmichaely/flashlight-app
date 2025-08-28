@@ -6,4 +6,9 @@
     <color name="button_accent">#FF4A4A4A</color>
     <color name="toggle_on_track">#64B5F6</color>
     <color name="toggle_off_track">#666666</color>
+    
+    <!-- Flashlight-intuitive slider colors -->
+    <color name="slider_track_active">#FFFFFFFF</color>     <!-- White for brightness -->
+    <color name="slider_track_inactive">#FF666666</color>   <!-- Lighter gray for dim -->
+    <color name="slider_thumb">#FFFFFFFF</color>           <!-- White thumb -->
 </resources>
