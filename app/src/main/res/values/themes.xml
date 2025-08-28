@@ -10,5 +10,9 @@
         <item name="colorOnSecondary">@color/black</item>
         <item name="android:statusBarColor" tools:targetApi="l">@color/black</item>
         <item name="android:navigationBarColor">@color/black</item>
+        
+        <!-- M3 Switch styling - using proper Material 3 design tokens -->
+        <item name="materialSwitchStyle">@style/Widget.Material3.CompoundButton.MaterialSwitch</item>
+        <item name="switchPreferenceCompatStyle">@style/Preference.SwitchPreferenceCompat.Material</item>
     </style>
 </resources>

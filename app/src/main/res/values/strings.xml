@@ -13,6 +13,8 @@
     <string name="about_version">Version %s</string>
     <string name="settings_title">Settings</string>
     <string name="settings_close">Close</string>
-    <string name="settings_version_title">Version</string>
-    <string name="settings_version_summary">Walklight v1.4.0</string>
+    <string name="settings_version_title">Walklight - Safety Light</string>
+    <string name="settings_version_summary">Version: %s</string>
+    <string name="settings_keep_light_title">Keep flashlight on</string>
+    <string name="settings_keep_light_summary">Flashlight stays on when you close the app. (It will always turn off when you exit the app)</string>
 </resources>

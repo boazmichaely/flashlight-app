@@ -1,25 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <!-- Version row (non-selectable) -->
+    <!-- Version row (non-selectable) - at top after icon -->
     <Preference
         android:key="app_version"
         android:title="@string/settings_version_title"
         android:summary="@string/settings_version_summary"
         android:selectable="false" />
 
-    <!-- Dummy row for spacing confirmation -->
-    <Preference
-        android:key="dummy_1"
-        android:title="Dummy Setting 1"
-        android:summary="For layout verification"
-        android:selectable="false" />
+    <!-- Keep flashlight on when closed switch -->
+    <SwitchPreferenceCompat
+        android:key="keep_light_on_close"
+        android:title="@string/settings_keep_light_title"
+        android:summary="@string/settings_keep_light_summary"
+        android:defaultValue="true" />
 
-    <!-- Another dummy row for spacing confirmation -->
+    <!-- Dummy row for future settings -->
     <Preference
-        android:key="dummy_2"
-        android:title="Dummy Setting 2"
-        android:summary="For divider testing"
+        android:key="dummy_future"
+        android:title="Future Setting"
+        android:summary="Placeholder for next feature"
         android:selectable="false" />
 
 </PreferenceScreen>

@@ -34,6 +34,7 @@ import android.widget.ImageButton;
 import com.google.android.material.slider.Slider;
 import com.google.android.material.switchmaterial.SwitchMaterial;
 import androidx.appcompat.app.AlertDialog;
+import androidx.preference.PreferenceManager;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -81,6 +82,14 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        // Set default values for preferences on first run
+        PreferenceManager.setDefaultValues(this, "walklight_settings", MODE_PRIVATE, R.xml.settings_preferences, false);
+        
+        // Log current preference state for debugging
+        android.content.SharedPreferences prefs = getSharedPreferences("walklight_settings", MODE_PRIVATE);
+        boolean keepLightOn = prefs.getBoolean("keep_light_on_close", true);
+        Log.d(TAG, "MainActivity: keep_light_on_close = " + keepLightOn);
 
         // Handle system insets for proper layout positioning
         setupWindowInsets();
