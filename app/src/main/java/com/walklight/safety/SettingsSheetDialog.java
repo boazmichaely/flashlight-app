@@ -49,7 +49,13 @@ public class SettingsSheetDialog extends DialogFragment {
         super.onViewCreated(view, savedInstanceState);
         MaterialToolbar toolbar = view.findViewById(R.id.settingsToolbar);
         if (toolbar != null) {
-            toolbar.setNavigationOnClickListener(v -> dismiss());
+            toolbar.setOnMenuItemClickListener(item -> {
+                if (item.getItemId() == R.id.action_close) {
+                    dismiss();
+                    return true;
+                }
+                return false;
+            });
         }
     }
 }
