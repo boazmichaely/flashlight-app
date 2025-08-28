@@ -17,7 +17,7 @@
         android:background="@android:color/transparent"
         app:title="@string/settings_title"
         app:titleCentered="false"
-        app:navigationIcon="@android:drawable/ic_menu_close_clear_cancel"
+        app:navigationIcon="@drawable/ic_close_24"
         app:titleTextColor="?attr/colorOnSurface" />
 
     <!-- Large brand icon below header -->
