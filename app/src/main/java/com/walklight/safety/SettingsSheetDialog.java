@@ -18,10 +18,17 @@ public class SettingsSheetDialog extends DialogFragment {
     @Override
     public void onStart() {
         super.onStart();
-        if (getDialog() != null && getDialog().getWindow() != null) {
-            int screenWidth = requireContext().getResources().getDisplayMetrics().widthPixels;
-            int desiredWidth = (int) (screenWidth * 0.92f); // occupy most of the screen
-            getDialog().getWindow().setLayout(desiredWidth, ViewGroup.LayoutParams.MATCH_PARENT);
+        if (getDialog() instanceof SideSheetDialog) {
+            SideSheetDialog d = (SideSheetDialog) getDialog();
+            View sheet = d.findViewById(com.google.android.material.R.id.m3_side_sheet);
+            if (sheet != null) {
+                int screenWidth = requireContext().getResources().getDisplayMetrics().widthPixels;
+                int desired = (int) (screenWidth * 0.92f);
+                ViewGroup.LayoutParams lp = sheet.getLayoutParams();
+                lp.width = desired;
+                lp.height = ViewGroup.LayoutParams.MATCH_PARENT;
+                sheet.setLayoutParams(lp);
+            }
         }
     }
 
