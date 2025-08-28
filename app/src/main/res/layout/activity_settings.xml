@@ -41,6 +41,7 @@
 
     <!-- Bottom bar with Close button -->
     <LinearLayout
+        android:id="@+id/settingsActionsBar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
@@ -55,7 +56,9 @@
             style="@style/Widget.Material3.Button.ElevatedButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/settings_close" />
+            android:text="@string/settings_close"
+            android:textColor="@android:color/white"
+            android:backgroundTint="@color/gray" />
     </LinearLayout>
 
 </LinearLayout>
