@@ -13,4 +13,6 @@
     <string name="about_version">Version %s</string>
     <string name="settings_title">Settings</string>
     <string name="settings_close">Close</string>
+    <string name="settings_version_title">Version</string>
+    <string name="settings_version_summary">Walklight v1.4.0</string>
 </resources>

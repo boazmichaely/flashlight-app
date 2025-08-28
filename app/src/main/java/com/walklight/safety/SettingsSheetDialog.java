@@ -47,6 +47,8 @@ public class SettingsSheetDialog extends DialogFragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        
+        // Setup toolbar close button
         MaterialToolbar toolbar = view.findViewById(R.id.settingsToolbar);
         if (toolbar != null) {
             toolbar.setOnMenuItemClickListener(item -> {
@@ -56,6 +58,15 @@ public class SettingsSheetDialog extends DialogFragment {
                 }
                 return false;
             });
+        }
+        
+        // Add SettingsFragment to container
+        if (savedInstanceState == null) {
+            SettingsFragment settingsFragment = new SettingsFragment();
+            getChildFragmentManager()
+                .beginTransaction()
+                .replace(R.id.settings_sheet_container, settingsFragment)
+                .commit();
         }
     }
 }
