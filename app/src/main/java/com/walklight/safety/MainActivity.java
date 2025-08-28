@@ -420,7 +420,11 @@ public class MainActivity extends AppCompatActivity {
         });
 
         // About Button
-        aboutButton.setOnClickListener(v -> showAboutDialog());
+        aboutButton.setOnClickListener(v -> {
+            try {
+                startActivity(new android.content.Intent(this, SettingsActivity.class));
+            } catch (Exception ignored) {}
+        });
         
         // Button Click Listeners
         if (exitButtonFloating != null) {

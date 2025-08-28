@@ -11,4 +11,6 @@
     <string name="permission_denied">Camera permission is required for flashlight functionality.</string>
     <string name="about_title">Walklight - Safety light</string>
     <string name="about_version">Version %s</string>
+    <string name="settings_title">Settings</string>
+    <string name="settings_close">Close</string>
 </resources>
