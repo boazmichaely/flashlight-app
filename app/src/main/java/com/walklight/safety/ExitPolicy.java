@@ -9,13 +9,9 @@ import android.hardware.camera2.CameraAccessException;
 public class ExitPolicy {
 
     public void onExitRequested(MainActivity activity) {
-        try {
-            if (activity.isFlashlightOn()) {
-                activity.turnOffFlashlight();
-            }
-        } catch (CameraAccessException ignored) {
+        if (activity.isFlashlightCurrentlyOn()) {
+            activity.turnOffFlashlightSafely();
         }
-
         activity.finishAndRemoveTask();
     }
 }

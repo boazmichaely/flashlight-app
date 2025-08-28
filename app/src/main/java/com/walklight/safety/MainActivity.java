@@ -552,6 +552,19 @@ public class MainActivity extends AppCompatActivity {
         updateSyncedIntensityLabel(); // Update label based on new flashlight state
     }
 
+    // Exposed for ExitPolicy (read-only)
+    public boolean isFlashlightCurrentlyOn() {
+        return isFlashlightOn;
+    }
+
+    // Exposed safe wrapper for ExitPolicy
+    public void turnOffFlashlightSafely() {
+        try {
+            turnOffFlashlight();
+        } catch (android.hardware.camera2.CameraAccessException ignored) {
+        }
+    }
+
     private void updateFlashlightIntensity(float intensity) {
         if (!isFlashlightOn) return;
         
