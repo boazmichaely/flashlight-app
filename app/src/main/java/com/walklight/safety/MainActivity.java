@@ -422,7 +422,7 @@ public class MainActivity extends AppCompatActivity {
         // About Button
         aboutButton.setOnClickListener(v -> {
             try {
-                startActivity(new android.content.Intent(this, SettingsActivity.class));
+                new SettingsSheetDialog().show(getSupportFragmentManager(), "settings");
             } catch (Exception ignored) {}
         });
         
