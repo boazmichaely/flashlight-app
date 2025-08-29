@@ -36,22 +36,14 @@ public class SettingsFragment extends PreferenceFragmentCompat {
             versionPref.setSummary(versionText);
         }
         
+        // Setup change listener for switch (logging only - behavior implementation in B2.2)
         SwitchPreferenceCompat keepLightPref = findPreference("keep_light_on_close");
         if (keepLightPref != null) {
-            // Ensure default value is set correctly
-            if (!getPreferenceManager().getSharedPreferences().contains("keep_light_on_close")) {
-                keepLightPref.setChecked(true); // Force default to ON
-                Log.d(TAG, "Prefs: Setting initial keep_light_on_close = true");
-            }
-            
-            keepLightPref.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
-                @Override
-                public boolean onPreferenceChange(@NonNull Preference preference, Object newValue) {
-                    boolean oldValue = keepLightPref.isChecked();
-                    boolean newValueBool = (Boolean) newValue;
-                    Log.d(TAG, "Prefs: keep_light_on_close " + oldValue + "→" + newValueBool);
-                    return true; // Allow change
-                }
+            keepLightPref.setOnPreferenceChangeListener((preference, newValue) -> {
+                boolean oldValue = ((SwitchPreferenceCompat) preference).isChecked();
+                boolean newValueBool = (Boolean) newValue;
+                Log.d(TAG, "Prefs: keep_light_on_close " + oldValue + "→" + newValueBool);
+                return true; // Allow change
             });
         }
     }

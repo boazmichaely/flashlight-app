@@ -1,67 +1,141 @@
-## Checkpoint
+## Current Checkpoint Status
 
-- Tag: `checkpoint/sidesheet-x-right` (commit f01e8bb)
-- State: Modal side sheet using Material 3 `SideSheetDialog`, header with right-aligned Close (X), no settings list yet. Split-screen button dynamic, flashlight functionality stable from earlier phases.
+- **Working Tag**: `checkpoint/theme-refined-working` (fully functional)
+- **Geometry Tag**: `checkpoint/m3-geometry-non-functional` (perfect visuals, broken interaction)
+- **State**: Settings preference list working with perfect M3 theme, switch geometry vs functionality tradeoff identified
 
-## Goals
-1) Deliver professional, native-looking settings with Material components.
-2) Make “Keep light on when closed” reliable and deterministic (default ON on first run).
-3) Integrate native app picker flow (no custom list), with icon+label display and reset to Spotify.
-4) Keep split-screen stability; no regressions.
-5) Keep user-facing strings in resources; follow Material guidelines.
+## Current Status Analysis
 
-## Step-by-step Plan
+### ✅ **What's Working:**
+- **Settings UI**: Perfect M3 dividers, dynamic version display, clean white side sheet
+- **Theme**: Intuitive slider colors (white=bright, gray=dim), proper M3 components
+- **Main flashlight**: Full functionality with intensity control, sync modes, adaptive layouts
+- **Exit detection**: Sophisticated pause/resume logic for multi-window scenarios
+- **Infrastructure**: `ExitPolicy` class exists, SharedPreferences operational, logging working
 
-Phase B2 (Settings)
+### ❌ **Critical Issues:**
+- **Settings switch interaction**: Custom M3 widget breaks touch events (perfect geometry but non-functional)
+- **Exit policy NOT enforced**: `onDestroy()` ignores preference setting, always turns off light
+- **Code syntax error**: `SettingsFragment.java:31` missing opening brace
 
-1. B2.0 – Add Preference host and list scaffold (no behavior)
-   - Add `SettingsFragment extends PreferenceFragmentCompat`.
-   - Resource: `res/xml/settings_preferences.xml` with three non-interactive rows to finalize layout:
-     - Version row (non-selectable).
-     - Dummy row(s) to visually confirm spacing.
-   - Visuals:
-     - Force dividers: `setDivider(drawable)` + `setDividerHeight(1)` and `MaterialDividerItemDecoration`.
-     - Ensure `app:allowDividerAbove/Below` on each row as needed.
-   - QA: open side sheet → confirm visible dividers on your device.
+### 🎯 **Root Cause Analysis:**
+```xml
+<!-- Custom widget layout breaks preference system -->
+<com.google.android.material.materialswitch.MaterialSwitch
+    android:clickable="false"    ← BREAKS TOUCH  
+    android:focusable="false"    ← BREAKS INTERACTION
+```
 
-2. B2.1 – Add “Keep light on when closed” switch (no policy changes yet)
-   - Add `SwitchPreferenceCompat` key `keep_light_on_close`, `android:defaultValue="true"`.
-   - Bind store: `getPreferenceManager().setSharedPreferencesName("walklight_settings")`.
-   - First-run default write: `PreferenceManager.setDefaultValues(context, "walklight_settings", MODE_PRIVATE, R.xml.settings_preferences, false)`.
-   - Logging: on change, log `old→new` and store.
-   - QA: uninstall → fresh install → open settings; switch shows ON. Toggle logs show correct transitions.
+## REVISED PLAN - Anti-Spinning Focus
 
-3. B2.2 – Enforce policy on exit
-   - `ExitPolicy.shouldKeepOn(Context)` reads from `walklight_settings` with default `true`.
-   - `MainActivity.onDestroy()` respects policy only when activity is finishing: if light ON and keep=false → turn off.
-   - QA: turn light ON, set keep=false, exit → light turns OFF; set keep=true, exit → light stays ON.
+### **PHASE 1: Critical Functionality Fixes** ⚡ *IMMEDIATE*
 
-4. B2.3 – App picker (native chooser)
-   - Add a `Preference` row “Companion App” that launches `Intent.createChooser(Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_LAUNCHER))`.
-   - Use `registerForActivityResult` to receive chosen component; store `packageName / component` in `SharedPreferences`.
-   - Display picked app’s icon and label in the row summary; add “Reset to Spotify” row.
-   - QA: pick app, re-open settings → icon+name persist; reset restores Spotify.
+#### **Fix 1.1: Settings Switch Functionality (5 min)**
+- **Problem**: Perfect M3 geometry but no touch interaction
+- **Solution**: Remove custom `android:widgetLayout` from settings_preferences.xml
+- **Tradeoff**: Accept current geometry (functional > perfect visual)
+- **Result**: Working switch with acceptable appearance
 
-5. B3 – Use selected app for split-screen
-   - Resolve launcher activity explicitly; use proven flags `FLAG_ACTIVITY_LAUNCH_ADJACENT | FLAG_ACTIVITY_NEW_TASK`.
-   - Fallback: if explicit launch fails, open URL or prompt.
-   - QA: button enters split-screen with chosen app; icon toggles for split/fullscreen as before.
+#### **Fix 1.2: Exit Policy Integration (15 min)**
+- **Problem**: `MainActivity.onDestroy()` always turns off light, ignores setting
+- **Current Code**: 
+```java
+// BROKEN - ignores preference
+if (isFlashlightOn) {
+    turnOffFlashlight();
+}
+```
+- **Fixed Code**:
+```java
+// CORRECT - respects preference  
+if (isFlashlightOn && isFinishing()) {
+    SharedPreferences prefs = getSharedPreferences("walklight_settings", MODE_PRIVATE);
+    boolean keepLightOn = prefs.getBoolean("keep_light_on_close", true);
+    if (!keepLightOn) {
+        turnOffFlashlight();
+        Log.d(TAG, "Exit: Light turned OFF per setting");
+    } else {
+        Log.d(TAG, "Exit: Light kept ON per setting");
+    }
+}
+```
 
-6. C1 – Normalize main screen switches to Material size
-   - Replace custom toggles with Material switches sized per M3; keep color resources.
-   - QA: visual parity, accessibility labels.
+### **PHASE 2: Feature Completion** 📱 *NEXT SESSION*
 
-## Quality Gates (per step)
-- Visual: matches Material (dividers visible, proper spacing, header/title consistent).
-- Strings: all user text from `res/values/strings.xml`.
-- Logs: deterministic `Prefs` logs for changes and reads.
-- No regressions: split-screen button behavior unchanged.
+#### **B2.3: App Picker Implementation**
+- Add `Preference` row "Companion App"
+- Native `Intent.createChooser(Intent.ACTION_MAIN + CATEGORY_LAUNCHER)`
+- Use `registerForActivityResult` to receive selection
+- Store `packageName/component` in SharedPreferences  
+- Display app icon + label in row summary
+- Add "Reset to Spotify" option
+- **QA**: Pick app, reopen settings → selection persists; reset works
 
-## Rollback/Recovery
-- Return to `checkpoint/sidesheet-x-right` instantly: `git checkout tags/checkpoint/sidesheet-x-right`.
+#### **B3: Split-Screen Integration** 
+- Use selected app from B2.3 for split-screen mode
+- Explicit launcher activity resolution
+- Proven flags: `FLAG_ACTIVITY_LAUNCH_ADJACENT | FLAG_ACTIVITY_NEW_TASK`
+- Fallback handling for launch failures
+- **QA**: Split-screen button uses chosen app; icon toggles correctly
+
+### **PHASE 3: Polish & Cleanup** 🎨 *FUTURE*
+
+#### **C1: Main Page Switch Normalization**
+- Remove `android:scaleX="1.5"` and `android:scaleY="1.3"` from main switches
+- Remove `app:thumbTint="@android:color/white"` customizations  
+- Convert `SwitchMaterial` → `MaterialSwitch` (pure M3)
+- Update programmatic tinting to use theme colors
+- **QA**: Visual parity with Settings switch geometry
+
+#### **Code Cleanup Opportunities**
+- **Theme simplification**: Remove unused color overrides, consolidate slider styling
+- **Architecture**: Extract preference reading to utility methods
+- **Multi-window logic**: Simplify detection code, consolidate exit logic
+
+## Quality Gates
+
+### **Phase 1 Complete When:**
+- ✅ Settings switch functional (clicks toggle state)
+- ✅ Switch state persists (survives app restart)
+- ✅ Exit policy enforced (setting controls flashlight on app exit)
+- ✅ Logging shows preference reads: `"keep_light_on_close true→false"`
+- ✅ QA: ON keeps light on exit, OFF turns off light on exit
+- ✅ No regressions in main flashlight functionality
+
+### **Phase 2 Complete When:**
+- ✅ Native app picker working (launches chooser)
+- ✅ Selected app persists and displays in Settings
+- ✅ Split-screen uses selected app instead of hardcoded Spotify
+- ✅ Reset to Spotify option functional
+- ✅ Multi-window button icon reflects current state
+
+### **Phase 3 Complete When:**
+- ✅ All switches use consistent M3 styling
+- ✅ No custom geometry scaling
+- ✅ Theme uses proper Material 3 design tokens
+- ✅ Code architecture clean and maintainable
+
+## Next Session Priority
+
+### **FOCUS: Complete Phase 1 (Critical Fixes)**
+1. **Fix Settings switch** - Remove custom widget layout
+2. **Fix syntax error** - Add missing brace
+3. **Implement exit policy** - Make setting actually work
+4. **Test thoroughly** - Verify no regressions
+
+### **SUCCESS METRIC:** 
+Settings switch toggles properly AND exit policy works (light behavior matches setting)
+
+## Recovery Commands
+
+- **Latest working state**: `git checkout tags/checkpoint/theme-refined-working`
+- **Perfect geometry (broken)**: `git checkout tags/checkpoint/m3-geometry-non-functional`
+- **Original side sheet**: `git checkout tags/checkpoint/settings-switch-working`
 
 ## Notes
-- We will add instrumentation hooks only as needed; avoid toasts per earlier decision.
-- Test on fresh install paths (uninstall app) for defaults.
 
-
+- **Geometry vs Functionality**: Choose function over perfect visuals
+- **Anti-spinning approach**: Small, focused changes with immediate testing
+- **Test fresh installs**: Uninstall → reinstall → verify defaults
+- **Logging is critical**: All preference changes must log old→new values
+- **No custom widget layouts**: Standard preference components work better
