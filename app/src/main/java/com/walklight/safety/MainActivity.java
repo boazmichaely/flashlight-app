@@ -86,10 +86,10 @@ public class MainActivity extends AppCompatActivity {
         // Set default values for preferences on first run
         PreferenceManager.setDefaultValues(this, "walklight_settings", MODE_PRIVATE, R.xml.settings_preferences, false);
         
-        // Log current preference state for debugging
+        // Log current preference state for debugging  
         android.content.SharedPreferences prefs = getSharedPreferences("walklight_settings", MODE_PRIVATE);
         boolean keepLightOn = prefs.getBoolean("keep_light_on_close", true);
-        Log.d(TAG, "MainActivity: keep_light_on_close = " + keepLightOn);
+        Log.d(TAG, "MainActivity: keep_light_on_close DATA = " + keepLightOn);
 
         // Handle system insets for proper layout positioning
         setupWindowInsets();
