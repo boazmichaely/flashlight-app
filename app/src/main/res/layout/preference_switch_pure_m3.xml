@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Pure M3 MaterialSwitch widget for Settings preferences -->
+<com.google.android.material.materialswitch.MaterialSwitch xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@android:id/switch_widget"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center_vertical"
+    android:layout_marginStart="16dp"
+    android:clickable="false"
+    android:focusable="false"
+    android:minWidth="48dp"
+    android:minHeight="48dp" />

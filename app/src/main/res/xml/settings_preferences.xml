@@ -13,7 +13,8 @@
         android:key="keep_light_on_close"
         android:title="@string/settings_keep_light_title"
         android:summary="@string/settings_keep_light_summary"
-        android:defaultValue="true" />
+        android:defaultValue="true"
+        android:widgetLayout="@layout/preference_switch_pure_m3" />
 
     <!-- Dummy row for future settings -->
     <Preference
