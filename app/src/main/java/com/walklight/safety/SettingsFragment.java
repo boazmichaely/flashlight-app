@@ -40,26 +40,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         SwitchPreferenceCompat keepLightPref = findPreference("keep_light_on_close");
         if (keepLightPref != null) {
             keepLightPref.setOnPreferenceChangeListener((preference, newValue) -> {
-                boolean oldValue = ((SwitchPreferenceCompat) preference).isChecked();
-                boolean newValueBool = (Boolean) newValue;
-                boolean dataBeforeChange = getPreferenceManager().getSharedPreferences().getBoolean("keep_light_on_close", true);
-                
-                Log.d(TAG, "🔄 === SWITCH CLICKED ===");
-                Log.d(TAG, "🔄 UI BEFORE: " + oldValue);
-                Log.d(TAG, "🔄 DATA BEFORE: " + dataBeforeChange);
-                Log.d(TAG, "🔄 NEW VALUE: " + newValueBool + " (type: " + newValue.getClass().getSimpleName() + ")");
-                
-                // Let the change go through first, then check after
-                if (getView() != null) {
-                    getView().post(() -> {
-                        boolean dataAfterChange = getPreferenceManager().getSharedPreferences().getBoolean("keep_light_on_close", true);
-                        boolean uiAfterChange = keepLightPref.isChecked();
-                        Log.d(TAG, "🔄 UI AFTER: " + uiAfterChange);
-                        Log.d(TAG, "🔄 DATA AFTER: " + dataAfterChange);
-                        Log.d(TAG, "🔄 === END CLICK ===");
-                    });
-                }
-                
+                Log.d(TAG, "Keep Light setting changed: " + newValue);
                 return true; // Allow change
             });
         }
@@ -69,21 +50,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         
-        // Debug: Complete data/UI analysis
-        SwitchPreferenceCompat keepLightPref = findPreference("keep_light_on_close");
-        if (keepLightPref != null) {
-            boolean dataValue = getPreferenceManager().getSharedPreferences().getBoolean("keep_light_on_close", true);
-            boolean uiValue = keepLightPref.isChecked();
-            boolean xmlDefault = true; // What XML declares
-            
-            Log.d(TAG, "=== SETTINGS SYNC ANALYSIS ===");
-            Log.d(TAG, "XML defaultValue: " + xmlDefault);
-            Log.d(TAG, "SharedPreferences DATA: " + dataValue);
-            Log.d(TAG, "SwitchPreferenceCompat UI: " + uiValue);
-            Log.d(TAG, "Store contains key: " + getPreferenceManager().getSharedPreferences().contains("keep_light_on_close"));
-            Log.d(TAG, "Store name: " + getPreferenceManager().getSharedPreferences().toString());
-            Log.d(TAG, "============================");
-        }
+        // Settings UI ready
         
         // Apply divider solution from DIVIDERS_RECIPE.md
         // Must be done here when RecyclerView is available
