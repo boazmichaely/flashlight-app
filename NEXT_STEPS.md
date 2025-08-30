@@ -1,21 +1,22 @@
 ## Current Checkpoint Status
 
-- **Latest Tag**: `checkpoint/b2-1-switch-functional` (B2.1 complete - switch working)
-- **Previous**: `checkpoint/theme-refined-working` (functional with custom widget issues)
-- **State**: B2.1 completed successfully - default switch functional, ready for B2.2
+- **Current Version**: `1.9.14` (Phase 1 Complete - Minor Version Bump)
+- **Latest Tag**: `checkpoint/b2-2-exit-policy-complete` (B2.2 exit policy working)
+- **State**: Phase 1 complete - user-controlled exit policy functional, ready for Phase 2
 
 ## Current Status Analysis
 
 ### ✅ **What's Working:**
 - **B2.1 COMPLETE**: Keep Light On switch fully functional (click, persist, default state)
+- **B2.2 COMPLETE**: Exit policy respects user preference for close behavior
 - **Settings UI**: Perfect M3 dividers, dynamic version display, clean white side sheet
 - **Theme**: Intuitive slider colors (white=bright, gray=dim), proper M3 components
 - **Main flashlight**: Full functionality with intensity control, sync modes, adaptive layouts
 - **Exit detection**: Sophisticated pause/resume logic for multi-window scenarios
 - **Infrastructure**: `ExitPolicy` class exists, SharedPreferences operational, logging working
 
-### ❌ **Next Critical Issue:**
-- **Exit policy NOT enforced**: `onDestroy()` ignores preference setting, always turns off light
+### 🚀 **Next Phase:**
+- **Phase 2**: Feature Completion (App Picker, Reset Settings, Companion App Integration)
 
 ### 🎯 **Root Cause Analysis:**
 ```xml
@@ -133,6 +134,23 @@ Close behavior matches switch setting perfectly, ready for companion app selecti
 - **Current working state**: `git checkout tags/checkpoint/b2-2-exit-policy-complete`
 - **Previous milestones**: `git checkout tags/checkpoint/b2-1-switch-functional`
 - **Earlier states**: `git checkout tags/checkpoint/theme-refined-working`
+
+## Version Management
+
+### **Versioning Scheme: M.n.C**
+- **M** = Major version (big architectural/UI changes, requires approval)
+- **n** = Minor version (new features, significant improvements)  
+- **C** = Code version (Play Store upload version, change only when publishing)
+
+### **Version Bump Rules:**
+- **Minor features/improvements**: Increment `n` only (e.g., 1.8.14 → 1.9.14)
+- **Major changes**: Increment `M`, reset `n` (requires explicit approval)
+- **Play Store upload**: Increment `C` and `versionCode` (only when publishing)
+
+### **Examples:**
+- `1.8.14` → `1.9.14` (B2.2 exit policy feature - minor bump)
+- `1.9.14` → `2.0.14` (hypothetical major UI overhaul - major bump)
+- `1.9.14` → `1.9.15` (Play Store upload - code bump)
 
 ## Notes
 
