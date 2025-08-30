@@ -3,6 +3,12 @@ package com.walklight.safety;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.content.pm.PackageManager;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.ResolveInfo;
+import android.content.Intent;
+import android.graphics.drawable.Drawable;
+import com.google.android.material.button.MaterialButton;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.preference.Preference;
@@ -50,6 +56,95 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                 return true; // Allow change
             });
         }
+        
+        // B2.3.1: Setup companion app picker
+        setupCompanionAppPicker();
+    }
+    
+    /**
+     * B2.3.1: Setup companion app picker with Spotify default detection
+     */
+    private void setupCompanionAppPicker() {
+        // Check if companion app is already stored
+        String storedPackage = getPreferenceManager().getSharedPreferences().getString("companion_app_package", null);
+        
+        if (storedPackage == null) {
+            // First run: Search for Spotify and store as default
+            Log.d(TAG, "🔍 B2.3.1: First run - searching for Spotify...");
+            detectAndStoreSpotify();
+        }
+        
+        // Update display with stored app info
+        updateCompanionAppDisplay();
+    }
+    
+    /**
+     * Detect Spotify app and store as default companion app
+     */
+    private void detectAndStoreSpotify() {
+        try {
+            PackageManager pm = requireContext().getPackageManager();
+            
+            // Try different Spotify package names
+            String[] spotifyPackages = {
+                "com.spotify.music",
+                "com.spotify.android" 
+            };
+            
+            for (String packageName : spotifyPackages) {
+                try {
+                    ApplicationInfo appInfo = pm.getApplicationInfo(packageName, 0);
+                    // Found Spotify! Store it
+                    getPreferenceManager().getSharedPreferences().edit()
+                        .putString("companion_app_package", packageName)
+                        .putString("companion_app_name", pm.getApplicationLabel(appInfo).toString())
+                        .apply();
+                    
+                    Log.d(TAG, "✅ B2.3.1: Found and stored Spotify: " + packageName);
+                    return;
+                } catch (PackageManager.NameNotFoundException e) {
+                    // Try next package name
+                }
+            }
+            
+            Log.d(TAG, "❌ B2.3.1: Spotify not found - will need user selection");
+        } catch (Exception e) {
+            Log.e(TAG, "Error detecting Spotify", e);
+        }
+    }
+    
+    /**
+     * Update companion app preference display with stored app info
+     */
+    private void updateCompanionAppDisplay() {
+        Preference companionPref = findPreference("companion_app_display");
+        if (companionPref == null) return;
+        
+        String storedPackage = getPreferenceManager().getSharedPreferences().getString("companion_app_package", null);
+        String storedName = getPreferenceManager().getSharedPreferences().getString("companion_app_name", "No app selected");
+        
+        if (storedPackage != null) {
+            try {
+                PackageManager pm = requireContext().getPackageManager();
+                ApplicationInfo appInfo = pm.getApplicationInfo(storedPackage, 0);
+                Drawable icon = pm.getApplicationIcon(appInfo);
+                
+                // Update preference with app info
+                companionPref.setIcon(icon);
+                companionPref.setTitle(storedName);
+                companionPref.setSummary("Package: " + storedPackage); // Debug info - will remove later
+                
+                Log.d(TAG, "📱 B2.3.1: Updated display for " + storedName + " (" + storedPackage + ")");
+            } catch (PackageManager.NameNotFoundException e) {
+                // App was uninstalled
+                companionPref.setTitle("App Not Found");
+                companionPref.setSummary("Previously selected app was uninstalled");
+                Log.w(TAG, "Stored app not found: " + storedPackage);
+            }
+        } else {
+            companionPref.setTitle("No Companion App");
+            companionPref.setSummary("Use Pick App button to select");
+        }
     }
     
     @Override
@@ -58,9 +153,29 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         
         // Settings UI ready
         
+        // B2.3.1: Setup companion app picker button
+        setupCompanionAppButton();
+        
         // Apply divider solution from DIVIDERS_RECIPE.md
         // Must be done here when RecyclerView is available
         setupDividers();
+    }
+    
+    /**
+     * B2.3.1: Setup companion app picker button click handler
+     */
+    private void setupCompanionAppButton() {
+        // Find the MaterialButton in the custom widget layout
+        MaterialButton pickButton = getView().findViewById(R.id.companion_pick_button);
+        if (pickButton != null) {
+            pickButton.setOnClickListener(v -> {
+                Log.d(TAG, "🔘 B2.3.1: Pick App button clicked - B2.3.2 will implement chooser");
+                // B2.3.2 will implement the actual app chooser here
+            });
+            Log.d(TAG, "📱 B2.3.1: Companion app button setup complete");
+        } else {
+            Log.w(TAG, "❌ B2.3.1: Could not find companion_pick_button");
+        }
     }
     
     private void setupDividers() {

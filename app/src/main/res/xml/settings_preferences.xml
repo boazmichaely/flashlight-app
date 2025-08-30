@@ -15,11 +15,12 @@
         android:summary="@string/settings_keep_light_summary"
         android:defaultValue="true" />
 
-    <!-- Dummy row for future settings -->
+    <!-- Companion App Picker -->
     <Preference
-        android:key="dummy_future"
-        android:title="Future Setting"
-        android:summary="Placeholder for next feature"
-        android:selectable="false" />
+        android:key="companion_app_display"
+        android:title="@string/settings_companion_title"
+        android:summary="@string/settings_companion_summary"
+        android:selectable="false"
+        android:widgetLayout="@layout/preference_companion_picker" />
 
 </PreferenceScreen>
