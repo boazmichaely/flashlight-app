@@ -131,9 +131,9 @@ Close behavior matches switch setting perfectly, ready for companion app selecti
 
 ## Recovery Commands
 
-- **Current working state**: `git checkout tags/checkpoint/b2-2-exit-policy-complete`
+- **Release 1.9.14**: `git checkout tags/v1.9.14` (Phase 1 Complete - Minor Version)
+- **Latest checkpoint**: `git checkout tags/checkpoint/b2-2-exit-policy-complete`
 - **Previous milestones**: `git checkout tags/checkpoint/b2-1-switch-functional`
-- **Earlier states**: `git checkout tags/checkpoint/theme-refined-working`
 
 ## Version Management
 
