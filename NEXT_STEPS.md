@@ -1,6 +1,6 @@
 ## Current Checkpoint Status
 
-- **Current Version**: `1.9.14` (Phase 1 Complete - Minor Version Bump)
+- **Current Version**: `1.10.14` (Phase 1 Complete + Bug Fix)
 - **Latest Tag**: `checkpoint/b2-2-exit-policy-complete` (B2.2 exit policy working)
 - **State**: Phase 1 complete - user-controlled exit policy functional, ready for Phase 2
 
@@ -131,9 +131,9 @@ Close behavior matches switch setting perfectly, ready for companion app selecti
 
 ## Recovery Commands
 
-- **Release 1.9.14**: `git checkout tags/v1.9.14` (Phase 1 Complete - Minor Version)
+- **Release 1.10.14**: `git checkout tags/v1.10.14` (Phase 1 Complete + Bug Fix)
+- **Release 1.9.14**: `git checkout tags/v1.9.14` (Phase 1 Complete - Original)
 - **Latest checkpoint**: `git checkout tags/checkpoint/b2-2-exit-policy-complete`
-- **Previous milestones**: `git checkout tags/checkpoint/b2-1-switch-functional`
 
 ## Version Management
 
@@ -149,8 +149,9 @@ Close behavior matches switch setting perfectly, ready for companion app selecti
 
 ### **Examples:**
 - `1.8.14` → `1.9.14` (B2.2 exit policy feature - minor bump)
-- `1.9.14` → `2.0.14` (hypothetical major UI overhaul - major bump)
-- `1.9.14` → `1.9.15` (Play Store upload - code bump)
+- `1.9.14` → `1.10.14` (switch display bug fix - minor bump)
+- `1.10.14` → `2.0.14` (hypothetical major UI overhaul - major bump)
+- `1.10.14` → `1.10.15` (Play Store upload - code bump)
 
 ## Notes
 
