@@ -8,6 +8,8 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.ResolveInfo;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
+import java.util.List;
 import com.google.android.material.button.MaterialButton;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -69,9 +71,11 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         String storedPackage = getPreferenceManager().getSharedPreferences().getString("companion_app_package", null);
         
         if (storedPackage == null) {
-            // First run: Search for Spotify and store as default
-            Log.d(TAG, "🔍 B2.3.1: First run - searching for Spotify...");
+            // First run: Search for Spotify using URI scheme (same as launch code)
+            Log.d(TAG, "🔍 B2.3.1: First run - detecting Spotify via URI scheme...");
             detectAndStoreSpotify();
+        } else {
+            Log.d(TAG, "📱 B2.3.1: Companion app already stored: " + storedPackage);
         }
         
         // Update display with stored app info
@@ -79,37 +83,40 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     }
     
     /**
-     * Detect Spotify app and store as default companion app
+     * Detect Spotify app using URI scheme (same method as existing launch code)
+     * SAFE: Only changes detection, keeps all existing launch functionality intact
      */
     private void detectAndStoreSpotify() {
         try {
             PackageManager pm = requireContext().getPackageManager();
             
-            // Try different Spotify package names
-            String[] spotifyPackages = {
-                "com.spotify.music",
-                "com.spotify.android" 
-            };
+            // Use same URI method as existing working launch code
+            Intent testIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("spotify:"));
+            List<ResolveInfo> handlers = pm.queryIntentActivities(testIntent, 0);
             
-            for (String packageName : spotifyPackages) {
-                try {
-                    ApplicationInfo appInfo = pm.getApplicationInfo(packageName, 0);
-                    // Found Spotify! Store it
-                    getPreferenceManager().getSharedPreferences().edit()
-                        .putString("companion_app_package", packageName)
-                        .putString("companion_app_name", pm.getApplicationLabel(appInfo).toString())
-                        .apply();
-                    
-                    Log.d(TAG, "✅ B2.3.1: Found and stored Spotify: " + packageName);
-                    return;
-                } catch (PackageManager.NameNotFoundException e) {
-                    // Try next package name
-                }
+            Log.d(TAG, "🔍 B2.3.1: Testing spotify: URI...");
+            Log.d(TAG, "Found " + handlers.size() + " handler(s) for spotify: URI");
+            
+            if (!handlers.isEmpty()) {
+                // Found app that can handle Spotify URI!
+                ResolveInfo spotifyHandler = handlers.get(0);
+                String packageName = spotifyHandler.activityInfo.packageName;
+                String appName = spotifyHandler.loadLabel(pm).toString();
+                
+                // Store the detected app
+                getPreferenceManager().getSharedPreferences().edit()
+                    .putString("companion_app_package", packageName)
+                    .putString("companion_app_name", appName)
+                    .apply();
+                
+                Log.d(TAG, "✅ B2.3.1: Found Spotify handler: " + appName + " (" + packageName + ")");
+                Log.d(TAG, "✅ B2.3.1: Activity: " + spotifyHandler.activityInfo.name);
+            } else {
+                Log.d(TAG, "❌ B2.3.1: No app found that handles spotify: URI");
+                Log.d(TAG, "❌ B2.3.1: Spotify likely not installed - will need user selection");
             }
-            
-            Log.d(TAG, "❌ B2.3.1: Spotify not found - will need user selection");
         } catch (Exception e) {
-            Log.e(TAG, "Error detecting Spotify", e);
+            Log.e(TAG, "Error detecting Spotify via URI", e);
         }
     }
     
