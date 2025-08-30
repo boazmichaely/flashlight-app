@@ -130,9 +130,9 @@ Close behavior matches switch setting perfectly, ready for companion app selecti
 
 ## Recovery Commands
 
-- **Current working state**: `git checkout tags/checkpoint/b2-1-switch-functional`
-- **Previous working**: `git checkout tags/checkpoint/theme-refined-working`
-- **Custom widget (broken)**: `git checkout tags/checkpoint/m3-geometry-non-functional`
+- **Current working state**: `git checkout tags/checkpoint/b2-2-exit-policy-complete`
+- **Previous milestones**: `git checkout tags/checkpoint/b2-1-switch-functional`
+- **Earlier states**: `git checkout tags/checkpoint/theme-refined-working`
 
 ## Notes
 
