@@ -18,11 +18,12 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
-        // Set preferences from XML resource
-        setPreferencesFromResource(R.xml.settings_preferences, rootKey);
-        
-        // Set custom preference store name
+        // CRITICAL: Set custom preference store name BEFORE loading XML
+        // This ensures UI reads from correct SharedPreferences file
         getPreferenceManager().setSharedPreferencesName("walklight_settings");
+        
+        // Set preferences from XML resource (now reads from correct store)
+        setPreferencesFromResource(R.xml.settings_preferences, rootKey);
         
         // Setup preference change listeners
         setupPreferenceListeners();
@@ -36,9 +37,14 @@ public class SettingsFragment extends PreferenceFragmentCompat {
             versionPref.setSummary(versionText);
         }
         
-        // Setup change listener for switch (logging only - behavior implementation in B2.2)
+        // Setup change listener for switch and verify initial state
         SwitchPreferenceCompat keepLightPref = findPreference("keep_light_on_close");
         if (keepLightPref != null) {
+            // Debug: Check initial UI vs stored value alignment
+            boolean storedValue = getPreferenceManager().getSharedPreferences().getBoolean("keep_light_on_close", true);
+            boolean uiValue = keepLightPref.isChecked();
+            Log.d(TAG, "🔍 INITIAL STATE: Stored=" + storedValue + ", UI=" + uiValue + " (should match!)");
+            
             keepLightPref.setOnPreferenceChangeListener((preference, newValue) -> {
                 Log.d(TAG, "Keep Light setting changed: " + newValue);
                 return true; // Allow change
