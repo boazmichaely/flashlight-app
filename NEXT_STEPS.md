@@ -35,29 +35,18 @@
 - **Decision**: Chose functionality over perfect styling (can improve later)
 - **Result**: ✅ Working switch with data/UI sync, proper default state
 
-#### **⚠️ Fix 1.2: Exit Policy Integration (15 min)** *NEXT UP*
-- **Problem**: `MainActivity.onDestroy()` always turns off light, ignores setting
-- **Current Code**: 
-```java
-// BROKEN - ignores preference
-if (isFlashlightOn) {
-    turnOffFlashlight();
-}
-```
+#### **✅ Fix 1.2: Exit Policy Integration (15 min)** *COMPLETED*
+- **Problem**: ✅ SOLVED - `shouldKeepLightOnDuringPause()` hardcoded to true, ignored setting
+- **Solution**: ✅ APPLIED - Modified `shouldKeepLightOnDuringPause()` to read preference
 - **Fixed Code**:
 ```java
 // CORRECT - respects preference  
-if (isFlashlightOn && isFinishing()) {
-    SharedPreferences prefs = getSharedPreferences("walklight_settings", MODE_PRIVATE);
-    boolean keepLightOn = prefs.getBoolean("keep_light_on_close", true);
-    if (!keepLightOn) {
-        turnOffFlashlight();
-        Log.d(TAG, "Exit: Light turned OFF per setting");
-    } else {
-        Log.d(TAG, "Exit: Light kept ON per setting");
-    }
-}
+SharedPreferences prefs = getSharedPreferences("walklight_settings", MODE_PRIVATE);
+boolean keepLightOn = prefs.getBoolean("keep_light_on_close", true);
+Log.d(TAG, "Keep light on when closed: " + keepLightOn);
+return keepLightOn; // Respect user preference
 ```
+- **Result**: ✅ App CLOSE behavior now follows switch setting, EXIT always turns off light
 
 ### **PHASE 2: Feature Completion** 📱 *NEXT SESSION*
 
@@ -66,24 +55,36 @@ if (isFlashlightOn && isFinishing()) {
 - Native `Intent.createChooser(Intent.ACTION_MAIN + CATEGORY_LAUNCHER)`
 - Use `registerForActivityResult` to receive selection
 - Store `packageName/component` in SharedPreferences  
-- Display app icon + label in row summary
-- Add "Reset to Spotify" option
+- Display the selected app' icon + label in the row summary
 - **QA**: Pick app, reopen settings → selection persists; reset works
 
-#### **B3: Split-Screen Integration** 
+#### **B2.4: reset settings**
+- Add a reset settings button at the bottom of the settings page
+- click asks for confirmation
+- resets both settings to default: the light seletion and the app picker
+- use M3 style button and confirmation dialog
+
+#### **B3: Companion app Integration** 
 - Use selected app from B2.3 for split-screen mode
-- Explicit launcher activity resolution
-- Proven flags: `FLAG_ACTIVITY_LAUNCH_ADJACENT | FLAG_ACTIVITY_NEW_TASK`
-- Fallback handling for launch failures
+- do not mess up with the working method of the split screen, only the app that is launched
+### B3.2
+- Once this works, attempt to set the default (out of the box) spotify, to be the same as the runtime selection (currently there is some different method for out of the box to select spotify)
+- this step is tricky, make sure to backup before and restore when things get messy
 - **QA**: Split-screen button uses chosen app; icon toggles correctly
 
 ### **PHASE 3: Polish & Cleanup** 🎨 *FUTURE*
 
 #### **C1: Main Page Switch Normalization**
-- Remove `android:scaleX="1.5"` and `android:scaleY="1.3"` from main switches
-- Remove `app:thumbTint="@android:color/white"` customizations  
-- Convert `SwitchMaterial` → `MaterialSwitch` (pure M3)
-- Update programmatic tinting to use theme colors
+For all of these steps, MUST NOT modify code, there should be no reason to do that. These are purely cosmetical
+### C1.1
+- Change both main switches to standard M3
+### C1.2
+- replace image based exit icon image with M3 standard exit icon
+### C1.3
+- replace image based split screen icon with  a suitable M3 standard icon
+- ask for approval by showing me the proposed icon
+- if none is found I will generate one and provide an updadate image
+- no change to functionality!
 - **QA**: Visual parity with Settings switch geometry
 
 #### **Code Cleanup Opportunities**
@@ -96,9 +97,9 @@ if (isFlashlightOn && isFinishing()) {
 ### ✅ **Phase 1 Complete When:**
 - ✅ Settings switch functional (clicks toggle state) **DONE**
 - ✅ Switch state persists (survives app restart) **DONE**  
-- ⚠️ Exit policy enforced (setting controls flashlight on app exit) **NEXT**
-- ⚠️ Logging shows preference reads: `"keep_light_on_close true→false"` **NEXT**
-- ⚠️ QA: ON keeps light on exit, OFF turns off light on exit **NEXT**
+- ✅ Exit policy enforced (setting controls flashlight on app close) **DONE**
+- ✅ Logging shows preference reads: `"Keep light on when closed: true/false"` **DONE**
+- 🧪 QA: ON keeps light on close, OFF turns off light on close **NEEDS TESTING**
 - ✅ No regressions in main flashlight functionality **DONE**
 
 ### **Phase 2 Complete When:**
@@ -116,14 +117,16 @@ if (isFlashlightOn && isFinishing()) {
 
 ## Next Session Priority
 
-### **FOCUS: Complete B2.2 (Exit Policy Enforcement)**
-1. **✅ DONE: Settings switch** - Working perfectly with default styling
-2. **NEXT: Implement exit policy** - Make `onDestroy()` respect the keep_light_on_close setting
-3. **Test thoroughly** - Verify exit behavior matches switch setting
-4. **Optional: Begin B2.3** - Start app picker implementation if time permits
+### **FOCUS: Test B2.2 & Begin B2.3 (App Picker)**
+1. **🧪 TEST B2.2: Exit Policy** - Verify close behavior matches switch setting
+   - Switch ON → Light stays on when minimizing app
+   - Switch OFF → Light turns off when minimizing app  
+   - Exit button → Always turns off light (unchanged)
+2. **START B2.3: App Picker** - Native chooser for companion app selection
+3. **Optional: B2.4** - Reset settings button if B2.3 completes quickly
 
 ### **SUCCESS METRIC:** 
-Exit policy works correctly (light behavior on app exit matches setting preference)
+Close behavior matches switch setting perfectly, ready for companion app selection
 
 ## Recovery Commands
 

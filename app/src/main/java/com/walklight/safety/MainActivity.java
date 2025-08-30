@@ -895,22 +895,23 @@ public class MainActivity extends AppCompatActivity {
      */
     private boolean shouldKeepLightOnDuringPause() {
         try {
-            // NEW APPROACH: Keep light on for ALL user-initiated pause scenarios
-            // This provides consistent behavior whether user:
-            // - Presses home button
-            // - Uses split-screen  
-            // - Opens notifications
-            // - Switches apps
+            // B2.2: Read preference to determine close behavior
+            // This respects user's "Keep flashlight on when closed" setting
+            SharedPreferences prefs = getSharedPreferences("walklight_settings", MODE_PRIVATE);
+            boolean keepLightOn = prefs.getBoolean("keep_light_on_close", true);
             
-            android.util.Log.d("FlashlightLifecycle", "🔄 Using CONSISTENT behavior: Always keep light on during pause");
-            return true; // Keep light on for consistent UX
+            android.util.Log.d("FlashlightLifecycle", "🔄 B2.2: Reading user preference for close behavior");
+            android.util.Log.d("FlashlightLifecycle", "Keep light on when closed: " + keepLightOn);
+            android.util.Log.d("FlashlightLifecycle", "🎯 DECISION: " + (keepLightOn ? "KEEP ON" : "TURN OFF"));
+            
+            return keepLightOn; // Respect user preference
             
             // Note: We still have the multi-window callback as a safety net
             // and onDestroy() will turn off light when app is actually closed
             
         } catch (Exception e) {
-            android.util.Log.e("FlashlightLifecycle", "Error in pause detection", e);
-            // Fallback to safe default - keep light on
+            android.util.Log.e("FlashlightLifecycle", "Error reading preference", e);
+            // Fallback to XML default - keep light on
             return true;
         }
     }
