@@ -90,13 +90,70 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         try {
             PackageManager pm = requireContext().getPackageManager();
             
-            // Use same URI method as existing working launch code
+            Log.d(TAG, "🔍 B2.3.1: === COMPREHENSIVE SPOTIFY DETECTION DEBUG ===");
+            
+            // 1. Test the spotify: URI (same as existing launch code)
             Intent testIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("spotify:"));
             List<ResolveInfo> handlers = pm.queryIntentActivities(testIntent, 0);
             
             Log.d(TAG, "🔍 B2.3.1: Testing spotify: URI...");
-            Log.d(TAG, "Found " + handlers.size() + " handler(s) for spotify: URI");
+            Log.d(TAG, "🔍 Found " + handlers.size() + " handler(s) for spotify: URI");
             
+            // 2. Log all handlers found (if any)
+            for (int i = 0; i < handlers.size(); i++) {
+                ResolveInfo handler = handlers.get(i);
+                String packageName = handler.activityInfo.packageName;
+                String appName = handler.loadLabel(pm).toString();
+                Log.d(TAG, "🔍 Handler " + i + ": " + appName + " (" + packageName + ")");
+                Log.d(TAG, "🔍 Activity: " + handler.activityInfo.name);
+            }
+            
+            // 3. Search for Spotify-like apps in installed applications
+            Log.d(TAG, "🔍 B2.3.1: Searching all installed apps for Spotify...");
+            List<ApplicationInfo> allApps = pm.getInstalledApplications(PackageManager.GET_META_DATA);
+            int spotifyLikeApps = 0;
+            
+            for (ApplicationInfo app : allApps) {
+                try {
+                    String appName = pm.getApplicationLabel(app).toString().toLowerCase();
+                    String packageName = app.packageName.toLowerCase();
+                    
+                    // Look for Spotify-related apps
+                    if (appName.contains("spotify") || packageName.contains("spotify")) {
+                        String displayName = pm.getApplicationLabel(app).toString();
+                        Log.d(TAG, "🎵 FOUND SPOTIFY-LIKE APP: " + displayName + " (" + app.packageName + ")");
+                        spotifyLikeApps++;
+                        
+                        // Test if this specific app can handle spotify: URI
+                        Intent specificTest = pm.getLaunchIntentForPackage(app.packageName);
+                        if (specificTest != null) {
+                            Log.d(TAG, "🎵 " + displayName + " has launch intent: YES");
+                        } else {
+                            Log.d(TAG, "🎵 " + displayName + " has launch intent: NO");
+                        }
+                    }
+                } catch (Exception e) {
+                    // Skip problematic apps
+                }
+            }
+            
+            Log.d(TAG, "🔍 B2.3.1: Found " + spotifyLikeApps + " Spotify-like apps in total");
+            
+            // 4. Test alternative URI schemes
+            String[] testUris = {
+                "spotify:",
+                "spotify://",
+                "https://open.spotify.com",
+                "market://details?id=com.spotify.music"
+            };
+            
+            for (String uriStr : testUris) {
+                Intent altTest = new Intent(Intent.ACTION_VIEW, Uri.parse(uriStr));
+                List<ResolveInfo> altHandlers = pm.queryIntentActivities(altTest, 0);
+                Log.d(TAG, "🔍 URI '" + uriStr + "' has " + altHandlers.size() + " handler(s)");
+            }
+            
+            // 5. Use the original spotify: URI result
             if (!handlers.isEmpty()) {
                 // Found app that can handle Spotify URI!
                 ResolveInfo spotifyHandler = handlers.get(0);
@@ -109,14 +166,16 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                     .putString("companion_app_name", appName)
                     .apply();
                 
-                Log.d(TAG, "✅ B2.3.1: Found Spotify handler: " + appName + " (" + packageName + ")");
-                Log.d(TAG, "✅ B2.3.1: Activity: " + spotifyHandler.activityInfo.name);
+                Log.d(TAG, "✅ B2.3.1: STORED Spotify handler: " + appName + " (" + packageName + ")");
             } else {
-                Log.d(TAG, "❌ B2.3.1: No app found that handles spotify: URI");
-                Log.d(TAG, "❌ B2.3.1: Spotify likely not installed - will need user selection");
+                Log.d(TAG, "❌ B2.3.1: No handler for spotify: URI found");
+                Log.d(TAG, "❌ B2.3.1: Either Spotify not installed OR URI scheme not registered");
             }
+            
+            Log.d(TAG, "🔍 B2.3.1: === END SPOTIFY DETECTION DEBUG ===");
+            
         } catch (Exception e) {
-            Log.e(TAG, "Error detecting Spotify via URI", e);
+            Log.e(TAG, "Error in comprehensive Spotify detection", e);
         }
     }
     
