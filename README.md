@@ -38,7 +38,7 @@ This is a native Android app built with:
 
 ## Status
 
-✨ **Latest Release v1.18.14** - Companion App Settings Improvements
+🚀 **Production Release v1.18.15** - Ready for Play Store (Companion App Settings + Bug Fixes)
 
 ### Version History
 - **v1.4.0** - **NEW ICON:** Person walking with dual safety lighting - clearly shows LED + screen functionality, perfect Walklight brand alignment
