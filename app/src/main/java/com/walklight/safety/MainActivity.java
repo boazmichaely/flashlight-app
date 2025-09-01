@@ -975,7 +975,10 @@ public class MainActivity extends AppCompatActivity {
         android.util.Log.d("FlashlightLifecycle", "New multi-window mode: " + isInMultiWindowMode);
         android.util.Log.d("FlashlightLifecycle", "Current light state: " + isFlashlightOn);
         
-        // FLASHLIGHT RESTORATION LOGIC
+        // D3 FIX: Block unnecessary flashlight restoration logic
+        // This was causing the flash during mode transitions - light should stay as-is
+        /*
+        // FLASHLIGHT RESTORATION LOGIC - DISABLED
         // If entering multi-window mode and light was turned off during transition, restore it!
         if (isInMultiWindowMode && wasFlashlightOnBeforePause && !isFlashlightOn) {
             android.util.Log.d("FlashlightLifecycle", "🌟 ENTERING MULTI-WINDOW: Restoring light!");
@@ -987,6 +990,8 @@ public class MainActivity extends AppCompatActivity {
                 e.printStackTrace();
             }
         }
+        */
+        android.util.Log.d("FlashlightLifecycle", "D3: Skipping flashlight restoration - letting light maintain natural state");
         
         // MULTI-WINDOW BUTTON UPDATE LOGIC
         // Update button icon when mode changes
