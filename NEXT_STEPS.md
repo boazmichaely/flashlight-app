@@ -19,10 +19,11 @@
 - ✅ Maintained current functionality (shows when in split-screen mode)
 - Ready for testing icon visibility and clarity
 
-### **C1.5: Re-scale the Sliders to 50:50 Ratio**  
-- Currently using 35:65 (or 45:55) ratio with less space for Light slider
-- Change to even 50:50 split between Light and Screen sliders
-- Update layout dimensions and constraints
+### ✅ **C1.5: Re-scale the Sliders to 50:50 Ratio** - COMPLETED
+- ✅ Changed from 45:55 ratio to even 50:50 split
+- ✅ Updated both label weights: `0.45` → `0.5` and `0.55` → `0.5`
+- ✅ Updated both slider weights: `0.45` → `0.5` and `0.55` → `0.5`
+- ✅ Light and Screen sliders now have equal space allocation
 
 ### **C2: Code Architecture Cleanup** *(Optional)*
 - Theme simplification: Remove unused color overrides
