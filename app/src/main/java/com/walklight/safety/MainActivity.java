@@ -621,10 +621,6 @@ public class MainActivity extends AppCompatActivity {
                 // D1 FIX: Use actual visual brightness state instead of reading from sliders during transitions
                 // This prevents the "two memories" issue where sliders override each other
                 float currentBrightness = currentActualScreenBrightness;
-                
-                // D3 FIX: Disable slider listeners during layout transition to prevent LED flash
-                isUpdatingSliders = true;
-                android.util.Log.d("FlashlightApp", "D3 FIX: Layout transition started - slider listeners DISABLED");
                 android.util.Log.d("BrightnessSync", "D1: Mode transition using visual brightness: " + currentBrightness + 
                     " (light=" + isFlashlightOn + ")");
                 
