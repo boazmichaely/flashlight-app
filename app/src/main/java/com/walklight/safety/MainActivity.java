@@ -730,19 +730,38 @@ public class MainActivity extends AppCompatActivity {
     // SINGLE SOURCE OF TRUTH - always return the actual LED intensity from active slider
     private float getCurrentActualLedIntensity() {
         try {
+            // D1 DEBUGGING: Log all state for troubleshooting
+            boolean syncMode = syncSwitch != null && syncSwitch.isChecked();
+            float syncValue = syncedIntensitySlider != null ? syncedIntensitySlider.getValue() : -1f;
+            float ledValue = ledIntensitySlider != null ? ledIntensitySlider.getValue() : -1f;
+            float cachedValue = currentActualLedIntensity;
+            
+            android.util.Log.d("FlashlightApp", "D1 DETAIL: getCurrentActualLedIntensity() state:");
+            android.util.Log.d("FlashlightApp", "  - syncMode=" + syncMode);
+            android.util.Log.d("FlashlightApp", "  - isFlashlightOn=" + isFlashlightOn);
+            android.util.Log.d("FlashlightApp", "  - syncValue=" + syncValue);
+            android.util.Log.d("FlashlightApp", "  - ledValue=" + ledValue);
+            android.util.Log.d("FlashlightApp", "  - cachedValue=" + cachedValue);
+            
             // D1 FIX: Read from whichever slider is currently active and visible to user
             if (syncSwitch != null && syncSwitch.isChecked() && syncedIntensitySlider != null) {
                 // Sync mode: single slider controls both LED and screen
-                return syncedIntensitySlider.getValue();
+                float result = syncedIntensitySlider.getValue();
+                android.util.Log.d("FlashlightApp", "D1 RESULT: Using SYNC slider value: " + result);
+                return result;
             } else if (isFlashlightOn && ledIntensitySlider != null) {
                 // Independent mode: separate LED slider  
-                return ledIntensitySlider.getValue();
+                float result = ledIntensitySlider.getValue();
+                android.util.Log.d("FlashlightApp", "D1 RESULT: Using LED slider value: " + result);
+                return result;
             } else {
                 // Fallback to cached value for edge cases
+                android.util.Log.d("FlashlightApp", "D1 RESULT: Using CACHED value (fallback): " + currentActualLedIntensity);
                 return currentActualLedIntensity;
             }
         } catch (Exception e) {
             android.util.Log.e("FlashlightApp", "Error reading LED intensity from sliders", e);
+            android.util.Log.d("FlashlightApp", "D1 RESULT: Using CACHED value (error): " + currentActualLedIntensity);
             return currentActualLedIntensity; // Safe fallback
         }
     }
@@ -873,6 +892,7 @@ public class MainActivity extends AppCompatActivity {
             } else {
                 // Light is still off - restore it (for non-multi-window scenarios)
                 if (!isInMultiWindowMode()) {
+                    android.util.Log.d("FlashlightLifecycle", "D1 RESUME: About to restore light in normal resume...");
                     try {
                         turnOnFlashlight();
                         android.util.Log.d("FlashlightLifecycle", "✅ Light restored (normal resume)");
@@ -974,10 +994,28 @@ public class MainActivity extends AppCompatActivity {
         android.util.Log.d("FlashlightLifecycle", "New multi-window mode: " + isInMultiWindowMode);
         android.util.Log.d("FlashlightLifecycle", "Current light state: " + isFlashlightOn);
         
+        // D1 DEBUG: Log current slider values during transition
+        android.util.Log.d("FlashlightLifecycle", "D1 TRANSITION: Current slider states:");
+        if (syncSwitch != null) {
+            android.util.Log.d("FlashlightLifecycle", "  - syncMode: " + syncSwitch.isChecked());
+        }
+        if (syncedIntensitySlider != null) {
+            android.util.Log.d("FlashlightLifecycle", "  - syncSlider: " + syncedIntensitySlider.getValue());
+        }
+        if (ledIntensitySlider != null) {
+            android.util.Log.d("FlashlightLifecycle", "  - ledSlider: " + ledIntensitySlider.getValue());
+        }
+        if (screenBrightnessSlider != null) {
+            android.util.Log.d("FlashlightLifecycle", "  - screenSlider: " + screenBrightnessSlider.getValue());
+        }
+        android.util.Log.d("FlashlightLifecycle", "  - cached: " + currentActualLedIntensity);
+        
         // FLASHLIGHT RESTORATION LOGIC
         // If entering multi-window mode and light was turned off during transition, restore it!
         if (isInMultiWindowMode && wasFlashlightOnBeforePause && !isFlashlightOn) {
             android.util.Log.d("FlashlightLifecycle", "🌟 ENTERING MULTI-WINDOW: Restoring light!");
+            // D1 DEBUG: Log slider states before restoration
+            android.util.Log.d("FlashlightLifecycle", "D1 MULTI-WINDOW: About to restore - checking slider states...");
             try {
                 turnOnFlashlight();
                 android.util.Log.d("FlashlightLifecycle", "✅ Light restored for multi-window mode");
