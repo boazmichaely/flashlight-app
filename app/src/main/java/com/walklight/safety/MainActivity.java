@@ -637,13 +637,8 @@ public class MainActivity extends AppCompatActivity {
                     syncLabel.setVisibility(View.GONE);
                     
                     // Update screen-only slider
-                    if (screenOnlySlider != null) {
-                        screenOnlySlider.post(() -> {
-                            isUpdatingSliders = true;
-                            screenOnlySlider.setValue(currentBrightness);
-                            isUpdatingSliders = false;
-                        });
-                    }
+                    // D2 FIX: Don't override slider values during mode transitions
+                    // screenOnlySlider retains its natural value - no need to force it
                     
                     android.util.Log.d("FlashlightHardware", "📱 Simple layout mode: Light ON/OFF + Screen only");
                     return; // Skip complex sync logic
@@ -660,27 +655,24 @@ public class MainActivity extends AppCompatActivity {
                 
                 if (isSyncMode) {
                         // SYNC MODE: Single full-width slider controlling both
-                        if (syncedIntensitySlider != null) {
-                            isUpdatingSliders = true;
-                            syncedIntensitySlider.setValue(currentBrightness);
-                            isUpdatingSliders = false;
-                        }
+                        // D2 FIX: Don't override slider values during mode transitions 
+                        // syncedIntensitySlider retains its natural value
                         
                     syncModeContainer.setVisibility(View.VISIBLE);
                     independentModeContainer.setVisibility(View.GONE);
                     screenOnlyModeContainer.setVisibility(View.GONE);
                         
                         syncModeContainer.post(() -> {
-                            updateColorRectangleBrightness(currentBrightness);
-                            updateFlashlightIntensity(currentBrightness);
+                            // D2 FIX: Use actual slider state instead of cached value
+                            updateColorRectangleBrightness(getCurrentActualScreenBrightness());
+                            updateFlashlightIntensity(getCurrentActualLedIntensity());
                         });
                         
                     } else {
-                        // INDEPENDENT MODE: Dual sliders (LED + Screen separate)
+                        // INDEPENDENT MODE: Dual sliders (LED + Screen separate)  
+                        // D2 FIX: Don't override screen slider value during mode transitions
+                        // screenBrightnessSlider retains its natural value
                         isUpdatingSliders = true;
-                        if (screenBrightnessSlider != null) {
-                            screenBrightnessSlider.setValue(currentBrightness);
-                        }
                         if (ledIntensitySlider != null) {
                             // D1 FIX: Preserve current slider value instead of overwriting with cached value
                             // Only set if the slider has no valid value yet
@@ -695,8 +687,8 @@ public class MainActivity extends AppCompatActivity {
                     screenOnlyModeContainer.setVisibility(View.GONE);
                         
                         independentModeContainer.post(() -> {
-                            updateColorRectangleBrightness(currentBrightness);
-                            // D1 FIX: Use getCurrentActualLedIntensity() instead of cached value
+                            // D2 FIX: Use actual slider state instead of cached value
+                            updateColorRectangleBrightness(getCurrentActualScreenBrightness());
                             updateFlashlightIntensity(getCurrentActualLedIntensity());
                         });
                     }
@@ -707,18 +699,16 @@ public class MainActivity extends AppCompatActivity {
                     syncLabel.setVisibility(View.GONE); // Hide sync label too
                     
                     // SCREEN ONLY MODE: Just screen brightness control
-                    if (screenOnlySlider != null) {
-                        isUpdatingSliders = true;
-                        screenOnlySlider.setValue(currentBrightness);
-                        isUpdatingSliders = false;
-                    }
+                    // D2 FIX: Don't override slider values during mode transitions
+                    // screenOnlySlider retains its natural value
                     
                     syncModeContainer.setVisibility(View.GONE);
                     independentModeContainer.setVisibility(View.GONE);
                     screenOnlyModeContainer.setVisibility(View.VISIBLE);
                     
                     screenOnlyModeContainer.post(() -> {
-                        updateColorRectangleBrightness(currentBrightness);
+                        // D2 FIX: Use actual slider state instead of cached value
+                        updateColorRectangleBrightness(getCurrentActualScreenBrightness());
                     });
                 }
             }
