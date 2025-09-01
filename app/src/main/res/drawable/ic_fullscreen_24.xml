@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    
+    <!-- Fullscreen icon - single panel (meaningful companion to split-screen) -->
+    <!-- Outer rounded container (same as split-screen) -->
+    <path
+        android:fillColor="#FF000000"
+        android:pathData="M4,5 L4,19 C4,19.55 4.45,20 5,20 L19,20 C19.55,20 20,19.55 20,19 L20,5 C20,4.45 19.55,4 19,4 L5,4 C4.45,4 4,4.45 4,5 Z"/>
+    
+    <!-- Title bar (same as split-screen) -->
+    <path
+        android:fillColor="#FFFFFFFF"
+        android:pathData="M6,7 L18,7 L18,8 L6,8 Z"/>
+    
+    <!-- Single full-width window panel (vs two panels in split-screen) -->
+    <path
+        android:fillColor="#FFFFFFFF"
+        android:pathData="M6,10 L18,10 L18,17 L6,17 Z"/>
+</vector>
