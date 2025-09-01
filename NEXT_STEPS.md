@@ -1,13 +1,14 @@
 ## Current Status
 
-- **Version**: `1.17.14` 
+- **Version**: `1.18.14` 
 - **State**: **Phase 3 IN PROGRESS** - Bug Fixes & Architecture Cleanup  
-- **Latest Tag**: `v1.17.14` (D1 Bug Fix Complete - Screen Brightness)
+- **Latest Tag**: `v1.18.14` (C1.6 - Companion App Settings Improvements)
 
 ## Safe Recovery Procedures
 
 ### **Available Checkpoints:**
-- **v1.17.14**: D1 Bug Fix Complete (Screen Brightness) *(LATEST)*
+- **v1.18.14**: C1.6 - Companion App Settings Improvements *(LATEST)*
+- **v1.17.14**: D1 & D2 Bug Fixes Complete (Screen Brightness) 
 - **v1.16.14**: Visual Polish Complete (Icons) 
 - **v1.15.14**: Companion App Integration Complete
 - **v1.14.14**: Phase 2 COMPLETE - Professional Dynamic Companion App System
@@ -26,9 +27,11 @@
 - ✅ Updated both slider weights: `0.45` → `0.5` and `0.55` → `0.5`
 - ✅ Light and Screen sliders now have equal space allocation
 
-### C1.6 - more intuitive setting
-- the companion app thing is unclear. add a new line (before the pick app line) with only a title "Companion App for split screen mode"
-Then  change the text on the last line to "Test companion app:"
+### ✅ **C1.6: More Intuitive Companion App Settings** - COMPLETED (v1.18.14)
+- ✅ Added section header: "Companion App for split screen mode" (title only, no button)
+- ✅ Changed launch button text from "Test your companion app:" to "Test companion app:"  
+- ✅ Created clearer visual hierarchy: Header → App Picker → Test Button
+- ✅ Improved user understanding of companion app functionality
 
 
 ### D - Debugging
