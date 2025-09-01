@@ -27,7 +27,6 @@
     <Preference
         android:key="companion_app_launch"
         android:title="@string/settings_companion_launch_title"
-        android:summary="@string/settings_companion_launch_summary"
         android:selectable="false"
         android:widgetLayout="@layout/preference_companion_launch" />
 

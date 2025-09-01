@@ -20,15 +20,15 @@ public class SplitScreenController {
     }
 
     public void enterSplitScreen(boolean alreadyInMultiWindow, Runnable onBringBackFull) {
-        Log.d(TAG, "Attempting to launch Spotify...");
+        Log.d(TAG, "Attempting to launch companion app...");
         Log.d(TAG, "Currently in multi-window mode: " + alreadyInMultiWindow);
 
         if (!alreadyInMultiWindow) {
-            Log.d(TAG, "Not in split-screen - forcing split-screen then launching Spotify");
-            new Handler(Looper.getMainLooper()).postDelayed(this::launchSpotifyInSplitScreen, 200);
+            Log.d(TAG, "Not in split-screen - forcing split-screen then launching companion app");
+            new Handler(Looper.getMainLooper()).postDelayed(this::launchCompanionAppInSplitScreen, 200);
         } else {
-            Log.d(TAG, "Already in split-screen - launching Spotify in adjacent window");
-            launchSpotifyInSplitScreen();
+            Log.d(TAG, "Already in split-screen - launching companion app in adjacent window");
+            launchCompanionAppInSplitScreen();
         }
     }
 
