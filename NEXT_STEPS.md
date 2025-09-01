@@ -25,18 +25,25 @@
 - ✅ Updated both slider weights: `0.45` → `0.5` and `0.55` → `0.5`
 - ✅ Light and Screen sliders now have equal space allocation
 
+ new line on top
 ### D - Debugging
-- **D1 PHASE 1 - COMPLETED**: Fix state reading to use live slider values instead of cached values
-  - ✅ Modified `getCurrentActualLedIntensity()` to read from active slider (sync/independent/fallback)
-  - ✅ Modified `getCurrentActualScreenBrightness()` to read from active slider (sync/independent/screen-only/fallback) 
-  - ✅ Added comprehensive error handling and logging
-  - ✅ **CRITICAL FIX**: Fixed UI restoration code (line 691) to call `getCurrentActualLedIntensity()` instead of using cached `currentActualLedIntensity`
-  - ✅ **CRITICAL FIX**: Fixed slider initialization to preserve current values instead of overwriting with stale cached values
-  - 🧪 **NEEDS TESTING**: Verify light intensity matches sliders after split-screen transitions
+- **D1 - COMPLETED**: Light intensity reset during split-screen transitions
+  - ✅ **ROOT CAUSE IDENTIFIED**: Unnecessary UI restoration logic was overwriting correct slider values
+  - ✅ **SIMPLE SOLUTION APPLIED**: Removed complex restoration logic - let sliders retain their natural state
   
-  **Root Cause Found**: The UI restoration code during multi-window transitions was calling `updateFlashlightIntensity(currentActualLedIntensity)` with stale cached values, bypassing the live slider reading fix.
+  **What Was Wrong:**
+  - UI restoration code tried to "restore" slider values during transitions
+  - This overwrote correct user-set values with stale cached values  
+  - Complex logic forced LED intensity updates during UI mode switches
   
-  - **REMAINING**: Phase 2 (reduce flash), Phase 3 (smooth transitions)
+  **The Simple Fix:**
+  - ✅ Don't touch slider values during transitions - they retain their state naturally
+  - ✅ Don't force LED intensity updates during UI mode switches
+  - ✅ Only update sliders if they're at invalid values (≤0)
+  - ✅ Let sliders be the single source of truth
+  
+  - 🧪 **NEEDS TESTING**: Verify light intensity stays correct after split-screen transitions
+  - **REMAINING**: Phase 2 (reduce flash), Phase 3 (smooth transitions) - *Optional*
 
 ### **E : Code Architecture Cleanup** *(Optional)*
 - Theme simplification: Remove unused color overrides
