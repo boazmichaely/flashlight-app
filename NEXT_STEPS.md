@@ -1,13 +1,14 @@
 ## Current Status
 
-- **Version**: `1.16.14` 
-- **State**: **Phase 3 IN PROGRESS** - Visual Polish & Architecture Cleanup
-- **Latest Tag**: `v1.16.14` (Visual Polish Complete - Icons)
+- **Version**: `1.17.14` 
+- **State**: **Phase 3 IN PROGRESS** - Bug Fixes & Architecture Cleanup  
+- **Latest Tag**: `v1.17.14` (D1 Bug Fix Complete - Screen Brightness)
 
 ## Safe Recovery Procedures
 
 ### **Available Checkpoints:**
-- **v1.16.14**: Visual Polish Complete (Icons) *(LATEST)*
+- **v1.17.14**: D1 Bug Fix Complete (Screen Brightness) *(LATEST)*
+- **v1.16.14**: Visual Polish Complete (Icons) 
 - **v1.15.14**: Companion App Integration Complete
 - **v1.14.14**: Phase 2 COMPLETE - Professional Dynamic Companion App System
 - **v1.13.14**: B3 Split-Screen Integration
@@ -31,23 +32,15 @@ Then  change the text on the last line to "Test companion app:"
 
 
 ### D - Debugging
-- **D1 - COMPLETED**: Light intensity reset during split-screen transitions
-  - ✅ **ROOT CAUSE IDENTIFIED**: Unnecessary UI restoration logic was overwriting correct slider values
-  - ✅ **SIMPLE SOLUTION APPLIED**: Removed complex restoration logic - let sliders retain their natural state
-  
-  **What Was Wrong:**
-  - UI restoration code tried to "restore" slider values during transitions
-  - This overwrote correct user-set values with stale cached values  
-  - Complex logic forced LED intensity updates during UI mode switches
-  
-  **The Simple Fix:**
-  - ✅ Don't touch slider values during transitions - they retain their state naturally
-  - ✅ Don't force LED intensity updates during UI mode switches
-  - ✅ Only update sliders if they're at invalid values (≤0)
-  - ✅ Let sliders be the single source of truth
-  
-  - 🧪 **NEEDS TESTING**: Verify light intensity stays correct after split-screen transitions
-  - **REMAINING**: Phase 2 (reduce flash), Phase 3 (smooth transitions) - *Optional*
+### ✅ **D1 - COMPLETED** (v1.17.14): Screen brightness "two memories" issue  
+- ✅ **Problem**: When toggling light switch, screen brightness changed to different value due to separate slider "memories"  
+- ✅ **Root Cause**: `updateLayoutMode()` read from slider values instead of actual visual brightness during transitions
+- ✅ **Solution**: Use `currentActualScreenBrightness` (visual state) instead of `getCurrentActualScreenBrightness()` (slider state)
+- ✅ **Result**: Screen brightness now stays consistent when switching between light modes
+
+### **D2 - IN ANALYSIS**: Mode reset to max brightness issue
+- **Problem**: When changing modes (split-screen/full-screen), both screen and flash brightness reset to maximum instead of retaining previous values
+- **Status**: Ready for analysis and fix
 
 ### **E : Code Architecture Cleanup** *(Optional)*
 - Theme simplification: Remove unused color overrides
