@@ -13,6 +13,26 @@
 
 ## NEXT STEPS
 
+### ✅ **C1.4: Replace Full Screen Icon** - COMPLETED
+- ✅ Replaced `ic_fullscreen_24.xml` with user's new `full_screen.png` 
+- ✅ Maintained current functionality (shows when in split-screen mode)
+- Ready for testing icon visibility and clarity
+
+### **C1.5: Re-scale the Sliders to 50:50 Ratio**  
+- Currently using 35:65 (or 45:55) ratio with less space for Light slider
+- Change to even 50:50 split between Light and Screen sliders
+- Update layout dimensions and constraints
+
+### **C2: Code Architecture Cleanup** *(Optional)*
+- Theme simplification: Remove unused color overrides
+- Extract preference reading to utility methods  
+- Consolidate multi-window detection logic
+
+### **Success Criteria:**
+- ✅ All icons follow M3 design language
+- ✅ Balanced 50:50 slider layout  
+- ✅ Clean, maintainable architecture
+
 ## Phase 2 & 3 Accomplishments Summary
 
 **Phase 2**: Hardcoded Spotify split-screen → Full dynamic companion app system  
@@ -40,27 +60,6 @@
 - **Material 3 UI**: Consistent design throughout settings
 - **Robust Error Handling**: Fallbacks and comprehensive logging
 
-## NEXT STEPS - Remaining Tasks
-
-### **C1.4: Replace Full Screen Icon**
-- Replace the current full screen icon with a better M3 design
-- Maintain current functionality
-- Test icon visibility and clarity
-
-### **C1.5: Re-scale the Sliders to 50:50 Ratio**  
-- Currently using 35:65 (or 45:55) ratio with less space for Light slider
-- Change to even 50:50 split between Light and Screen sliders
-- Update layout dimensions and constraints
-
-### **C2: Code Architecture Cleanup** *(Optional)*
-- Theme simplification: Remove unused color overrides
-- Extract preference reading to utility methods  
-- Consolidate multi-window detection logic
-
-### **Success Criteria:**
-- ✅ All icons follow M3 design language
-- ✅ Balanced 50:50 slider layout  
-- ✅ Clean, maintainable architecture
 
 ---
 

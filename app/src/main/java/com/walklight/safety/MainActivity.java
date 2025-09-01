@@ -994,7 +994,7 @@ public class MainActivity extends AppCompatActivity {
         
         if (isInMultiWindowMode) {
             // Currently in split-screen → show fullscreen icon (to exit)
-            multiWindowButton.setImageResource(R.drawable.ic_fullscreen_24);
+            multiWindowButton.setImageResource(R.drawable.full_screen);
             multiWindowButton.setContentDescription("Exit Split-Screen");
             Log.d(TAG, "Button updated: Showing fullscreen icon (currently in split-screen)");
         } else {
