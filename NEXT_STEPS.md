@@ -52,7 +52,7 @@
 - **Split-Screen Fix**: Split-screen button now uses stored companion app (not hardcoded Spotify)
 - **Git Workflow**: Added comprehensive version bump procedures to README
 - **Recovery Procedures**: Created disaster-proof restore instructions
-- **UI Polish**: C1.1 (switches), C1.2 (exit icon), C1.3 (split-screen icon) marked complete
+- **UI Polish**: C1.1 (switches), C1.2 (exit icon), C1.3 (split-screen icon → improved to more pronounced design)
 
 ### ✅ **Technical Achievements:**
 - **Android 11+ Compatibility**: Package visibility properly handled via `<queries>` manifest
