@@ -1,163 +1,108 @@
-## Current Checkpoint Status
+## Current Status
 
-- **Current Version**: `1.10.14` (Phase 1 Complete + Bug Fix)
-- **Latest Tag**: `checkpoint/b2-2-exit-policy-complete` (B2.2 exit policy working)
-- **State**: Phase 1 complete - user-controlled exit policy functional, ready for Phase 2
+- **Version**: `1.14.14` 
+- **State**: **Phase 2 COMPLETE** - Professional Dynamic Companion App System
+- **Latest Tag**: `checkpoint/phase-2-complete-polished`
 
-## Current Status Analysis
+## Phase 2 Accomplishments Summary
 
-### ✅ **What's Working:**
-- **B2.1 COMPLETE**: Keep Light On switch fully functional (click, persist, default state)
-- **B2.2 COMPLETE**: Exit policy respects user preference for close behavior
-- **Settings UI**: Perfect M3 dividers, dynamic version display, clean white side sheet
-- **Theme**: Intuitive slider colors (white=bright, gray=dim), proper M3 components
-- **Main flashlight**: Full functionality with intensity control, sync modes, adaptive layouts
-- **Exit detection**: Sophisticated pause/resume logic for multi-window scenarios
-- **Infrastructure**: `ExitPolicy` class exists, SharedPreferences operational, logging working
+**From:** Hardcoded Spotify split-screen → **To:** Full dynamic companion app system
 
-### 🚀 **Next Phase:**
-- **Phase 2**: Feature Completion (App Picker, Reset Settings, Companion App Integration)
+### ✅ **Completed Features:**
+- **App Picker**: Native chooser with proper name/icon display  
+- **Launch Testing**: Dedicated button to test selected apps
+- **Smart Defaults**: Spotify auto-initialized on fresh installs
+- **Reset Functionality**: One-button restore with confirmation
+- **Professional UI**: Aligned layout with descriptive text
+- **Split-Screen Integration**: Uses selected app instead of hardcoded Spotify
 
-### 🎯 **Root Cause Analysis:**
-```xml
-<!-- Custom widget layout breaks preference system -->
-<com.google.android.material.materialswitch.MaterialSwitch
-    android:clickable="false"    ← BREAKS TOUCH  
-    android:focusable="false"    ← BREAKS INTERACTION
-```
+### ✅ **Technical Achievements:**
+- **Android 11+ Compatibility**: Package visibility properly handled via `<queries>` manifest
+- **Kotlin-Java Integration**: Mixed codebase working seamlessly  
+- **Material 3 UI**: Consistent design throughout settings
+- **Robust Error Handling**: Fallbacks and comprehensive logging
 
-## REVISED PLAN - Anti-Spinning Focus
+## Next Steps - Phase 3: Visual Polish 🎨
 
-### ✅ **PHASE 1: Critical Functionality Fixes** ⚡ *COMPLETED*
+### **C1: Main Page Switch Normalization** *(Cosmetic Only - No Code Changes)*
 
-#### **✅ Fix 1.1: Settings Switch Functionality** 
-- **Problem**: ✅ SOLVED - Custom M3 widget broke touch interaction
-- **Solution**: ✅ APPLIED - Removed custom `android:widgetLayout`, using default switch
-- **Decision**: Chose functionality over perfect styling (can improve later)
-- **Result**: ✅ Working switch with data/UI sync, proper default state
+#### **C1.1: Standardize Main Switches**
+- Change both main page switches to standard M3 style
+- Match visual consistency with Settings switches
 
-#### **✅ Fix 1.2: Exit Policy Integration (15 min)** *COMPLETED*
-- **Problem**: ✅ SOLVED - `shouldKeepLightOnDuringPause()` hardcoded to true, ignored setting
-- **Solution**: ✅ APPLIED - Modified `shouldKeepLightOnDuringPause()` to read preference
-- **Fixed Code**:
-```java
-// CORRECT - respects preference  
-SharedPreferences prefs = getSharedPreferences("walklight_settings", MODE_PRIVATE);
-boolean keepLightOn = prefs.getBoolean("keep_light_on_close", true);
-Log.d(TAG, "Keep light on when closed: " + keepLightOn);
-return keepLightOn; // Respect user preference
-```
-- **Result**: ✅ App CLOSE behavior now follows switch setting, EXIT always turns off light
+#### **C1.2: Replace Exit Icon** 
+- Replace image-based exit icon with M3 standard exit icon
+- Maintain current functionality
 
-### **PHASE 2: Feature Completion** 📱 *NEXT SESSION*
+#### **C1.3: Replace Split-Screen Icon**
+- Replace image-based split-screen icon with suitable M3 standard icon
+- **Approval Required**: Show proposed icon before implementation
+- If no suitable M3 icon found, custom icon will be provided
+- **Critical**: No functionality changes
 
-#### **B2.3: App Picker Implementation**
-- Add `Preference` row "Companion App"
-- Native `Intent.createChooser(Intent.ACTION_MAIN + CATEGORY_LAUNCHER)`
-- Use `registerForActivityResult` to receive selection
-- Store `packageName/component` in SharedPreferences  
-- Display the selected app' icon + label in the row summary
-- **QA**: Pick app, reopen settings → selection persists; reset works
+#### ** C1.4: re-scale the sliders **
+- earlier we used a 35:65 (or 45:55, not sure) ratio with less spae for the Light slider. I've changed my mind, make it even 50:50
 
-#### **B2.4: reset settings**
-- Add a reset settings button at the bottom of the settings page
-- click asks for confirmation
-- resets both settings to default: the light seletion and the app picker
-- use M3 style button and confirmation dialog
 
-#### **B3: Companion app Integration** 
-- Use selected app from B2.3 for split-screen mode
-- do not mess up with the working method of the split screen, only the app that is launched
-### B3.2
-- Once this works, attempt to set the default (out of the box) spotify, to be the same as the runtime selection (currently there is some different method for out of the box to select spotify)
-- this step is tricky, make sure to backup before and restore when things get messy
-- **QA**: Split-screen button uses chosen app; icon toggles correctly
+### **C2: Code Architecture Cleanup** *(Optional)*
+- Theme simplification: Remove unused color overrides
+- Extract preference reading to utility methods  
+- Consolidate multi-window detection logic
 
-### **PHASE 3: Polish & Cleanup** 🎨 *FUTURE*
+## Phase 3 Success Criteria
 
-#### **C1: Main Page Switch Normalization**
-For all of these steps, MUST NOT modify code, there should be no reason to do that. These are purely cosmetical
-### C1.1
-- Change both main switches to standard M3
-### C1.2
-- replace image based exit icon image with M3 standard exit icon
-### C1.3
-- replace image based split screen icon with  a suitable M3 standard icon
-- ask for approval by showing me the proposed icon
-- if none is found I will generate one and provide an updadate image
-- no change to functionality!
-- **QA**: Visual parity with Settings switch geometry
-
-#### **Code Cleanup Opportunities**
-- **Theme simplification**: Remove unused color overrides, consolidate slider styling
-- **Architecture**: Extract preference reading to utility methods
-- **Multi-window logic**: Simplify detection code, consolidate exit logic
-
-## Quality Gates
-
-### ✅ **Phase 1 Complete When:**
-- ✅ Settings switch functional (clicks toggle state) **DONE**
-- ✅ Switch state persists (survives app restart) **DONE**  
-- ✅ Exit policy enforced (setting controls flashlight on app close) **DONE**
-- ✅ Logging shows preference reads: `"Keep light on when closed: true/false"` **DONE**
-- 🧪 QA: ON keeps light on close, OFF turns off light on close **NEEDS TESTING**
-- ✅ No regressions in main flashlight functionality **DONE**
-
-### **Phase 2 Complete When:**
-- ✅ Native app picker working (launches chooser)
-- ✅ Selected app persists and displays in Settings
-- ✅ Split-screen uses selected app instead of hardcoded Spotify
-- ✅ Reset to Spotify option functional
-- ✅ Multi-window button icon reflects current state
-
-### **Phase 3 Complete When:**
-- ✅ All switches use consistent M3 styling
+### **Visual Consistency:**
+- ✅ All switches use identical M3 styling
+- ✅ All icons follow M3 design language
 - ✅ No custom geometry scaling
-- ✅ Theme uses proper Material 3 design tokens
-- ✅ Code architecture clean and maintainable
 
-## Next Session Priority
+### **Code Quality:**
+- ✅ Clean, maintainable architecture
+- ✅ Proper Material 3 design token usage
+- ✅ Consolidated utility methods
 
-### **FOCUS: Test B2.2 & Begin B2.3 (App Picker)**
-1. **🧪 TEST B2.2: Exit Policy** - Verify close behavior matches switch setting
-   - Switch ON → Light stays on when minimizing app
-   - Switch OFF → Light turns off when minimizing app  
-   - Exit button → Always turns off light (unchanged)
-2. **START B2.3: App Picker** - Native chooser for companion app selection
-3. **Optional: B2.4** - Reset settings button if B2.3 completes quickly
+---
 
-### **SUCCESS METRIC:** 
-Close behavior matches switch setting perfectly, ready for companion app selection
+## Appendix
 
-## Recovery Commands
+### **Version Management**
 
-- **Release 1.10.14**: `git checkout tags/v1.10.14` (Phase 1 Complete + Bug Fix)
-- **Release 1.9.14**: `git checkout tags/v1.9.14` (Phase 1 Complete - Original)
-- **Latest checkpoint**: `git checkout tags/checkpoint/b2-2-exit-policy-complete`
-
-## Version Management
-
-### **Versioning Scheme: M.n.C**
+#### **Versioning Scheme: M.n.C**
 - **M** = Major version (big architectural/UI changes, requires approval)
 - **n** = Minor version (new features, significant improvements)  
 - **C** = Code version (Play Store upload version, change only when publishing)
 
-### **Version Bump Rules:**
-- **Minor features/improvements**: Increment `n` only (e.g., 1.8.14 → 1.9.14)
+#### **Version Bump Rules:**
+- **Minor features/improvements**: Increment `n` only (e.g., 1.14.14 → 1.15.14)
 - **Major changes**: Increment `M`, reset `n` (requires explicit approval)
 - **Play Store upload**: Increment `C` and `versionCode` (only when publishing)
 
-### **Examples:**
-- `1.8.14` → `1.9.14` (B2.2 exit policy feature - minor bump)
-- `1.9.14` → `1.10.14` (switch display bug fix - minor bump)
-- `1.10.14` → `2.0.14` (hypothetical major UI overhaul - major bump)
-- `1.10.14` → `1.10.15` (Play Store upload - code bump)
+#### **Recent Examples:**
+- `1.13.14` → `1.14.14` (B2.7 settings UI polish - minor bump)
+- `1.14.14` → `2.0.14` (hypothetical major UI overhaul - major bump)
+- `1.14.14` → `1.14.15` (Play Store upload - code bump)
 
-## Notes
+### **Recovery Commands**
+- **Release 1.14.14**: `git checkout tags/v1.14.14` (Phase 2 COMPLETE)
+- **Release 1.13.14**: `git checkout tags/v1.13.14` (B3 Split-Screen Integration)
+- **Latest checkpoint**: `git checkout tags/checkpoint/phase-2-complete-polished`
 
-- **B2.1 Styling Decision**: Chose default switch over custom M3 widget for reliability
-- **Future improvement**: Can revisit M3 switch styling in Phase 3 (polish phase)
-- **Anti-spinning approach**: Small, focused changes with immediate testing worked perfectly
-- **Test fresh installs**: Uninstall → reinstall → verify defaults
+### **Key Lessons Learned**
+
+#### **Android Development:**
+- **Package Visibility**: Android 11+ requires `<queries>` in manifest for `PackageManager` calls
+- **Preference Systems**: Standard components more reliable than custom `widgetLayout` widgets
+- **Intent Actions**: Use `ACTION_PICK_ACTIVITY` for app selection, not `createChooser()` 
+- **Kotlin-Java**: Seamless interoperability when properly configured in Gradle
+
+#### **Development Process:**
+- **Anti-spinning approach**: Small, focused changes with immediate testing
 - **Logging is critical**: All preference changes must log old→new values
-- **Lesson learned**: Standard preference components more reliable than custom widgets
+- **Test fresh installs**: Uninstall → reinstall → verify defaults
+- **Functionality first**: Choose working solutions over perfect styling initially
+
+#### **UI/UX Design:**
+- **Material 3**: Consistency across all components improves user experience
+- **Descriptive text**: Clear labels like "Test your companion app:" improve usability  
+- **Confirmation dialogs**: Prevent accidental resets with proper confirmation flows
+- **Visual alignment**: Left text / right button alignment creates professional appearance

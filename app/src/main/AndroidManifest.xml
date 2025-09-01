@@ -8,6 +8,15 @@
     
     <!-- Declare flashlight feature -->
     <uses-feature android:name="android.hardware.camera.flash" android:required="true" />
+    
+    <!-- Package visibility queries for Android 11+ (API 30+) -->
+    <queries>
+        <!-- Query for all launchable apps - this should make ALL user apps visible -->
+        <intent>
+            <action android:name="android.intent.action.MAIN" />
+            <category android:name="android.intent.category.LAUNCHER" />
+        </intent>
+    </queries>
 
     <application
         android:allowBackup="true"

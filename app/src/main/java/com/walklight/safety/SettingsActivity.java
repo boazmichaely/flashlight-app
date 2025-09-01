@@ -25,8 +25,27 @@ public class SettingsActivity extends AppCompatActivity {
             return insets;
         });
 
+        // Setup Close button
         MaterialButton close = findViewById(R.id.buttonCloseSettings);
         if (close != null) close.setOnClickListener(v -> finish());
+        
+        // Setup Reset button
+        MaterialButton reset = findViewById(R.id.buttonResetSettings);
+        if (reset != null) {
+            android.util.Log.d("SettingsActivity", "✅ Reset button found successfully");
+            reset.setOnClickListener(v -> {
+                android.util.Log.d("SettingsActivity", "🔄 Reset button clicked");
+                // Get the settings fragment and trigger reset
+                SettingsFragment fragment = (SettingsFragment) getSupportFragmentManager().findFragmentById(R.id.settings_container);
+                if (fragment != null) {
+                    fragment.triggerResetDialog();
+                } else {
+                    android.util.Log.w("SettingsActivity", "Could not find SettingsFragment to trigger reset");
+                }
+            });
+        } else {
+            android.util.Log.e("SettingsActivity", "❌ Reset button NOT FOUND! Check layout.");
+        }
     }
 }
 

@@ -19,7 +19,7 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.content.res.ColorStateList;
+
 
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
@@ -731,35 +731,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void updateLightToggleAppearance(boolean isLightOn) {
-        try {
-            if (lightToggle != null) {
-                if (isLightOn) {
-                    // Light blue track when light is ON - consistent with sync toggle
-                    lightToggle.setTrackTintList(ColorStateList.valueOf(getColor(R.color.toggle_on_track)));
-                } else {
-                    // Gray track when light is OFF
-                    lightToggle.setTrackTintList(ColorStateList.valueOf(getColor(R.color.toggle_off_track)));
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        // C1.1: M3 switches handle theming automatically - no custom colors needed
     }
 
     private void updateSyncToggleAppearance(boolean isSyncOn) {
-        try {
-            if (syncSwitch != null) {
-                if (isSyncOn) {
-                    // Light blue track when sync is ON - consistent with light toggle
-                    syncSwitch.setTrackTintList(ColorStateList.valueOf(getColor(R.color.toggle_on_track)));
-                } else {
-                    // Gray track when sync is OFF
-                    syncSwitch.setTrackTintList(ColorStateList.valueOf(getColor(R.color.toggle_off_track)));
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        // C1.1: M3 switches handle theming automatically - no custom colors needed  
     }
 
     private void updateSyncedIntensityLabel() {
@@ -1018,12 +994,12 @@ public class MainActivity extends AppCompatActivity {
         
         if (isInMultiWindowMode) {
             // Currently in split-screen → show fullscreen icon (to exit)
-            multiWindowButton.setImageResource(R.drawable.full_screen_icon);
+            multiWindowButton.setImageResource(R.drawable.ic_fullscreen_24);
             multiWindowButton.setContentDescription("Exit Split-Screen");
             Log.d(TAG, "Button updated: Showing fullscreen icon (currently in split-screen)");
         } else {
             // Currently fullscreen → show split-screen icon (to enter)
-            multiWindowButton.setImageResource(R.drawable.split_icon_blue_512x512);
+            multiWindowButton.setImageResource(R.drawable.ic_split_vertical_tight);
             multiWindowButton.setContentDescription("Enter Split-Screen");
             Log.d(TAG, "Button updated: Showing split-screen icon (currently fullscreen)");
         }
@@ -1063,50 +1039,70 @@ public class MainActivity extends AppCompatActivity {
     // ================================
     
     /**
-     * EXACT POC CODE: Launch Spotify with Split-Screen Intent Flags
+     * B3: Launch Companion App with Split-Screen Intent Flags
      * 
      * KEY FLAG COMBINATION (from proven POC):
      * - FLAG_ACTIVITY_LAUNCH_ADJACENT: Forces launch in split-screen mode
      * - FLAG_ACTIVITY_NEW_TASK: Creates new task stack for the target app
      * 
-     * This combination is the secret sauce that makes programmatic split-screen work!
+     * Now uses stored companion app instead of hardcoded Spotify!
      */
     private void launchMusicAppInSplitScreen() {
-        new SplitScreenController(this).launchSpotifyInSplitScreen();
+        new SplitScreenController(this).launchCompanionAppInSplitScreen();
     }
     
     /**
-     * DIRECT FROM POC: Launch Spotify in split-screen mode
-     * Uses the exact working code from your proven POC
+     * LEGACY METHOD: Launch Spotify in split-screen mode (kept for backward compatibility)
+     * B3 UPDATE: Now handled by SplitScreenController.launchCompanionAppInSplitScreen()
+     * @deprecated Use SplitScreenController.launchCompanionAppInSplitScreen() instead
      */
+    @Deprecated
     private void launchSpotifyInSplitScreen() {
-        try {
-            // Try launching the native Spotify app first
-            Intent spotifyIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("spotify:"));
-            spotifyIntent.addFlags(Intent.FLAG_ACTIVITY_LAUNCH_ADJACENT | Intent.FLAG_ACTIVITY_NEW_TASK);
-            startActivity(spotifyIntent);
-            Log.d(TAG, "Spotify launched in adjacent window");
-        } catch (Exception e) {
-            // Graceful fallback: launch Spotify web in split-screen
-            Log.d(TAG, "Spotify app not available, opening web in split-screen");
-            Intent webIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://open.spotify.com"));
-            webIntent.addFlags(Intent.FLAG_ACTIVITY_LAUNCH_ADJACENT | Intent.FLAG_ACTIVITY_NEW_TASK);
-            startActivity(webIntent);
-        }
+        // Delegate to new companion app method
+        new SplitScreenController(this).launchCompanionAppInSplitScreen();
     }
     
     /**
-     * EXACT POC FALLBACK: Launch Spotify Normally (No Split-Screen Forcing)
+     * B3 UPDATED: Launch Companion App Normally (No Split-Screen Forcing)
      * 
      * This is the traditional app launch method when split-screen forcing fails.
      * User would need to manually enter split-screen via system gestures.
      */
-    private void launchSpotifyNormally() {
+    private void launchCompanionAppNormally() {
+        // Read stored companion app data
+        android.content.SharedPreferences prefs = getSharedPreferences("walklight_settings", MODE_PRIVATE);
+        String companionPackage = prefs.getString("companion_app_package", null);
+        String companionClass = prefs.getString("companion_app_class", null);
+        String companionName = prefs.getString("companion_app_name", "Spotify");
+
+        if (companionPackage != null && companionClass != null) {
+            try {
+                // Launch stored companion app normally
+                Intent companionIntent = new Intent();
+                companionIntent.setClassName(companionPackage, companionClass);
+                startActivity(companionIntent);
+                Log.d(TAG, companionName + " launched normally");
+                return;
+            } catch (Exception e) {
+                Log.w(TAG, "Failed to launch " + companionName + " normally: " + e.getMessage());
+            }
+        }
+
+        // Fallback to Spotify (backward compatibility)
+        launchSpotifyNormallyFallback();
+    }
+
+    /**
+     * LEGACY FALLBACK: Launch Spotify normally
+     * @deprecated Use launchCompanionAppNormally() instead
+     */
+    @Deprecated
+    private void launchSpotifyNormallyFallback() {
         try {
             // Standard launch without split-screen flags
             Intent spotifyIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("spotify:"));
             startActivity(spotifyIntent);
-            Log.d(TAG, "Spotify launched normally");
+            Log.d(TAG, "Spotify launched normally (fallback)");
         } catch (Exception e) {
             // Web fallback for normal launch
             Intent webIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://open.spotify.com"));

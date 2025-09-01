@@ -38,17 +38,34 @@
         android:layout_height="0dp"
         android:layout_weight="1" />
 
-    <!-- Bottom bar with Close button -->
+    <!-- Bottom bar with Reset and Close buttons -->
     <LinearLayout
         android:id="@+id/settingsActionsBar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:gravity="end"
+        android:gravity="center_vertical"
         android:paddingStart="24dp"
         android:paddingEnd="24dp"
         android:paddingTop="12dp"
         android:paddingBottom="24dp">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/buttonResetSettings"
+            style="@style/Widget.Material3.Button.OutlinedButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/settings_reset_button"
+            android:textSize="14sp"
+            android:minWidth="120dp"
+            android:background="@color/design_default_color_primary"
+            android:textColor="@android:color/white" />
+
+        <!-- Spacer to push Close button to the right -->
+        <View
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:layout_weight="1" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/buttonCloseSettings"

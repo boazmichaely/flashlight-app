@@ -20,4 +20,6 @@
     <string name="settings_companion_title">Companion App</string>
     <string name="settings_companion_summary">App for split-screen mode</string>
     <string name="settings_companion_button">Pick App</string>
+    <string name="settings_companion_launch">Launch</string>
+    <string name="settings_reset_button">Reset to Default</string>
 </resources>

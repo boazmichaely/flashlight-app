@@ -12,9 +12,9 @@
         <item name="colorSurface">@color/white</item>
         <item name="colorOnSurface">@color/black</item>
         
-        <!-- Let M3 handle all component colors for proper system appearance -->
-        <!-- Only customize sliders for flashlight intuition -->
+        <!-- Custom components for black background contrast -->
         <item name="sliderStyle">@style/Widget.Flashlight.Slider</item>
+        <item name="switchStyle">@style/Widget.Flashlight.Switch</item>
     </style>
     
     <!-- Custom slider style for flashlight intuition -->
@@ -22,6 +22,12 @@
         <item name="trackColorActive">@color/slider_track_active</item>
         <item name="trackColorInactive">@color/slider_track_inactive</item>
         <item name="thumbColor">@color/slider_thumb</item>
+    </style>
+    
+    <!-- Custom switch style for black background contrast -->
+    <style name="Widget.Flashlight.Switch" parent="Widget.Material3.CompoundButton.MaterialSwitch">
+        <item name="thumbTint">@color/switch_thumb_color</item>
+        <item name="trackTint">@color/switch_track_color</item>
     </style>
     
 

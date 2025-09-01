@@ -1,5 +1,6 @@
 plugins {
     id 'com.android.application'
+    id 'org.jetbrains.kotlin.android'
 }
 
 android {
@@ -11,7 +12,7 @@ android {
         minSdk 26
         targetSdk 35
         versionCode 14
-        versionName "1.10.14"
+        versionName "1.14.14"
     }
 
     buildTypes {
@@ -25,6 +26,10 @@ android {
         targetCompatibility JavaVersion.VERSION_17
     }
     
+    kotlinOptions {
+        jvmTarget = '17'
+    }
+    
     buildFeatures {
         buildConfig true
     }
@@ -35,6 +40,10 @@ dependencies {
     implementation 'com.google.android.material:material:1.12.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
     implementation 'androidx.preference:preference:1.2.1'
+    
+    // Kotlin dependencies
+    implementation 'androidx.core:core-ktx:1.12.0'
+    implementation 'org.jetbrains.kotlin:kotlin-stdlib:1.9.10'
     
     // Testing dependencies
     testImplementation 'junit:junit:4.13.2'

@@ -60,6 +60,30 @@ public class SettingsSheetDialog extends DialogFragment {
             });
         }
         
+        // Setup Reset button
+        com.google.android.material.button.MaterialButton resetButton = view.findViewById(R.id.buttonResetSettingsSheet);
+        if (resetButton != null) {
+            resetButton.setOnClickListener(v -> {
+                android.util.Log.d("SettingsSheetDialog", "🔄 Reset button clicked in sheet");
+                // Get the settings fragment and trigger reset
+                SettingsFragment fragment = (SettingsFragment) getChildFragmentManager().findFragmentById(R.id.settings_sheet_container);
+                if (fragment != null) {
+                    fragment.triggerResetDialog();
+                } else {
+                    // Try to find by tag or look through fragments
+                    androidx.fragment.app.Fragment foundFragment = getChildFragmentManager().findFragmentById(R.id.settings_sheet_container);
+                    if (foundFragment instanceof SettingsFragment) {
+                        ((SettingsFragment) foundFragment).triggerResetDialog();
+                    } else {
+                        android.util.Log.w("SettingsSheetDialog", "Could not find SettingsFragment to trigger reset");
+                    }
+                }
+            });
+            android.util.Log.d("SettingsSheetDialog", "✅ Reset button found and setup in sheet");
+        } else {
+            android.util.Log.e("SettingsSheetDialog", "❌ Reset button NOT FOUND in sheet!");
+        }
+        
         // Add SettingsFragment to container
         if (savedInstanceState == null) {
             SettingsFragment settingsFragment = new SettingsFragment();

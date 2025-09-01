@@ -6,6 +6,7 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:layout_centerVertical="true"
+    android:layout_alignParentEnd="true"
     android:text="@string/settings_companion_button"
     style="@style/Widget.Material3.Button.OutlinedButton"
     android:textSize="14sp"
