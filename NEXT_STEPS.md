@@ -25,7 +25,15 @@
 - ✅ Updated both slider weights: `0.45` → `0.5` and `0.55` → `0.5`
 - ✅ Light and Screen sliders now have equal space allocation
 
-### **C2: Code Architecture Cleanup** *(Optional)*
+### D - Debugging
+- **D1 PHASE 1 - IN PROGRESS**: Fix state reading to use live slider values instead of cached values
+  - ✅ Modified `getCurrentActualLedIntensity()` to read from active slider (sync/independent/fallback)
+  - ✅ Modified `getCurrentActualScreenBrightness()` to read from active slider (sync/independent/screen-only/fallback) 
+  - ✅ Added comprehensive error handling and logging
+  - 🧪 **NEEDS TESTING**: Verify light intensity matches sliders after split-screen transitions
+  - **REMAINING**: Phase 2 (reduce flash), Phase 3 (smooth transitions)
+
+### **E : Code Architecture Cleanup** *(Optional)*
 - Theme simplification: Remove unused color overrides
 - Extract preference reading to utility methods  
 - Consolidate multi-window detection logic

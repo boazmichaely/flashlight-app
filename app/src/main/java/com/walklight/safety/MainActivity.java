@@ -519,6 +519,8 @@ public class MainActivity extends AppCompatActivity {
             if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
                 try {
                     float intensity = getCurrentActualLedIntensity();
+                    // D1 DEBUG: Log intensity restoration for debugging multi-window transitions
+                    android.util.Log.d("FlashlightApp", "D1 DEBUG: turnOnFlashlight() using intensity: " + intensity + " (from active slider)");
                     // Use the actual device's max strength level (Samsung devices often use 1-99, not 1-100)
                     int strengthLevel = Math.max(1, Math.min(maxTorchStrength, Math.round(intensity * maxTorchStrength)));
                     TorchController.setStrength(cameraManager, cameraId, strengthLevel);
@@ -720,14 +722,47 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-    // SINGLE SOURCE OF TRUTH - always return the actual LED intensity
+    // SINGLE SOURCE OF TRUTH - always return the actual LED intensity from active slider
     private float getCurrentActualLedIntensity() {
-        return currentActualLedIntensity;
+        try {
+            // D1 FIX: Read from whichever slider is currently active and visible to user
+            if (syncSwitch != null && syncSwitch.isChecked() && syncedIntensitySlider != null) {
+                // Sync mode: single slider controls both LED and screen
+                return syncedIntensitySlider.getValue();
+            } else if (isFlashlightOn && ledIntensitySlider != null) {
+                // Independent mode: separate LED slider  
+                return ledIntensitySlider.getValue();
+            } else {
+                // Fallback to cached value for edge cases
+                return currentActualLedIntensity;
+            }
+        } catch (Exception e) {
+            android.util.Log.e("FlashlightApp", "Error reading LED intensity from sliders", e);
+            return currentActualLedIntensity; // Safe fallback
+        }
     }
 
-    // SINGLE SOURCE OF TRUTH - always return the actual displayed screen brightness
+    // SINGLE SOURCE OF TRUTH - always return the actual displayed screen brightness from active slider  
     private float getCurrentActualScreenBrightness() {
-        return currentActualScreenBrightness;
+        try {
+            // D1 FIX: Read from whichever slider is currently active and visible to user
+            if (syncSwitch != null && syncSwitch.isChecked() && syncedIntensitySlider != null) {
+                // Sync mode: single slider controls both LED and screen
+                return syncedIntensitySlider.getValue();
+            } else if (isFlashlightOn && screenBrightnessSlider != null) {
+                // Independent mode: separate screen slider
+                return screenBrightnessSlider.getValue();
+            } else if (screenOnlySlider != null) {
+                // Screen-only mode: single screen slider
+                return screenOnlySlider.getValue();
+            } else {
+                // Fallback to cached value for edge cases
+                return currentActualScreenBrightness;
+            }
+        } catch (Exception e) {
+            android.util.Log.e("FlashlightApp", "Error reading screen brightness from sliders", e);
+            return currentActualScreenBrightness; // Safe fallback
+        }
     }
 
     private void updateLightToggleAppearance(boolean isLightOn) {
