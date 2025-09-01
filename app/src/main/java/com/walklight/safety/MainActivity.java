@@ -678,7 +678,11 @@ public class MainActivity extends AppCompatActivity {
                             screenBrightnessSlider.setValue(currentBrightness);
                         }
                         if (ledIntensitySlider != null) {
-                            ledIntensitySlider.setValue(currentActualLedIntensity);
+                            // D1 FIX: Preserve current slider value instead of overwriting with cached value
+                            // Only set if the slider has no valid value yet
+                            if (ledIntensitySlider.getValue() <= 0f) {
+                                ledIntensitySlider.setValue(Math.max(0.1f, currentActualLedIntensity));
+                            }
                         }
                         isUpdatingSliders = false;
                         
@@ -688,7 +692,8 @@ public class MainActivity extends AppCompatActivity {
                         
                         independentModeContainer.post(() -> {
                             updateColorRectangleBrightness(currentBrightness);
-                            updateFlashlightIntensity(currentActualLedIntensity);
+                            // D1 FIX: Use getCurrentActualLedIntensity() instead of cached value
+                            updateFlashlightIntensity(getCurrentActualLedIntensity());
                         });
                     }
                     
