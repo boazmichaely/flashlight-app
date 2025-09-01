@@ -356,6 +356,7 @@ public class MainActivity extends AppCompatActivity {
             
             try {
                 if (fromUser && isFlashlightOn) {
+                    android.util.Log.d("FlashlightApp", "D3 DEBUG: LED slider triggered updateFlashlightIntensity(" + value + ")");
                     updateFlashlightIntensity(value);
                 }
                 
@@ -383,6 +384,7 @@ public class MainActivity extends AppCompatActivity {
                 // If sync is enabled, update LED intensity AND move LED slider
                 if (fromUser && syncSwitch != null && syncSwitch.isChecked()) {
                     if (isFlashlightOn) {
+                        android.util.Log.d("FlashlightApp", "D3 DEBUG: Screen slider (sync mode) triggered updateFlashlightIntensity(" + value + ")");
                         updateFlashlightIntensity(value);
                     }
                     // Safely move LED slider to match
@@ -400,6 +402,7 @@ public class MainActivity extends AppCompatActivity {
         syncedIntensitySlider.addOnChangeListener((slider, value, fromUser) -> {
             try {
                 if (fromUser && !isUpdatingSliders) {
+                    android.util.Log.d("FlashlightApp", "D3 DEBUG: Synced slider triggered updateFlashlightIntensity(" + value + ")");
                     updateFlashlightIntensity(value);
                     updateColorRectangleBrightness(value);
                 }
