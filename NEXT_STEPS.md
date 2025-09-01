@@ -25,7 +25,11 @@
 - ✅ Updated both slider weights: `0.45` → `0.5` and `0.55` → `0.5`
 - ✅ Light and Screen sliders now have equal space allocation
 
- new line on top
+### C1.6 - more intuitive setting
+- the companion app thing is unclear. add a new line (before the pick app line) with only a title "Companion App for split screen mode"
+Then  change the text on the last line to "Test companion app:"
+
+
 ### D - Debugging
 - **D1 - COMPLETED**: Light intensity reset during split-screen transitions
   - ✅ **ROOT CAUSE IDENTIFIED**: Unnecessary UI restoration logic was overwriting correct slider values

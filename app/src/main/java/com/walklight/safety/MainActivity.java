@@ -730,15 +730,20 @@ public class MainActivity extends AppCompatActivity {
     // SINGLE SOURCE OF TRUTH - always return the actual LED intensity from active slider
     private float getCurrentActualLedIntensity() {
         try {
-            // D1 FIX: Read from whichever slider is currently active and visible to user
+            // TARGETED FIX: Read from whichever slider is currently active and visible to user
             if (syncSwitch != null && syncSwitch.isChecked() && syncedIntensitySlider != null) {
                 // Sync mode: single slider controls both LED and screen
-                return syncedIntensitySlider.getValue();
-            } else if (isFlashlightOn && ledIntensitySlider != null) {
-                // Independent mode: separate LED slider  
-                return ledIntensitySlider.getValue();
+                float value = syncedIntensitySlider.getValue();
+                android.util.Log.d("FlashlightApp", "LED intensity from SYNC slider: " + value);
+                return value;
+            } else if (ledIntensitySlider != null) {
+                // Independent mode: separate LED slider (remove isFlashlightOn check - slider always has value)
+                float value = ledIntensitySlider.getValue();
+                android.util.Log.d("FlashlightApp", "LED intensity from LED slider: " + value);
+                return value;
             } else {
                 // Fallback to cached value for edge cases
+                android.util.Log.d("FlashlightApp", "LED intensity from CACHED value: " + currentActualLedIntensity);
                 return currentActualLedIntensity;
             }
         } catch (Exception e) {
