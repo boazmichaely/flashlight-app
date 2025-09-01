@@ -618,7 +618,11 @@ public class MainActivity extends AppCompatActivity {
         try {
             if (syncSwitch != null && syncModeContainer != null && independentModeContainer != null && screenOnlyModeContainer != null) {
                 boolean isFlashlightOn = this.isFlashlightOn;
-                float currentBrightness = getCurrentActualScreenBrightness();
+                // D1 FIX: Use actual visual brightness state instead of reading from sliders during transitions
+                // This prevents the "two memories" issue where sliders override each other
+                float currentBrightness = currentActualScreenBrightness;
+                android.util.Log.d("BrightnessSync", "D1: Mode transition using visual brightness: " + currentBrightness + 
+                    " (light=" + isFlashlightOn + ")");
                 
                 // PHASE 1: TEMPORARILY DISABLED - For devices without intensity control, always use simple mode
                 // TODO: Re-enable after testing that hardware detection works correctly
