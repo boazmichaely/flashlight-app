@@ -44,14 +44,7 @@ Then  change the text on the last line to "Test companion app:"
 - ✅ **Solution**: Removed unnecessary `setValue()` calls - let sliders retain their natural state during transitions
 - ✅ **Result**: Screen and flash brightness now maintain user-set values across all mode transitions
 
-### ✅ **D3 - COMPLETED** (v1.17.14): Quick flash during mode transitions
-- ✅ **Problem**: Light flashes when switching between split-screen and full-screen modes  
-- ✅ **Root Cause**: `updateFlashlightIntensity()` called during transitions even when light already had correct intensity - Camera2 API briefly flickers when re-applying same intensity
-- ✅ **Solution**: Removed unnecessary `updateFlashlightIntensity()` calls from mode transitions - light stays as-is during UI layout changes
-- ✅ **Safety**: Created backup tag `v1.17.14-d3-backup` for easy restoration
-- ✅ **Result**: No more flash during split-screen ↔ full-screen transitions
-
-## 🎉 **ALL THREE DEBUG ISSUES RESOLVED (D1, D2, D3)**
+## 🎉 **BOTH D1 & D2 BRIGHTNESS ISSUES RESOLVED**
 
 ### **E : Code Architecture Cleanup** *(Optional)*
 - Theme simplification: Remove unused color overrides
