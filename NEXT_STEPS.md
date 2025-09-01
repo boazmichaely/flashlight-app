@@ -106,3 +106,13 @@
 - **Descriptive text**: Clear labels like "Test your companion app:" improve usability  
 - **Confirmation dialogs**: Prevent accidental resets with proper confirmation flows
 - **Visual alignment**: Left text / right button alignment creates professional appearance
+
+#### **Git Workflow & AI Collaboration:**
+- **NEVER accumulate 12+ hours of uncommitted work** - commit early, commit often
+- **Create backup branches** before major operations: `git branch backup-current-state`
+- **Use descriptive commit messages** following established pattern (🎯, ✅, 🛠️, 🐛)
+- **Branch for major features**: `git checkout -b phase-3-visual-polish`
+- **Tag releases**: `git tag v1.15.14` when phases complete
+- **AI assistants must follow proper git practices** - no destructive operations without explicit approval
+- **Document all changes** in commit messages for future recovery
+- **Always verify git state** before starting new work sessions

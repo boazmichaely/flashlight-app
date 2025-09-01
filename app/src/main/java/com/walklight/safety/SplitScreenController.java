@@ -2,6 +2,7 @@ package com.walklight.safety;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Handler;
 import android.os.Looper;
@@ -49,6 +50,43 @@ public class SplitScreenController {
             Intent webIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://open.spotify.com"));
             webIntent.addFlags(Intent.FLAG_ACTIVITY_LAUNCH_ADJACENT | Intent.FLAG_ACTIVITY_NEW_TASK);
             context.startActivity(webIntent);
+        }
+    }
+
+    /**
+     * B3: Launch Companion App in Split-Screen (Dynamic App System)
+     * 
+     * Launches the user's selected companion app in split-screen mode.
+     * Falls back to Spotify if no companion app is configured.
+     */
+    public void launchCompanionAppInSplitScreen() {
+        SharedPreferences prefs = context.getSharedPreferences("walklight_settings", Context.MODE_PRIVATE);
+        String packageName = prefs.getString("companion_app_package", null);
+        String className = prefs.getString("companion_app_class", null);
+        String appName = prefs.getString("companion_app_name", "Unknown App");
+
+        Log.d(TAG, "=== LAUNCHING COMPANION APP IN SPLIT-SCREEN ===");
+        Log.d(TAG, "Stored package: " + packageName);
+        Log.d(TAG, "Stored class: " + className);
+        Log.d(TAG, "App name: " + appName);
+
+        if (packageName != null && className != null) {
+            // Launch the selected companion app
+            try {
+                Intent companionIntent = new Intent();
+                companionIntent.setClassName(packageName, className);
+                companionIntent.addFlags(Intent.FLAG_ACTIVITY_LAUNCH_ADJACENT | Intent.FLAG_ACTIVITY_NEW_TASK);
+                context.startActivity(companionIntent);
+                Log.d(TAG, "✅ Companion app '" + appName + "' launched in split-screen");
+            } catch (Exception e) {
+                Log.e(TAG, "❌ Failed to launch companion app '" + appName + "', falling back to Spotify", e);
+                // Fall back to Spotify
+                launchSpotifyInSplitScreen();
+            }
+        } else {
+            // No companion app configured, use Spotify as fallback
+            Log.d(TAG, "⚠️ No companion app configured, falling back to Spotify");
+            launchSpotifyInSplitScreen();
         }
     }
 }
