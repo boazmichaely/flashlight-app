@@ -999,7 +999,7 @@ public class MainActivity extends AppCompatActivity {
             Log.d(TAG, "Button updated: Showing fullscreen icon (currently in split-screen)");
         } else {
             // Currently fullscreen → show split-screen icon (to enter)
-            multiWindowButton.setImageResource(R.drawable.split_vertical_line);
+            multiWindowButton.setImageResource(R.drawable.split_vertical_line2);
             multiWindowButton.setContentDescription("Enter Split-Screen");
             Log.d(TAG, "Button updated: Showing split-screen icon (currently fullscreen)");
         }
