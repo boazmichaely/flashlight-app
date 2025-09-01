@@ -585,6 +585,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void updateFlashlightIntensity(float intensity) {
+        // D3 ROOT CAUSE ANALYSIS: Log every call to understand WHY this is happening
+        android.util.Log.d("FlashlightApp", "D3 TRACE: updateFlashlightIntensity(" + intensity + ") called");
+        android.util.Log.d("FlashlightApp", "D3 TRACE: isFlashlightOn=" + isFlashlightOn + ", currentActualLedIntensity=" + currentActualLedIntensity);
+        android.util.Log.d("FlashlightApp", "D3 TRACE: Call stack trace:", new Exception("Stack trace"));
+        
         if (!isFlashlightOn) return;
         
         try {
