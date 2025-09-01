@@ -1,8 +1,8 @@
 ## Current Status
 
-- **Version**: `1.14.14` 
+- **Version**: `1.15.14` 
 - **State**: **Phase 2 COMPLETE** - Professional Dynamic Companion App System
-- **Latest Tag**: `checkpoint/phase-2-complete-polished`
+- **Latest Tag**: `v1.15.14`
 
 ## Phase 2 Accomplishments Summary
 
@@ -83,9 +83,9 @@
 - `1.14.14` → `1.14.15` (Play Store upload - code bump)
 
 ### **Recovery Commands**
+- **Release 1.15.14**: `git checkout tags/v1.15.14` (Companion App Integration Complete)
 - **Release 1.14.14**: `git checkout tags/v1.14.14` (Phase 2 COMPLETE)
 - **Release 1.13.14**: `git checkout tags/v1.13.14` (B3 Split-Screen Integration)
-- **Latest checkpoint**: `git checkout tags/checkpoint/phase-2-complete-polished`
 
 ### **Key Lessons Learned**
 

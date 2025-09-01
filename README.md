@@ -38,7 +38,7 @@ This is a native Android app built with:
 
 ## Status
 
-✨ **Latest Release v1.4.0** - Walklight Icon: Person with Dual Safety Lighting
+✨ **Latest Release v1.15.14** - Companion App Integration Complete
 
 ### Version History
 - **v1.4.0** - **NEW ICON:** Person walking with dual safety lighting - clearly shows LED + screen functionality, perfect Walklight brand alignment
@@ -74,6 +74,38 @@ flowchart TD
 ```
 
 **Why this matters:** Instead of cluttering the screen with disabled controls (like most apps), ours intelligently shows only what's functional. When the flashlight is off, why show a grayed-out LED slider? Our interface adapts to give you maximum precision where it counts.
+
+## Development Procedures
+
+### Version Bump Process
+
+**Versioning Scheme: M.n.C**
+- **M** = Major version (big architectural/UI changes, requires approval)  
+- **n** = Minor version (new features, significant improvements)
+- **C** = Code version (Play Store upload version, change only when publishing)
+
+**Steps for Version Bump:**
+```bash
+# 1. Update version in app/build.gradle (e.g. 1.14.14 → 1.15.14)
+# 2. Update README.md latest release version
+# 3. Update NEXT_STEPS.md version references
+
+# 4. Commit version changes
+git add app/build.gradle README.md NEXT_STEPS.md
+git commit -m "🎯 Version bump to 1.15.14 - [Description of changes]"
+
+# 5. Create checkpoint tag
+git tag v1.15.14
+# OR for major milestones:
+git tag checkpoint/[milestone-name]
+
+# 6. Update recovery commands in NEXT_STEPS.md if needed
+```
+
+**Version Bump Rules:**
+- **Minor features/improvements**: Increment `n` only (e.g., 1.14.14 → 1.15.14)
+- **Major changes**: Increment `M`, reset `n` (requires approval)  
+- **Play Store upload**: Increment `C` and `versionCode` (only when publishing)
 
 ## Development Credits
 
