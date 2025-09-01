@@ -1,8 +1,8 @@
 ## Current Status
 
 - **Version**: `1.15.14` 
-- **State**: **Phase 2 COMPLETE** - Professional Dynamic Companion App System
-- **Latest Tag**: `v1.15.14`
+- **State**: **Phase 3 IN PROGRESS** - Visual Polish & Architecture Cleanup
+- **Latest Tag**: `v1.15.14` (Companion App Integration Complete)
 
 ## Safe Recovery Procedures
 
@@ -11,60 +11,14 @@
 - **v1.14.14**: Phase 2 COMPLETE - Professional Dynamic Companion App System
 - **v1.13.14**: B3 Split-Screen Integration
 
-### **SAFE Restore to Checkpoint (Prevents Work Loss):**
+## NEXT STEPS
 
-⚠️ **CRITICAL: NEVER do direct `git checkout` without saving your work!**
+## Phase 2 & 3 Accomplishments Summary
 
-**Step-by-step Safe Restore:**
-```bash
-# 1. ALWAYS create backup branch FIRST
-git branch backup-before-restore-$(date +%Y%m%d-%H%M)
+**Phase 2**: Hardcoded Spotify split-screen → Full dynamic companion app system  
+**Phase 3**: Recovery from disaster + Final companion app integration
 
-# 2. Commit or stash ALL current work
-git add -A
-git commit -m "WIP: Save work before restore to [checkpoint-name]"
-# OR if not ready to commit:
-git stash push -m "Work in progress before restore"
-
-# 3. NOW safe to restore
-git checkout tags/v1.15.14
-# This puts you in detached HEAD state
-
-# 4. Create working branch from checkpoint
-git checkout -b restored-from-v1.15.14
-
-# 5. VERIFY the restore worked
-git log --oneline -3
-ls -la app/src/main/java/com/walklight/safety/
-```
-
-### **Emergency Recovery (If You Lost Work):**
-```bash
-# 1. Check for backup branches
-git branch -a | grep backup
-
-# 2. Check reflog for lost commits
-git reflog --oneline -20
-
-# 3. Check for dangling commits (like we did in the disaster)
-git fsck --dangling
-
-# 4. Recover from specific reflog entry
-git checkout [reflog-hash]
-git branch recovery-[date] HEAD
-```
-
-### **Quick Restore to Latest (SAFE):**
-```bash
-# One-liner safe restore to latest checkpoint
-git branch backup-$(date +%Y%m%d-%H%M) && git add -A && git commit -m "Backup before restore" && git checkout tags/v1.15.14 && git checkout -b working-from-latest
-```
-
-## Phase 2 Accomplishments Summary
-
-**From:** Hardcoded Spotify split-screen → **To:** Full dynamic companion app system
-
-### ✅ **Completed Features:**
+### ✅ **Phase 2 Completed Features:**
 - **App Picker**: Native chooser with proper name/icon display  
 - **Launch Testing**: Dedicated button to test selected apps
 - **Smart Defaults**: Spotify auto-initialized on fresh installs
@@ -72,50 +26,41 @@ git branch backup-$(date +%Y%m%d-%H%M) && git add -A && git commit -m "Backup be
 - **Professional UI**: Aligned layout with descriptive text
 - **Split-Screen Integration**: Uses selected app instead of hardcoded Spotify
 
+### ✅ **Phase 3 Completed (v1.15.14):**
+- **Compilation Fix**: Added missing `launchCompanionAppInSplitScreen()` method
+- **Settings Restoration**: Restored "Test your Companion App" line with Launch button
+- **Split-Screen Fix**: Split-screen button now uses stored companion app (not hardcoded Spotify)
+- **Git Workflow**: Added comprehensive version bump procedures to README
+- **Recovery Procedures**: Created disaster-proof restore instructions
+- **UI Polish**: C1.1 (switches), C1.2 (exit icon), C1.3 (split-screen icon) marked complete
+
 ### ✅ **Technical Achievements:**
 - **Android 11+ Compatibility**: Package visibility properly handled via `<queries>` manifest
 - **Kotlin-Java Integration**: Mixed codebase working seamlessly  
 - **Material 3 UI**: Consistent design throughout settings
 - **Robust Error Handling**: Fallbacks and comprehensive logging
 
-## Next Steps - Phase 3: Visual Polish 🎨
+## NEXT STEPS - Remaining Tasks
 
-### **C1: Main Page Switch Normalization** *(Cosmetic Only - No Code Changes)*
-
-#### **C1.1: Standardize Main Switches**
-- Change both main page switches to standard M3 style
-- Match visual consistency with Settings switches
-
-#### **C1.2: Replace Exit Icon** 
-- Replace image-based exit icon with M3 standard exit icon
+### **C1.4: Replace Full Screen Icon**
+- Replace the current full screen icon with a better M3 design
 - Maintain current functionality
+- Test icon visibility and clarity
 
-#### **C1.3: Replace Split-Screen Icon**
-- Replace image-based split-screen icon with suitable M3 standard icon
-- **Approval Required**: Show proposed icon before implementation
-- If no suitable M3 icon found, custom icon will be provided
-- **Critical**: No functionality changes
-
-#### ** C1.4: re-scale the sliders **
-- earlier we used a 35:65 (or 45:55, not sure) ratio with less spae for the Light slider. I've changed my mind, make it even 50:50
-
+### **C1.5: Re-scale the Sliders to 50:50 Ratio**  
+- Currently using 35:65 (or 45:55) ratio with less space for Light slider
+- Change to even 50:50 split between Light and Screen sliders
+- Update layout dimensions and constraints
 
 ### **C2: Code Architecture Cleanup** *(Optional)*
 - Theme simplification: Remove unused color overrides
 - Extract preference reading to utility methods  
 - Consolidate multi-window detection logic
 
-## Phase 3 Success Criteria
-
-### **Visual Consistency:**
-- ✅ All switches use identical M3 styling
+### **Success Criteria:**
 - ✅ All icons follow M3 design language
-- ✅ No custom geometry scaling
-
-### **Code Quality:**
+- ✅ Balanced 50:50 slider layout  
 - ✅ Clean, maintainable architecture
-- ✅ Proper Material 3 design token usage
-- ✅ Consolidated utility methods
 
 ---
 
@@ -167,3 +112,5 @@ git branch backup-$(date +%Y%m%d-%H%M) && git add -A && git commit -m "Backup be
 - **AI assistants must follow proper git practices** - no destructive operations without explicit approval
 - **Document all changes** in commit messages for future recovery
 - **Always verify git state** before starting new work sessions
+
+
