@@ -38,9 +38,13 @@ Then  change the text on the last line to "Test companion app:"
 - ✅ **Solution**: Use `currentActualScreenBrightness` (visual state) instead of `getCurrentActualScreenBrightness()` (slider state)
 - ✅ **Result**: Screen brightness now stays consistent when switching between light modes
 
-### **D2 - IN ANALYSIS**: Mode reset to max brightness issue
-- **Problem**: When changing modes (split-screen/full-screen), both screen and flash brightness reset to maximum instead of retaining previous values
-- **Status**: Ready for analysis and fix
+### ✅ **D2 - COMPLETED** (v1.17.14): Mode reset to max brightness issue  
+- ✅ **Problem**: When changing modes (split-screen/full-screen), both screen and flash brightness reset to maximum instead of retaining previous values
+- ✅ **Root Cause**: `updateLayoutMode()` was calling `setValue()` on sliders during every transition, overriding user values
+- ✅ **Solution**: Removed unnecessary `setValue()` calls - let sliders retain their natural state during transitions
+- ✅ **Result**: Screen and flash brightness now maintain user-set values across all mode transitions
+
+## 🎉 **BOTH D1 & D2 BRIGHTNESS ISSUES RESOLVED**
 
 ### **E : Code Architecture Cleanup** *(Optional)*
 - Theme simplification: Remove unused color overrides
