@@ -26,11 +26,16 @@
 - ✅ Light and Screen sliders now have equal space allocation
 
 ### D - Debugging
-- **D1 PHASE 1 - IN PROGRESS**: Fix state reading to use live slider values instead of cached values
+- **D1 PHASE 1 - COMPLETED**: Fix state reading to use live slider values instead of cached values
   - ✅ Modified `getCurrentActualLedIntensity()` to read from active slider (sync/independent/fallback)
   - ✅ Modified `getCurrentActualScreenBrightness()` to read from active slider (sync/independent/screen-only/fallback) 
   - ✅ Added comprehensive error handling and logging
+  - ✅ **CRITICAL FIX**: Fixed UI restoration code (line 691) to call `getCurrentActualLedIntensity()` instead of using cached `currentActualLedIntensity`
+  - ✅ **CRITICAL FIX**: Fixed slider initialization to preserve current values instead of overwriting with stale cached values
   - 🧪 **NEEDS TESTING**: Verify light intensity matches sliders after split-screen transitions
+  
+  **Root Cause Found**: The UI restoration code during multi-window transitions was calling `updateFlashlightIntensity(currentActualLedIntensity)` with stale cached values, bypassing the live slider reading fix.
+  
   - **REMAINING**: Phase 2 (reduce flash), Phase 3 (smooth transitions)
 
 ### **E : Code Architecture Cleanup** *(Optional)*
