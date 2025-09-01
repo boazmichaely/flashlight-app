@@ -665,7 +665,8 @@ public class MainActivity extends AppCompatActivity {
                         syncModeContainer.post(() -> {
                             // D2 FIX: Use actual slider state instead of cached value
                             updateColorRectangleBrightness(getCurrentActualScreenBrightness());
-                            updateFlashlightIntensity(getCurrentActualLedIntensity());
+                            // D3 FIX: Remove intensity update - light is already on with correct intensity
+                            // updateFlashlightIntensity() during transitions causes unnecessary flash
                         });
                         
                     } else {
@@ -689,7 +690,8 @@ public class MainActivity extends AppCompatActivity {
                         independentModeContainer.post(() -> {
                             // D2 FIX: Use actual slider state instead of cached value
                             updateColorRectangleBrightness(getCurrentActualScreenBrightness());
-                            updateFlashlightIntensity(getCurrentActualLedIntensity());
+                            // D3 FIX: Remove intensity update - light is already on with correct intensity
+                            // updateFlashlightIntensity() during transitions causes unnecessary flash
                         });
                     }
                     
