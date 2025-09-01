@@ -47,13 +47,12 @@
 - **Professional UI**: Aligned layout with descriptive text
 - **Split-Screen Integration**: Uses selected app instead of hardcoded Spotify
 
-### ✅ **Phase 3 Completed (v1.15.14):**
-- **Compilation Fix**: Added missing `launchCompanionAppInSplitScreen()` method
-- **Settings Restoration**: Restored "Test your Companion App" line with Launch button
-- **Split-Screen Fix**: Split-screen button now uses stored companion app (not hardcoded Spotify)
-- **Git Workflow**: Added comprehensive version bump procedures to README
-- **Recovery Procedures**: Created disaster-proof restore instructions
-- **UI Polish**: C1.1 (switches), C1.2 (exit icon), C1.3 (split-screen icon → improved to more pronounced design)
+### ✅ **Phase 3 Completed (v1.15.14 → v1.16.14):**
+- **v1.15.14**: Compilation Fix, Settings Restoration, Split-Screen Fix, Git Workflow, Recovery Procedures
+- **v1.16.14**: Visual Polish Complete (Icons)
+  - **C1.4 COMPLETED**: Full screen icon replacement with user's design (`full_screen.png`)
+  - **C1.3 IMPROVED**: Split screen icon iterations (v1 → v2 → v3) for better visibility (`split_vertical_line3.png`)
+  - **UI Polish**: All icons now use user's custom designs for professional appearance
 
 ### ✅ **Technical Achievements:**
 - **Android 11+ Compatibility**: Package visibility properly handled via `<queries>` manifest
