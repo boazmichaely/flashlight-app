@@ -44,7 +44,8 @@ Then  change the text on the last line to "Test companion app:"
 - ✅ **Solution**: Removed unnecessary `setValue()` calls - let sliders retain their natural state during transitions
 - ✅ **Result**: Screen and flash brightness now maintain user-set values across all mode transitions
 
-## 🎉 **BOTH D1 & D2 BRIGHTNESS ISSUES RESOLVED**
+## D3 - quick flash
+When switching screen modes the light flashes. Why ? Can it be avoided
 
 ### **E : Code Architecture Cleanup** *(Optional)*
 - Theme simplification: Remove unused color overrides
