@@ -82,10 +82,61 @@
 - `1.14.14` → `2.0.14` (hypothetical major UI overhaul - major bump)
 - `1.14.14` → `1.14.15` (Play Store upload - code bump)
 
-### **Recovery Commands**
-- **Release 1.15.14**: `git checkout tags/v1.15.14` (Companion App Integration Complete)
-- **Release 1.14.14**: `git checkout tags/v1.14.14` (Phase 2 COMPLETE)
-- **Release 1.13.14**: `git checkout tags/v1.13.14` (B3 Split-Screen Integration)
+### **Safe Recovery Procedures**
+
+#### **Available Checkpoints:**
+- **v1.15.14**: Companion App Integration Complete *(LATEST)*
+- **v1.14.14**: Phase 2 COMPLETE - Professional Dynamic Companion App System
+- **v1.13.14**: B3 Split-Screen Integration
+
+#### **SAFE Restore to Checkpoint (Prevents Work Loss):**
+
+⚠️ **CRITICAL: NEVER do direct `git checkout` without saving your work!**
+
+**Step-by-step Safe Restore:**
+```bash
+# 1. ALWAYS create backup branch FIRST
+git branch backup-before-restore-$(date +%Y%m%d-%H%M)
+
+# 2. Commit or stash ALL current work
+git add -A
+git commit -m "WIP: Save work before restore to [checkpoint-name]"
+# OR if not ready to commit:
+git stash push -m "Work in progress before restore"
+
+# 3. NOW safe to restore
+git checkout tags/v1.15.14
+# This puts you in detached HEAD state
+
+# 4. Create working branch from checkpoint
+git checkout -b restored-from-v1.15.14
+
+# 5. VERIFY the restore worked
+git log --oneline -3
+ls -la app/src/main/java/com/walklight/safety/
+```
+
+#### **Emergency Recovery (If You Lost Work):**
+```bash
+# 1. Check for backup branches
+git branch -a | grep backup
+
+# 2. Check reflog for lost commits
+git reflog --oneline -20
+
+# 3. Check for dangling commits (like we did in the disaster)
+git fsck --dangling
+
+# 4. Recover from specific reflog entry
+git checkout [reflog-hash]
+git branch recovery-[date] HEAD
+```
+
+#### **Quick Restore to Latest (SAFE):**
+```bash
+# One-liner safe restore to latest checkpoint
+git branch backup-$(date +%Y%m%d-%H%M) && git add -A && git commit -m "Backup before restore" && git checkout tags/v1.15.14 && git checkout -b working-from-latest
+```
 
 ### **Key Lessons Learned**
 
