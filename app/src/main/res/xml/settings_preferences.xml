@@ -15,6 +15,12 @@
         android:summary="@string/settings_keep_light_summary"
         android:defaultValue="true" />
 
+    <!-- Companion App Section Header -->
+    <Preference
+        android:key="companion_app_header"
+        android:title="@string/settings_companion_header_title"
+        android:selectable="false" />
+
     <!-- Companion App Picker -->
     <Preference
         android:key="companion_app_display"
