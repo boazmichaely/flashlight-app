@@ -51,6 +51,10 @@
 ## D3 - quick flash
 When switching screen modes the light flashes. Why ? Can it be avoided
 
+## D4
+replace camera oermissions with android.permissions.FLASHLIGHT
+
+
 ### **E : Code Architecture Cleanup** *(Optional)*
 - Theme simplification: Remove unused color overrides
 - Extract preference reading to utility methods  
