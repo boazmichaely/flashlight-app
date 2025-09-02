@@ -118,4 +118,4 @@ git tag checkpoint/[milestone-name]
 
 ## License
 
-Free and open source
+View Only : you are welcome to inspect the source code but not to copy it.
