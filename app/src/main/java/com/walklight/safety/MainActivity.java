@@ -1,6 +1,5 @@
 package com.walklight.safety;
 
-import android.Manifest;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Color;
@@ -25,10 +24,7 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.core.graphics.Insets;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 
 import com.google.android.material.button.MaterialButton;
 import android.widget.ImageButton;
@@ -40,7 +36,6 @@ import androidx.preference.PreferenceManager;
 public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "MainActivity";
-    private static final int CAMERA_PERMISSION_REQUEST = 100;
     
     // Configuration now lives in: app/src/main/res/values/exit_button_config.xml
     
@@ -100,12 +95,7 @@ public class MainActivity extends AppCompatActivity {
         setupClickListeners();
         
         // Auto-turn on flashlight when app launches (AFTER camera initialization)
-        // For fresh installs, request camera permission automatically
-        if (hasFlash && !checkCameraPermission()) {
-            requestCameraPermission();
-        } else {
         autoStartFlashlight();
-        }
     }
     
     private void setupWindowInsets() {
@@ -126,8 +116,8 @@ public class MainActivity extends AppCompatActivity {
     }
     
     private void autoStartFlashlight() {
-        // Only auto-start if we have flash capability and permission
-        if (hasFlash && checkCameraPermission()) {
+        // Only auto-start if we have flash capability
+        if (hasFlash) {
             try {
                 turnOnFlashlight();
             } catch (CameraAccessException e) {
@@ -331,16 +321,10 @@ public class MainActivity extends AppCompatActivity {
         // Light toggle switch
         lightToggle.setOnCheckedChangeListener((button, isChecked) -> {
             try {
-                if (checkCameraPermission()) {
-                    if (isChecked) {
-                        turnOnFlashlight();
-                    } else {
-                        turnOffFlashlight();
-                    }
+                if (isChecked) {
+                    turnOnFlashlight();
                 } else {
-                    requestCameraPermission();
-                    // Reset toggle if permission denied
-                    lightToggle.setChecked(false);
+                    turnOffFlashlight();
                 }
             } catch (Exception e) {
                 e.printStackTrace();
@@ -477,35 +461,6 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private boolean checkCameraPermission() {
-        return ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) 
-                == PackageManager.PERMISSION_GRANTED;
-    }
-
-    private void requestCameraPermission() {
-        if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.CAMERA)) {
-            showToast(getString(R.string.permission_camera_rationale));
-        }
-        ActivityCompat.requestPermissions(this, 
-                new String[]{Manifest.permission.CAMERA}, 
-                CAMERA_PERMISSION_REQUEST);
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, 
-                                         @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        
-        if (requestCode == CAMERA_PERMISSION_REQUEST) {
-            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                showToast("Camera permission granted. You can now control the light.");
-                // Auto-start flashlight after permission is granted (for fresh installs)
-                autoStartFlashlight();
-            } else {
-                showToast(getString(R.string.permission_denied));
-            }
-        }
-    }
 
     private void turnOnFlashlight() throws CameraAccessException {
         boolean torchSuccess = false;
@@ -714,18 +669,8 @@ public class MainActivity extends AppCompatActivity {
                     });
                 }
             }
-            
-            // D3 FIX: Re-enable slider listeners after layout transition completes
-            // This must be done in a post() to ensure all layout changes are finished first
-            syncModeContainer.post(() -> {
-                isUpdatingSliders = false;
-                android.util.Log.d("FlashlightApp", "D3 FIX: Layout transition complete - slider listeners RE-ENABLED");
-            });
-            
         } catch (Exception e) {
             e.printStackTrace();
-            // D3 FIX: Ensure listeners are re-enabled even on error
-            isUpdatingSliders = false;
         }
     }
 
@@ -872,7 +817,7 @@ public class MainActivity extends AppCompatActivity {
         android.util.Log.d("FlashlightLifecycle", "Has window focus: " + hasWindowFocus());
         
         // PHASE 2.1: Smart restore logic (with multi-window transition handling)
-        if (wasFlashlightOnBeforePause && hasFlash && checkCameraPermission()) {
+        if (wasFlashlightOnBeforePause && hasFlash) {
             if (isFlashlightOn) {
                 // Light is already on - either kept on during pause OR restored by onMultiWindowModeChanged()
                 if (isInMultiWindowMode()) {
@@ -896,9 +841,7 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         } else {
-            String reason = !wasFlashlightOnBeforePause ? "wasn't on before" : 
-                           !hasFlash ? "no flash capability" : 
-                           "no camera permission";
+            String reason = !wasFlashlightOnBeforePause ? "wasn't on before" : "no flash capability";
             android.util.Log.d("FlashlightLifecycle", "➡️ Not restoring light: " + reason);
         }
         

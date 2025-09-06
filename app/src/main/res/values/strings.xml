@@ -7,8 +7,6 @@
     <string name="light_toggle">Light</string>
     <string name="screen_brightness">Screen</string>
     <string name="sync_controls">Link to screen</string>
-    <string name="permission_camera_rationale">Camera permission is needed to control the flashlight.</string>
-    <string name="permission_denied">Camera permission is required for flashlight functionality.</string>
     <string name="about_title">Walklight - Safety light</string>
     <string name="about_version">Version %s</string>
     <string name="settings_title">Settings</string>
