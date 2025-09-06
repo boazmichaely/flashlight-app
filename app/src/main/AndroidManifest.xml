@@ -5,9 +5,6 @@
     <!-- Flashlight permission (no camera permission needed for torch functionality) -->
     <uses-permission android:name="android.permission.FLASHLIGHT" />
     
-    <!-- Declare flashlight feature -->
-    <uses-feature android:name="android.hardware.camera.flash" android:required="false" />
-    
     <!-- Package visibility queries for Android 11+ (API 30+) -->
     <queries>
         <!-- Query for all launchable apps - this should make ALL user apps visible -->
