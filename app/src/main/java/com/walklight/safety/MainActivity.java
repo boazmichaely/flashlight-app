@@ -403,11 +403,7 @@ public class MainActivity extends AppCompatActivity {
         syncSwitch.setOnCheckedChangeListener(this::onSyncSwitchChanged);
 
         // About Button
-        aboutButton.setOnClickListener(v -> {
-            try {
-                new SettingsSheetDialog().show(getSupportFragmentManager(), "settings");
-            } catch (Exception ignored) {}
-        });
+        aboutButton.setOnClickListener(this::onAboutButtonClicked);
         
         // Button Click Listeners
         if (exitButtonFloating != null) {
@@ -463,6 +459,20 @@ public class MainActivity extends AppCompatActivity {
             showToast("Error updating sync mode: " + e.getMessage());
         }
         Log.d(DEBUG_TAG, "<-- Sync switch change handled");
+    }
+
+    /**
+     * Handle about button clicks (user interaction)
+     */
+    private void onAboutButtonClicked(View view) {
+        Log.d(DEBUG_TAG, "--> About button clicked");
+        try {
+            new SettingsSheetDialog().show(getSupportFragmentManager(), "settings");
+        } catch (Exception e) {
+            e.printStackTrace();
+            showToast("Error opening settings: " + e.getMessage());
+        }
+        Log.d(DEBUG_TAG, "<-- About button click handled");
     }
     
 
