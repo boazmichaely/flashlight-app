@@ -400,14 +400,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
         // Sync Switch - toggle between layouts and sync values
-        syncSwitch.setOnCheckedChangeListener((button, isChecked) -> {
-            // Save sync state for when flashlight turns off/on
-            lastSyncState = isChecked;
-            
-            updateSyncToggleAppearance(isChecked);
-            updateLayoutMode(); // This now handles all slider synchronization
-            updateSyncedIntensityLabel();
-        });
+        syncSwitch.setOnCheckedChangeListener(this::onSyncSwitchChanged);
 
         // About Button
         aboutButton.setOnClickListener(v -> {
@@ -451,6 +444,25 @@ public class MainActivity extends AppCompatActivity {
             lightToggle.setChecked(false);
         }
         Log.d(DEBUG_TAG, "<-- Light toggle change handled");
+    }
+
+    /**
+     * Handle sync switch changes (user interaction)
+     */
+    private void onSyncSwitchChanged(CompoundButton button, boolean isChecked) {
+        Log.d(DEBUG_TAG, "--> Sync switch changed to: " + isChecked);
+        try {
+            // Save sync state for when flashlight turns off/on
+            lastSyncState = isChecked;
+            
+            updateSyncToggleAppearance(isChecked);
+            updateLayoutMode(); // This now handles all slider synchronization
+            updateSyncedIntensityLabel();
+        } catch (Exception e) {
+            e.printStackTrace();
+            showToast("Error updating sync mode: " + e.getMessage());
+        }
+        Log.d(DEBUG_TAG, "<-- Sync switch change handled");
     }
     
 
