@@ -327,20 +327,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void setupClickListeners() {
         // Light toggle switch
-        lightToggle.setOnCheckedChangeListener((button, isChecked) -> {
-            try {
-                if (isChecked) {
-                    turnOnFlashlight();
-                } else {
-                    turnOffFlashlight();
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-                showToast("Error controlling flashlight: " + e.getMessage());
-                // Reset toggle on error
-                lightToggle.setChecked(false);
-            }
-        });
+        lightToggle.setOnCheckedChangeListener(this::onLightToggleChanged);
 
         // LED Intensity Slider
         ledIntensitySlider.addOnChangeListener((slider, value, fromUser) -> {
@@ -437,6 +424,32 @@ public class MainActivity extends AppCompatActivity {
         if (multiWindowButton != null) {
             multiWindowButton.setOnClickListener(v -> toggleMultiWindowMode());
         }
+    }
+
+    // ================================
+    // UI EVENT HANDLERS
+    // ================================
+
+    /**
+     * Handle light toggle switch changes (user interaction)
+     */
+    private void onLightToggleChanged(CompoundButton button, boolean isChecked) {
+        Log.d(DEBUG_TAG, "--> Light toggle changed to: " + isChecked);
+        try {
+            if (isChecked) {
+                Log.d(DEBUG_TAG, "User wants flashlight ON");
+                turnOnFlashlight();
+            } else {
+                Log.d(DEBUG_TAG, "User wants flashlight OFF");
+                turnOffFlashlight();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            showToast("Error controlling flashlight: " + e.getMessage());
+            // Reset toggle on error
+            lightToggle.setChecked(false);
+        }
+        Log.d(DEBUG_TAG, "<-- Light toggle change handled");
     }
     
 
