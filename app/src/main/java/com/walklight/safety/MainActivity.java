@@ -407,7 +407,7 @@ public class MainActivity extends AppCompatActivity {
         
         // Button Click Listeners
         if (exitButtonFloating != null) {
-            exitButtonFloating.setOnClickListener(v -> exitApp());
+            exitButtonFloating.setOnClickListener(this::onExitButtonClicked);
         }
         
         // Multi-window toggle button
@@ -473,6 +473,15 @@ public class MainActivity extends AppCompatActivity {
             showToast("Error opening settings: " + e.getMessage());
         }
         Log.d(DEBUG_TAG, "<-- About button click handled");
+    }
+
+    /**
+     * Handle exit button clicks (user interaction)
+     */
+    private void onExitButtonClicked(View view) {
+        Log.d(DEBUG_TAG, "--> Exit button clicked");
+        exitApp();
+        Log.d(DEBUG_TAG, "<-- Exit button click handled");
     }
     
 
