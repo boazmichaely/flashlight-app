@@ -412,7 +412,7 @@ public class MainActivity extends AppCompatActivity {
         
         // Multi-window toggle button
         if (multiWindowButton != null) {
-            multiWindowButton.setOnClickListener(v -> toggleMultiWindowMode());
+            multiWindowButton.setOnClickListener(this::onMultiWindowButtonClicked);
         }
     }
 
@@ -482,6 +482,15 @@ public class MainActivity extends AppCompatActivity {
         Log.d(DEBUG_TAG, "--> Exit button clicked");
         exitApp();
         Log.d(DEBUG_TAG, "<-- Exit button click handled");
+    }
+
+    /**
+     * Handle multi-window button clicks (user interaction)
+     */
+    private void onMultiWindowButtonClicked(View view) {
+        Log.d(DEBUG_TAG, "--> Multi-window button clicked");
+        toggleMultiWindowMode();
+        Log.d(DEBUG_TAG, "<-- Multi-window button click handled");
     }
     
 
