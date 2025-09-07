@@ -14,12 +14,14 @@ public final class TorchController {
 
     public static void setOn(CameraManager cameraManager, String cameraId) throws CameraAccessException {
         Log.d(DEBUG_TAG, "--> Entering TorchController.setOn()");
+        Log.d(DEBUG_TAG, "+++ TORCH ON +++");
         cameraManager.setTorchMode(cameraId, true);
         Log.d(DEBUG_TAG, "<-- Exiting TorchController.setOn()");
     }
 
     public static void setOff(CameraManager cameraManager, String cameraId) throws CameraAccessException {
         Log.d(DEBUG_TAG, "--> Entering TorchController.setOff()");
+        Log.d(DEBUG_TAG, "--- TORCH OFF ---");
         cameraManager.setTorchMode(cameraId, false);
         Log.d(DEBUG_TAG, "<-- Exiting TorchController.setOff()");
     }

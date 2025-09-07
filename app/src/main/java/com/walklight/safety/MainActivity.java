@@ -476,6 +476,7 @@ public class MainActivity extends AppCompatActivity {
         
         try {
             // Try basic torch mode first - this is more reliable
+            Log.d(DEBUG_TAG, "+++ TORCH ON +++");
             TorchController.setOn(cameraManager, cameraId);
             torchSuccess = true;
             
@@ -519,6 +520,7 @@ public class MainActivity extends AppCompatActivity {
     private void turnOffFlashlight() throws CameraAccessException {
         Log.d(DEBUG_TAG, "--> Entering turnOffFlashlight()");
         try {
+            Log.d(DEBUG_TAG, "--- TORCH OFF ---");
             TorchController.setOff(cameraManager, cameraId);
         } catch (Exception e) {
             // Handle cases where flashlight hardware isn't available (like emulators)
