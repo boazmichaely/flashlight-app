@@ -36,6 +36,7 @@ import androidx.preference.PreferenceManager;
 public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "MainActivity";
+    private static final String DEBUG_TAG = "WalklightD3";
     
     // Configuration now lives in: app/src/main/res/values/exit_button_config.xml
     
@@ -76,6 +77,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Log.d(DEBUG_TAG, "--> Entering onCreate()");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
@@ -99,6 +101,7 @@ public class MainActivity extends AppCompatActivity {
     }
     
     private void setupWindowInsets() {
+        Log.d(DEBUG_TAG, "--> Entering setupWindowInsets()");
         View rootView = findViewById(android.R.id.content);
         ViewCompat.setOnApplyWindowInsetsListener(rootView, (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
@@ -113,9 +116,11 @@ public class MainActivity extends AppCompatActivity {
             
             return insets;
         });
+        Log.d(DEBUG_TAG, "<-- Exiting setupWindowInsets()");
     }
     
     private void autoStartFlashlight() {
+        Log.d(DEBUG_TAG, "--> Entering autoStartFlashlight()");
         // Only auto-start if we have flash capability
         if (hasFlash) {
             try {
