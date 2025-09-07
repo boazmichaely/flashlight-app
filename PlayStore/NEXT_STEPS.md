@@ -135,6 +135,15 @@ Never have mismatched internal vs. upload versions.
 - **Confirmation dialogs**: Prevent accidental resets with proper confirmation flows
 - **Visual alignment**: Left text / right button alignment creates professional appearance
 
+#### **Google Play Console & Security:**
+- **Certificate errors are BLOCKING, not warnings** - Red error icons prevent publishing, not just yellow warnings
+- **"Available on 0 devices" = Certificate issue first** - Don't debug manifest/permissions until certificate is valid
+- **Google Play won't analyze AABs with certificate mismatches** - Device compatibility shows false negatives
+- **"Change signing key" process is INSTANT** - Not 1-2 days, happens immediately in Play Console
+- **App Signing by Google Play ≠ Automatic upload certificate changes** - Still requires explicit approval via "Change signing key" button
+- **Certificate problems cause cascading false issues** - Manifest "fixes" may be unnecessary rabbit holes
+- **Always resolve certificate errors BEFORE debugging device compatibility** - Invalid certificates corrupt all analysis
+
 #### **Git Workflow & AI Collaboration:**
 - **NEVER accumulate 12+ hours of uncommitted work** - commit early, commit often
 - **Create backup branches** before major operations: `git branch backup-current-state`
