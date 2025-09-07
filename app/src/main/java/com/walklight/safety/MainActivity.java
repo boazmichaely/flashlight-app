@@ -38,6 +38,7 @@ public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "MainActivity";
     private static final String DEBUG_TAG = "WalklightD3";
+    private static final String STATE_DEBUG_TAG = "D3StateDebug";  // For state saving/restoration only
     
     // Configuration now lives in: app/src/main/res/values/exit_button_config.xml
     
@@ -97,8 +98,26 @@ public class MainActivity extends AppCompatActivity {
         initializeViews();
         setupClickListeners();
         
-        // Auto-turn on flashlight when app launches (AFTER camera initialization)
-        autoStartFlashlight();
+        // D3 FIX: Check if this is activity recreation or fresh launch
+        if (savedInstanceState != null) {
+            // Activity recreation - restore previous state
+            boolean wasLightOn = savedInstanceState.getBoolean("flashlight_was_on", false);
+            boolean currentToggleState = lightToggle.isChecked();
+            
+            Log.d(STATE_DEBUG_TAG, "🎯 RECREATION: saved=" + wasLightOn + ", toggle=" + currentToggleState);
+            
+            if (wasLightOn != currentToggleState) {
+                Log.d(STATE_DEBUG_TAG, "🎯 SYNCING: toggle to " + wasLightOn);
+                lightToggle.setChecked(wasLightOn); // Let listener handle the hardware
+            } else {
+                Log.d(STATE_DEBUG_TAG, "🎯 MATCH: toggle already correct");
+            }
+        } else {
+            // Real app launch - auto-start as normal
+            Log.d(STATE_DEBUG_TAG, "🎯 FRESH LAUNCH: auto-starting");
+            autoStartFlashlight();
+        }
+        Log.d(DEBUG_TAG, "<-- Exiting onCreate()");
     }
     
     private void setupWindowInsets() {
@@ -425,6 +444,9 @@ public class MainActivity extends AppCompatActivity {
      */
     private void onLightToggleChanged(CompoundButton button, boolean isChecked) {
         Log.d(DEBUG_TAG, "--> Light toggle changed to: " + isChecked);
+        Log.d(DEBUG_TAG, "🔍 WHO CALLED ME? Previous state: " + button.isChecked() + " → New state: " + isChecked);
+        StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
+        Log.d(DEBUG_TAG, "🔍 CALLER: " + stackTrace[3].toString());
         try {
             if (isChecked) {
                 Log.d(DEBUG_TAG, "User wants flashlight ON");
@@ -437,7 +459,9 @@ public class MainActivity extends AppCompatActivity {
             e.printStackTrace();
             showToast("Error controlling flashlight: " + e.getMessage());
             // Reset toggle on error
+            Log.d(DEBUG_TAG, "🚨 ERROR HANDLER: About to call lightToggle.setChecked(false) - this will trigger listener!");
             lightToggle.setChecked(false);
+            Log.d(DEBUG_TAG, "🚨 ERROR HANDLER: JUST CALLED lightToggle.setChecked(false) - RECURSION INCOMING!");
         }
         Log.d(DEBUG_TAG, "<-- Light toggle change handled");
     }
@@ -561,7 +585,13 @@ public class MainActivity extends AppCompatActivity {
         // Update UI only if basic flashlight succeeded
         if (torchSuccess) {
             isFlashlightOn = true;
-            lightToggle.setChecked(true);
+            // D3 FIX: Only update toggle if it's actually different to prevent recursive listener
+            if (!lightToggle.isChecked()) {
+                Log.d(DEBUG_TAG, "🎯 D3 FIX: Setting toggle to ON (was OFF)");
+                lightToggle.setChecked(true);
+            } else {
+                Log.d(DEBUG_TAG, "🎯 D3 FIX: Toggle already ON - skipping setChecked to prevent recursion");
+            }
             updateLightToggleAppearance(true); // Yellow track when ON
             // DON'T call getCurrentScreenBrightness() here - it will read wrong slider
             // Keep current screen brightness unchanged when light turns on
@@ -583,7 +613,13 @@ public class MainActivity extends AppCompatActivity {
         
         // Update UI regardless of hardware success
         isFlashlightOn = false;
-        lightToggle.setChecked(false);
+        // D3 FIX: Only update toggle if it's actually different to prevent recursive listener
+        if (lightToggle.isChecked()) {
+            Log.d(DEBUG_TAG, "🎯 D3 FIX: Setting toggle to OFF (was ON)");
+            lightToggle.setChecked(false);
+        } else {
+            Log.d(DEBUG_TAG, "🎯 D3 FIX: Toggle already OFF - skipping setChecked to prevent recursion");
+        }
         updateLightToggleAppearance(false); // Gray track when OFF
         // DON'T call getCurrentScreenBrightness() here - keep current screen unchanged
         updateLayoutMode(); // Update layout based on new flashlight state
@@ -824,20 +860,49 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        // D3 FIX: Save flashlight state for activity recreation only
+        outState.putBoolean("flashlight_was_on", isFlashlightOn);
+        Log.d(STATE_DEBUG_TAG, "🎯 SAVING: flashlight_was_on = " + isFlashlightOn);
+    }
+
+    @Override
     protected void onDestroy() {
         super.onDestroy();
+        
         if (isFlashlightOn) {
-            try {
-                turnOffFlashlight();
-            } catch (CameraAccessException e) {
-                e.printStackTrace();
+            // D3 FIX: Only turn off light if app is actually exiting (not just rotating/multi-window)
+            if (isChangingConfigurations()) {
+                Log.d(DEBUG_TAG, "🎯 D3 FIX: Activity recreating - KEEPING light ON");
+            } else {
+                Log.d(DEBUG_TAG, "🎯 D3 FIX: App actually exiting - turning light OFF");
+                Log.d(STATE_DEBUG_TAG, "🎯 REAL EXIT: state will be cleared");
+                try {
+                    turnOffFlashlight();
+                } catch (CameraAccessException e) {
+                    e.printStackTrace();
+                }
             }
         }
+        
+        Log.d(DEBUG_TAG, "<-- Exiting onDestroy()");
     }
 
     @Override
     protected void onPause() {
         super.onPause();
+        
+        // D3 FIX: Only apply "close preference" logic for real pause, not activity recreation
+        if (isChangingConfigurations()) {
+            Log.d(STATE_DEBUG_TAG, "🎯 PAUSE FIX: Activity recreating - IGNORING close preference");
+            // Save current flashlight state for consistency
+            wasFlashlightOnBeforePause = isFlashlightOn;
+            Log.d(DEBUG_TAG, "<-- Exiting onPause()");
+            return; // Skip all preference logic - let state restoration handle it
+        }
+        
+        Log.d(STATE_DEBUG_TAG, "🎯 PAUSE FIX: Real pause - applying close preference");
         
         // PHASE 2.2: Apply consistent behavior logic - keep light on for ALL pause scenarios
         boolean shouldKeepOn = shouldKeepLightOnDuringPause();
