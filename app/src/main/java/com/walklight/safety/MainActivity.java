@@ -935,6 +935,7 @@ public class MainActivity extends AppCompatActivity {
      */
     @Override
     public void onMultiWindowModeChanged(boolean isInMultiWindowMode) {
+        Log.d(DEBUG_TAG, "--> Entering onMultiWindowModeChanged(isInMultiWindowMode=" + isInMultiWindowMode + ")");
         super.onMultiWindowModeChanged(isInMultiWindowMode);
         
         android.util.Log.d("FlashlightLifecycle", "=== onMultiWindowModeChanged() ===");
@@ -967,6 +968,7 @@ public class MainActivity extends AppCompatActivity {
         });
         
         android.util.Log.d("FlashlightLifecycle", "=====================================");
+        Log.d(DEBUG_TAG, "<-- Exiting onMultiWindowModeChanged()");
     }
 
     // ================================
