@@ -2,8 +2,12 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <!-- Flashlight permission (no camera permission needed for torch functionality) -->
+    <!-- Flashlight permission (sufficient for torch-only operations) -->  
     <uses-permission android:name="android.permission.FLASHLIGHT" />
+    
+    <!-- Declare camera feature as optional for Google Play compatibility analysis -->
+    <uses-feature android:name="android.hardware.camera" android:required="false" />
+    <uses-feature android:name="android.hardware.camera.flash" android:required="false" />
     
     <!-- Package visibility queries for Android 11+ (API 30+) -->
     <queries>
