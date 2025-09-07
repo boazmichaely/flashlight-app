@@ -129,9 +129,11 @@ public class MainActivity extends AppCompatActivity {
                 e.printStackTrace();
             }
         }
+        Log.d(DEBUG_TAG, "<-- Exiting autoStartFlashlight()");
     }
 
     private void initializeViews() {
+        Log.d(DEBUG_TAG, "--> Entering initializeViews()");
         lightToggle = findViewById(R.id.lightToggle);
         ledIntensitySlider = findViewById(R.id.ledIntensitySlider);
         screenBrightnessSlider = findViewById(R.id.screenBrightnessSlider);
@@ -192,6 +194,7 @@ public class MainActivity extends AppCompatActivity {
         
         // Set initial synced intensity label
         updateSyncedIntensityLabel();
+        Log.d(DEBUG_TAG, "<-- Exiting initializeViews()");
     }
 
     // Exit button configuration now handled by resources in exit_button_config.xml
@@ -468,6 +471,7 @@ public class MainActivity extends AppCompatActivity {
 
 
     private void turnOnFlashlight() throws CameraAccessException {
+        Log.d(DEBUG_TAG, "--> Entering turnOnFlashlight()");
         boolean torchSuccess = false;
         
         try {
@@ -509,9 +513,11 @@ public class MainActivity extends AppCompatActivity {
             updateLayoutMode(); // Update layout based on new flashlight state
             updateSyncedIntensityLabel(); // Update label based on new flashlight state
         }
+        Log.d(DEBUG_TAG, "<-- Exiting turnOnFlashlight()");
     }
 
     private void turnOffFlashlight() throws CameraAccessException {
+        Log.d(DEBUG_TAG, "--> Entering turnOffFlashlight()");
         try {
             TorchController.setOff(cameraManager, cameraId);
         } catch (Exception e) {
@@ -526,6 +532,7 @@ public class MainActivity extends AppCompatActivity {
         // DON'T call getCurrentScreenBrightness() here - keep current screen unchanged
         updateLayoutMode(); // Update layout based on new flashlight state
         updateSyncedIntensityLabel(); // Update label based on new flashlight state
+        Log.d(DEBUG_TAG, "<-- Exiting turnOffFlashlight()");
     }
 
     // Exposed for ExitPolicy (read-only)
@@ -575,6 +582,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void updateLayoutMode() {
+        Log.d(DEBUG_TAG, "--> Entering updateLayoutMode()");
         try {
             if (syncSwitch != null && syncModeContainer != null && independentModeContainer != null && screenOnlyModeContainer != null) {
                 boolean isFlashlightOn = this.isFlashlightOn;
