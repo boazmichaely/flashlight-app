@@ -54,6 +54,20 @@
 
 ## D3 - quick flash
 When switching screen modes the light flashes. Why ? Can it be avoided
+When does the flash occur? (entering split-screen? exiting? both?)
+Test flow #1: Light off
+1. normal start, light is on
+2. turn light off
+3. split screen: light flashes briefly, then is off
+4. tilt phone: brief flash BEFORE the windows align
+5. tilt back:  brief flash BEFORE the windows align
+6. return to full mode: brief flash before returning.
+
+Test flow #2: Light on
+1. light on
+2. split: brief flash, light stays on
+3. Tilt, tilt back: brieft flash, light stays on
+4. full screen, brief flash, light stays on,
 
 ### **E : Code Architecture Cleanup** *(Optional)*
 - Theme simplification: Remove unused color overrides
@@ -144,6 +158,26 @@ Never have mismatched internal vs. upload versions.
 - **App Signing by Google Play ≠ Automatic upload certificate changes** - Still requires explicit approval via "Change signing key" button
 - **Certificate problems cause cascading false issues** - Manifest "fixes" may be unnecessary rabbit holes
 - **Always resolve certificate errors BEFORE debugging device compatibility** - Invalid certificates corrupt all analysis
+
+#### **Safe Development Workflow (Anti-Spinning):**
+- **NEVER make code changes without safety infrastructure** - Always create checkpoints before experimental work
+- **Safety-First Protocol for Bug Investigation:**
+  1. `git tag v[version]-safe-checkpoint -m "SAFE CHECKPOINT: [description]"` - Create tagged fallback point
+  2. `git checkout -b [feature-branch]` - Isolate experimental work from master  
+  3. Make small, focused changes with frequent commits
+  4. Test immediately after each change
+  5. If successful → merge to master, if failed → delete branch and return to checkpoint
+- **Emergency Rollback Commands:**
+  - `git checkout master && git reset --hard [checkpoint-tag]` - Nuclear rollback to safe state
+  - `git reset HEAD~1` - Undo last commit but keep changes
+  - `git checkout master && git branch -D [branch-name]` - Delete failed experiment branch
+- **Successful Merge Process:**
+  1. Ensure all changes committed on feature branch
+  2. `git checkout master` - Switch back to master
+  3. `git merge [feature-branch]` - Merge successful changes
+  4. `git branch -d [feature-branch]` - Clean up feature branch
+  5. `git tag v[new-version]-release` - Tag the successful release
+  6. `git push origin master && git push origin [tag-name]` - Push to remote
 
 #### **Git Workflow & AI Collaboration:**
 - **NEVER accumulate 12+ hours of uncommitted work** - commit early, commit often
