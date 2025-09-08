@@ -47,6 +47,14 @@ public class MainActivity extends AppCompatActivity {
     private boolean hasFlashIntensityControl = false; // PHASE 1: Track if device supports variable intensity
     private int maxTorchStrength = 100; // Default, will be updated from device capabilities
     
+    /**
+     * D3 FIX: Flag to track when entering multi-window mode via user button click
+     * WRITTEN BY: onMultiWindowButtonClicked() - sets to true when user clicks button
+     * RESET BY: onMultiWindowModeChanged() - clears when system completes transition
+     * READ BY: onPause() - checks flag to determine if pause is due to multi-window vs real pause
+     */
+    private boolean isEnteringMultiWindow = false;
+    
     private SwitchMaterial lightToggle;
     private Slider ledIntensitySlider;
     private Slider screenBrightnessSlider;
@@ -511,6 +519,11 @@ public class MainActivity extends AppCompatActivity {
      */
     private void onMultiWindowButtonClicked(View view) {
         Log.d(DEBUG_TAG, "--> Multi-window button clicked");
+        
+        // D3 FIX: Set flag to prevent preference logic during multi-window transition
+        isEnteringMultiWindow = true;
+        Log.d(STATE_DEBUG_TAG, "🎯 BUTTON: Setting isEnteringMultiWindow = true");
+        
         toggleMultiWindowMode();
         Log.d(DEBUG_TAG, "<-- Multi-window button click handled");
     }
@@ -893,8 +906,9 @@ public class MainActivity extends AppCompatActivity {
         super.onPause();
         
         // D3 FIX: Only apply "close preference" logic for real pause, not activity recreation
-        if (isChangingConfigurations()) {
-            Log.d(STATE_DEBUG_TAG, "🎯 PAUSE FIX: Activity recreating - IGNORING close preference");
+        if (isChangingConfigurations() || isEnteringMultiWindow) {
+            Log.d(STATE_DEBUG_TAG, "🎯 PAUSE FIX: Activity recreation OR multi-window - IGNORING close preference");
+            Log.d(STATE_DEBUG_TAG, "🎯 PAUSE FIX: isChangingConfigurations=" + isChangingConfigurations() + ", isEnteringMultiWindow=" + isEnteringMultiWindow);
             // Save current flashlight state for consistency
             wasFlashlightOnBeforePause = isFlashlightOn;
             Log.d(DEBUG_TAG, "<-- Exiting onPause()");
@@ -1057,6 +1071,14 @@ public class MainActivity extends AppCompatActivity {
     public void onMultiWindowModeChanged(boolean isInMultiWindowMode) {
         Log.d(DEBUG_TAG, "--> Entering onMultiWindowModeChanged(isInMultiWindowMode=" + isInMultiWindowMode + ")");
         super.onMultiWindowModeChanged(isInMultiWindowMode);
+        
+        // D3 FIX: Reset flag when multi-window transition completes
+        if (isEnteringMultiWindow) {
+            Log.d(STATE_DEBUG_TAG, "🎯 TRANSITION COMPLETE: Resetting isEnteringMultiWindow = false");
+            isEnteringMultiWindow = false;
+        } else {
+            Log.d(STATE_DEBUG_TAG, "🎯 TRANSITION COMPLETE: Flag was already false");
+        }
         
         android.util.Log.d("FlashlightLifecycle", "=== onMultiWindowModeChanged() ===");
         android.util.Log.d("FlashlightLifecycle", "New multi-window mode: " + isInMultiWindowMode);
