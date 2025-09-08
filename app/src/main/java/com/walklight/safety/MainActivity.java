@@ -867,7 +867,6 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
-        Log.d(DEBUG_TAG, "--> Entering onDestroy()");
         super.onDestroy();
         
         if (isFlashlightOn) {
@@ -875,24 +874,12 @@ public class MainActivity extends AppCompatActivity {
             if (isChangingConfigurations()) {
                 Log.d(DEBUG_TAG, "🎯 D3 FIX: Activity recreating - KEEPING light ON");
             } else {
-                Log.d(DEBUG_TAG, "🎯 D3 FIX: App actually exiting - checking user preference");
+                Log.d(DEBUG_TAG, "🎯 D3 FIX: App actually exiting - turning light OFF");
                 Log.d(STATE_DEBUG_TAG, "🎯 REAL EXIT: state will be cleared");
-                
-                // Apply user preference for real app termination
-                SharedPreferences prefs = getSharedPreferences("walklight_settings", MODE_PRIVATE);
-                boolean keepLightOn = prefs.getBoolean("keep_light_on_close", true);
-                
-                Log.d(STATE_DEBUG_TAG, "🎯 REAL EXIT: User preference 'keep_light_on_close' = " + keepLightOn);
-                
-                if (!keepLightOn) {
-                    Log.d(STATE_DEBUG_TAG, "🎯 REAL EXIT: User wants light OFF - turning off");
-                    try {
-                        turnOffFlashlight();
-                    } catch (CameraAccessException e) {
-                        e.printStackTrace();
-                    }
-                } else {
-                    Log.d(STATE_DEBUG_TAG, "🎯 REAL EXIT: User wants light ON - keeping on");
+                try {
+                    turnOffFlashlight();
+                } catch (CameraAccessException e) {
+                    e.printStackTrace();
                 }
             }
         }
@@ -1008,26 +995,27 @@ public class MainActivity extends AppCompatActivity {
      * - Home button / app switcher → KEEP ON (consistent behavior)
      * - Only turn OFF for system-forced scenarios (low battery, etc.)
      * 
-     * User preferences are applied in onDestroy() for real app termination only.
-     * 
      * @return true if light should stay on, false if it should turn off
      */
     private boolean shouldKeepLightOnDuringPause() {
         try {
-            // CONSISTENT BEHAVIOR: Always keep light on during pause scenarios
-            // regardless of user preference - this prevents flickering during transitions
+            // B2.2: Read preference to determine close behavior
+            // This respects user's "Keep flashlight on when closed" setting
+            SharedPreferences prefs = getSharedPreferences("walklight_settings", MODE_PRIVATE);
+            boolean keepLightOn = prefs.getBoolean("keep_light_on_close", true);
             
-            android.util.Log.d("FlashlightLifecycle", "🔄 CONSISTENT BEHAVIOR: Always keep light on during pause");
-            android.util.Log.d("FlashlightLifecycle", "🎯 DECISION: KEEP ON (consistent behavior)");
+            android.util.Log.d("FlashlightLifecycle", "🔄 B2.2: Reading user preference for close behavior");
+            android.util.Log.d("FlashlightLifecycle", "Keep light on when closed: " + keepLightOn);
+            android.util.Log.d("FlashlightLifecycle", "🎯 DECISION: " + (keepLightOn ? "KEEP ON" : "TURN OFF"));
             
-            return true; // Always keep light on during pause
+            return keepLightOn; // Respect user preference
             
-            // Note: User preference "keep light on close" is applied in onDestroy() 
-            // for real app termination only
+            // Note: We still have the multi-window callback as a safety net
+            // and onDestroy() will turn off light when app is actually closed
             
         } catch (Exception e) {
-            android.util.Log.e("FlashlightLifecycle", "Error in pause decision", e);
-            // Fallback - keep light on
+            android.util.Log.e("FlashlightLifecycle", "Error reading preference", e);
+            // Fallback to XML default - keep light on
             return true;
         }
     }
