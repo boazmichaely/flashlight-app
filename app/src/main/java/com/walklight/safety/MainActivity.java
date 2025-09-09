@@ -85,7 +85,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        Log.d(DEBUG_TAG, "--> Entering onCreate()");
+        Log.d(DEBUG_TAG, "STATE --> enter onCreate()");
         Log.d(DEBUG_TAG, "🔍 WHO CALLED ME? onCreate");
         StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
         Log.d(DEBUG_TAG, "🔍 CALLER: " + stackTrace[3].toString());
@@ -126,7 +126,14 @@ public class MainActivity extends AppCompatActivity {
             Log.d(STATE_DEBUG_TAG, "🎯 FRESH LAUNCH: auto-starting");
             autoStartFlashlight();
         }
-        Log.d(DEBUG_TAG, "<-- Exiting onCreate()");
+        Log.d(DEBUG_TAG, "STATE <-- exit onCreate()");
+    }
+    
+    @Override
+    protected void onStart() {
+        Log.d(DEBUG_TAG, "STATE --> enter onStart()");
+        super.onStart();
+        Log.d(DEBUG_TAG, "STATE <-- exit onStart()");
     }
     
     private void setupWindowInsets() {
@@ -871,6 +878,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
+        Log.d(DEBUG_TAG, "STATE --> enter onDestroy()");
         super.onDestroy();
         
         if (isFlashlightOn) {
@@ -888,12 +896,12 @@ public class MainActivity extends AppCompatActivity {
             }
         }
         
-        Log.d(DEBUG_TAG, "<-- Exiting onDestroy()");
+        Log.d(DEBUG_TAG, "STATE <-- exit onDestroy()");
     }
 
     @Override
     protected void onPause() {
-        Log.d(DEBUG_TAG, "--> Entering onPause()");
+        Log.d(DEBUG_TAG, "STATE --> enter onPause()");
         Log.d(DEBUG_TAG, "🔍 WHO CALLED ME? onPause");
         StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
         Log.d(DEBUG_TAG, "🔍 CALLER: " + stackTrace[3].toString());
@@ -905,7 +913,7 @@ public class MainActivity extends AppCompatActivity {
             Log.d(STATE_DEBUG_TAG, "🎯 PAUSE FIX: isChangingConfigurations=" + isChangingConfigurations() + ", isEnteringMultiWindow=" + isEnteringMultiWindow);
             // Save current flashlight state for consistency
             wasFlashlightOnBeforePause = isFlashlightOn;
-            Log.d(DEBUG_TAG, "<-- Exiting onPause()");
+            Log.d(DEBUG_TAG, "STATE <-- exit onPause()");
             return; // Skip all preference logic - let state restoration handle it
         }
         
@@ -945,10 +953,19 @@ public class MainActivity extends AppCompatActivity {
         }
         
         android.util.Log.d("FlashlightLifecycle", "=========================");
+        Log.d(DEBUG_TAG, "STATE <-- exit onPause()");
+    }
+
+    @Override
+    protected void onStop() {
+        Log.d(DEBUG_TAG, "STATE --> enter onStop()");
+        super.onStop();
+        Log.d(DEBUG_TAG, "STATE <-- exit onStop()");
     }
 
     @Override
     protected void onResume() {
+        Log.d(DEBUG_TAG, "STATE --> enter onResume()");
         super.onResume();
         
         android.util.Log.d("FlashlightLifecycle", "=== onResume() Analysis ===");
@@ -993,6 +1010,7 @@ public class MainActivity extends AppCompatActivity {
         }
         
         android.util.Log.d("FlashlightLifecycle", "==========================");
+        Log.d(DEBUG_TAG, "STATE <-- exit onResume()");
     }
 
     // ================================
