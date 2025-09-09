@@ -86,8 +86,9 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         Log.d(DEBUG_TAG, "--> Entering onCreate()");
+        Log.d(DEBUG_TAG, "🔍 WHO CALLED ME? onCreate");
         StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
-        Log.d(DEBUG_TAG, "🔍 onCreate CALLER: " + stackTrace[3].toString());
+        Log.d(DEBUG_TAG, "🔍 CALLER: " + stackTrace[3].toString());
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
@@ -893,8 +894,9 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         Log.d(DEBUG_TAG, "--> Entering onPause()");
+        Log.d(DEBUG_TAG, "🔍 WHO CALLED ME? onPause");
         StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
-        Log.d(DEBUG_TAG, "🔍 onPause CALLER: " + stackTrace[3].toString());
+        Log.d(DEBUG_TAG, "🔍 CALLER: " + stackTrace[3].toString());
         super.onPause();
         
         // D3 FIX: Only apply "close preference" logic for real pause, not activity recreation
