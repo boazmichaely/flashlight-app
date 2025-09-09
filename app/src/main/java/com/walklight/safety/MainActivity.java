@@ -86,6 +86,8 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         Log.d(DEBUG_TAG, "--> Entering onCreate()");
+        StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
+        Log.d(DEBUG_TAG, "🔍 onCreate CALLER: " + stackTrace[3].toString());
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
@@ -210,11 +212,8 @@ public class MainActivity extends AppCompatActivity {
         // Set initial layout mode based on sync switch state
         updateLayoutMode();
         
-        // Set initial light toggle appearance (starts OFF)
-        updateLightToggleAppearance(false);
         
         // Set initial sync toggle appearance (starts OFF) and hide since flashlight starts OFF
-        updateSyncToggleAppearance(false);
         syncSwitch.setVisibility(View.GONE);  // Hidden initially since flashlight starts OFF
         syncLabel.setVisibility(View.GONE);   // Hidden initially since flashlight starts OFF
         
@@ -481,7 +480,6 @@ public class MainActivity extends AppCompatActivity {
             // Save sync state for when flashlight turns off/on
             lastSyncState = isChecked;
             
-            updateSyncToggleAppearance(isChecked);
             updateLayoutMode(); // This now handles all slider synchronization
             updateSyncedIntensityLabel();
         } catch (Exception e) {
@@ -603,7 +601,6 @@ public class MainActivity extends AppCompatActivity {
             } else {
                 Log.d(DEBUG_TAG, "🎯 D3 FIX: Toggle already ON - skipping setChecked to prevent recursion");
             }
-            updateLightToggleAppearance(true); // Yellow track when ON
             // DON'T call getCurrentScreenBrightness() here - it will read wrong slider
             // Keep current screen brightness unchanged when light turns on
             updateLayoutMode(); // Update layout based on new flashlight state
@@ -631,7 +628,6 @@ public class MainActivity extends AppCompatActivity {
         } else {
             Log.d(DEBUG_TAG, "🎯 D3 FIX: Toggle already OFF - skipping setChecked to prevent recursion");
         }
-        updateLightToggleAppearance(false); // Gray track when OFF
         // DON'T call getCurrentScreenBrightness() here - keep current screen unchanged
         updateLayoutMode(); // Update layout based on new flashlight state
         updateSyncedIntensityLabel(); // Update label based on new flashlight state
@@ -842,14 +838,8 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void updateLightToggleAppearance(boolean isLightOn) {
-        // C1.1: M3 switches handle theming automatically - no custom colors needed
-    }
-
-    private void updateSyncToggleAppearance(boolean isSyncOn) {
-        // C1.1: M3 switches handle theming automatically - no custom colors needed  
-    }
-
+   
+ 
     private void updateSyncedIntensityLabel() {
         try {
             if (syncedIntensityLabel != null && syncSwitch != null) {
@@ -903,6 +893,8 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         Log.d(DEBUG_TAG, "--> Entering onPause()");
+        StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
+        Log.d(DEBUG_TAG, "🔍 onPause CALLER: " + stackTrace[3].toString());
         super.onPause();
         
         // D3 FIX: Only apply "close preference" logic for real pause, not activity recreation
