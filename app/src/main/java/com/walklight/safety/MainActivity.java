@@ -900,30 +900,30 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onPause() {
-        Log.d(DEBUG_TAG, "STATE --> enter onPause()");
-        Log.d(DEBUG_TAG, "🔍 WHO CALLED ME? onPause");
+    protected void onStop() {
+        Log.d(DEBUG_TAG, "STATE --> enter onStop()");
+        Log.d(DEBUG_TAG, "🔍 WHO CALLED ME? onStop");
         StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
         Log.d(DEBUG_TAG, "🔍 CALLER: " + stackTrace[3].toString());
-        super.onPause();
+        super.onStop();
         
         // D3 FIX: Only apply "close preference" logic for real pause, not activity recreation
         if (isChangingConfigurations() || isEnteringMultiWindow) {
-            Log.d(STATE_DEBUG_TAG, "🎯 PAUSE FIX: Activity recreation OR multi-window - IGNORING close preference");
-            Log.d(STATE_DEBUG_TAG, "🎯 PAUSE FIX: isChangingConfigurations=" + isChangingConfigurations() + ", isEnteringMultiWindow=" + isEnteringMultiWindow);
+            Log.d(STATE_DEBUG_TAG, "🎯 STOP FIX: Activity recreation OR multi-window - IGNORING close preference");
+            Log.d(STATE_DEBUG_TAG, "🎯 STOP FIX: isChangingConfigurations=" + isChangingConfigurations() + ", isEnteringMultiWindow=" + isEnteringMultiWindow);
             // Save current flashlight state for consistency
             wasFlashlightOnBeforePause = isFlashlightOn;
-            Log.d(DEBUG_TAG, "STATE <-- exit onPause()");
+            Log.d(DEBUG_TAG, "STATE <-- exit onStop()");
             return; // Skip all preference logic - let state restoration handle it
         }
         
-        Log.d(STATE_DEBUG_TAG, "🎯 PAUSE FIX: Real pause - applying close preference");
+        Log.d(STATE_DEBUG_TAG, "🎯 STOP FIX: Real stop - applying close preference");
         
         // PHASE 2.2: Apply consistent behavior logic - keep light on for ALL pause scenarios
         boolean shouldKeepOn = shouldKeepLightOnDuringPause();
         String reason = getPauseDecisionReason();
         
-        android.util.Log.d("FlashlightLifecycle", "=== onPause() PHASE 2.2: CONSISTENT BEHAVIOR ===");
+        android.util.Log.d("FlashlightLifecycle", "=== onStop() PHASE 2.2: CONSISTENT BEHAVIOR ===");
         android.util.Log.d("FlashlightLifecycle", "Multi-window mode: " + isInMultiWindowMode());
         android.util.Log.d("FlashlightLifecycle", "Picture-in-Picture: " + isInPictureInPictureMode());  
         android.util.Log.d("FlashlightLifecycle", "Has window focus: " + hasWindowFocus());
@@ -953,14 +953,14 @@ public class MainActivity extends AppCompatActivity {
         }
         
         android.util.Log.d("FlashlightLifecycle", "=========================");
-        Log.d(DEBUG_TAG, "STATE <-- exit onPause()");
+        Log.d(DEBUG_TAG, "STATE <-- exit onStop()");
     }
 
     @Override
-    protected void onStop() {
-        Log.d(DEBUG_TAG, "STATE --> enter onStop()");
-        super.onStop();
-        Log.d(DEBUG_TAG, "STATE <-- exit onStop()");
+    protected void onPause() {
+        Log.d(DEBUG_TAG, "STATE --> enter onPause()");
+        super.onPause();
+        Log.d(DEBUG_TAG, "STATE <-- exit onPause()");
     }
 
     @Override
