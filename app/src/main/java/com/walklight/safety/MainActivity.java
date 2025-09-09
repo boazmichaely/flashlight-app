@@ -677,11 +677,14 @@ public class MainActivity extends AppCompatActivity {
             return; // Don't update UI if flashlight failed
         }
         
-        // Update internal state only - UI sync handled by calling code during recreation
+        // Update internal state and essential UI - but NO toggle manipulation during recreation
         if (torchSuccess) {
             isFlashlightOn = true;
-            // No UI updates during recreation - calling code handles toggle sync
-            Log.d(DEBUG_TAG, "🎯 RECREATION: Hardware state updated, UI sync skipped");
+            // Essential UI updates that don't trigger listeners
+            updateLayoutMode(); // Handles "link to screen" toggle visibility
+            updateSyncedIntensityLabel(); // Updates intensity labels
+            // Skip: lightToggle.setChecked() - that's what caused the listener problem
+            Log.d(DEBUG_TAG, "🎯 RECREATION: Hardware + essential UI updated, toggle sync skipped");
         }
         Log.d(DEBUG_TAG, "<-- Exiting turnOnFlashlightWithIntensity()");
     }
