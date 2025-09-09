@@ -667,20 +667,11 @@ public class MainActivity extends AppCompatActivity {
             return; // Don't update UI if flashlight failed
         }
         
-        // Update UI only if basic flashlight succeeded
+        // Update internal state only - UI sync handled by calling code during recreation
         if (torchSuccess) {
             isFlashlightOn = true;
-            // D3 FIX: Only update toggle if it's actually different to prevent recursive listener
-            if (!lightToggle.isChecked()) {
-                Log.d(DEBUG_TAG, "🎯 D3 FIX: Setting toggle to ON (was OFF)");
-                lightToggle.setChecked(true);
-            } else {
-                Log.d(DEBUG_TAG, "🎯 D3 FIX: Toggle already ON - skipping setChecked to prevent recursion");
-            }
-            // DON'T call getCurrentScreenBrightness() here - it will read wrong slider
-            // Keep current screen brightness unchanged when light turns on
-            updateLayoutMode(); // Update layout based on new flashlight state
-            updateSyncedIntensityLabel(); // Update label based on new flashlight state
+            // No UI updates during recreation - calling code handles toggle sync
+            Log.d(DEBUG_TAG, "🎯 RECREATION: Hardware state updated, UI sync skipped");
         }
         Log.d(DEBUG_TAG, "<-- Exiting turnOnFlashlightWithIntensity()");
     }
