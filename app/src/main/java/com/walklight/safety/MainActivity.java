@@ -957,6 +957,12 @@ public class MainActivity extends AppCompatActivity {
         android.util.Log.d("FlashlightLifecycle", "Multi-window mode: " + isInMultiWindowMode());
         android.util.Log.d("FlashlightLifecycle", "Has window focus: " + hasWindowFocus());
         
+        // D3 FIX: Safety reset of multi-window flag
+        if (isEnteringMultiWindow) {
+            Log.d(STATE_DEBUG_TAG, "🎯 ONRESUME BACKUP: Resetting isEnteringMultiWindow = false");
+            isEnteringMultiWindow = false;
+        }
+        
         // PHASE 2.1: Smart restore logic (with multi-window transition handling)
         if (wasFlashlightOnBeforePause && hasFlash) {
             if (isFlashlightOn) {
