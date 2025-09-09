@@ -111,9 +111,11 @@ public class MainActivity extends AppCompatActivity {
         if (savedInstanceState != null) {
             // Activity recreation - restore previous state
             boolean wasLightOn = savedInstanceState.getBoolean("flashlight_was_on", false);
+            float savedIntensity = savedInstanceState.getFloat("led_intensity", 1.0f);
+            currentActualLedIntensity = savedIntensity; // Store for getCurrentActualLedIntensity()
             boolean currentToggleState = lightToggle.isChecked();
             
-            Log.d(STATE_DEBUG_TAG, "🎯 RECREATION: saved=" + wasLightOn + ", toggle=" + currentToggleState);
+            Log.d(STATE_DEBUG_TAG, "🎯 RECREATION: saved=" + wasLightOn + ", toggle=" + currentToggleState + ", intensity=" + savedIntensity);
             
             if (wasLightOn != currentToggleState) {
                 Log.d(STATE_DEBUG_TAG, "🎯 SYNCING: toggle to " + wasLightOn);
@@ -801,6 +803,17 @@ public class MainActivity extends AppCompatActivity {
     // SINGLE SOURCE OF TRUTH - always return the actual LED intensity from active slider
     private float getCurrentActualLedIntensity() {
         try {
+            // DEBUG: Check slider state during activity recreation
+            android.util.Log.d("FlashlightApp", "🔍 INTENSITY DEBUG: ledIntensitySlider=" + (ledIntensitySlider != null ? "EXISTS" : "NULL"));
+            if (ledIntensitySlider != null) {
+                android.util.Log.d("FlashlightApp", "🔍 INTENSITY DEBUG: slider.getValue()=" + ledIntensitySlider.getValue());
+                android.util.Log.d("FlashlightApp", "🔍 INTENSITY DEBUG: currentActualLedIntensity=" + currentActualLedIntensity);
+            }
+            android.util.Log.d("FlashlightApp", "🔍 INTENSITY DEBUG: syncSwitch=" + (syncSwitch != null ? "EXISTS" : "NULL"));
+            if (syncSwitch != null) {
+                android.util.Log.d("FlashlightApp", "🔍 INTENSITY DEBUG: syncSwitch.isChecked()=" + syncSwitch.isChecked());
+            }
+            
             // TARGETED FIX: Read from whichever slider is currently active and visible to user
             if (syncSwitch != null && syncSwitch.isChecked() && syncedIntensitySlider != null) {
                 // Sync mode: single slider controls both LED and screen
@@ -873,7 +886,8 @@ public class MainActivity extends AppCompatActivity {
         super.onSaveInstanceState(outState);
         // D3 FIX: Save flashlight state for activity recreation only
         outState.putBoolean("flashlight_was_on", isFlashlightOn);
-        Log.d(STATE_DEBUG_TAG, "🎯 SAVING: flashlight_was_on = " + isFlashlightOn);
+        outState.putFloat("led_intensity", getCurrentActualLedIntensity());
+        Log.d(STATE_DEBUG_TAG, "🎯 SAVING: flashlight_was_on = " + isFlashlightOn + ", led_intensity = " + getCurrentActualLedIntensity());
     }
 
     @Override
