@@ -118,8 +118,19 @@ public class MainActivity extends AppCompatActivity {
             Log.d(STATE_DEBUG_TAG, "🎯 RECREATION: saved=" + wasLightOn + ", toggle=" + currentToggleState + ", intensity=" + savedIntensity);
             
             if (wasLightOn != currentToggleState) {
-                Log.d(STATE_DEBUG_TAG, "🎯 SYNCING: toggle to " + wasLightOn);
-                lightToggle.setChecked(wasLightOn); // Let listener handle the hardware
+                Log.d(STATE_DEBUG_TAG, "🎯 SYNCING: toggle to " + wasLightOn + " with intensity " + savedIntensity);
+                try {
+                    // Use direct intensity instead of relying on listener + getCurrentActualLedIntensity()
+                    if (wasLightOn) {
+                        turnOnFlashlightWithIntensity(savedIntensity);
+                    } else {
+                        turnOffFlashlight();
+                    }
+                } catch (CameraAccessException e) {
+                    Log.e(STATE_DEBUG_TAG, "🎯 RECREATION ERROR: Failed to sync flashlight", e);
+                    // Fallback to old method
+                    lightToggle.setChecked(wasLightOn);
+                }
             } else {
                 Log.d(STATE_DEBUG_TAG, "🎯 MATCH: toggle already correct");
             }
@@ -617,6 +628,61 @@ public class MainActivity extends AppCompatActivity {
             updateSyncedIntensityLabel(); // Update label based on new flashlight state
         }
         Log.d(DEBUG_TAG, "<-- Exiting turnOnFlashlight()");
+    }
+    
+    /**
+     * Turn on flashlight with specific intensity - used during activity recreation
+     * Bypasses getCurrentActualLedIntensity() to avoid reading unreliable slider values
+     */
+    private void turnOnFlashlightWithIntensity(float intensity) throws CameraAccessException {
+        Log.d(DEBUG_TAG, "--> Entering turnOnFlashlightWithIntensity(intensity=" + intensity + ")");
+        boolean torchSuccess = false;
+        
+        try {
+            // Try basic torch mode first - this is more reliable
+            Log.d(DEBUG_TAG, "+++ TORCH ON +++");
+            TorchController.setOn(cameraManager, cameraId);
+            torchSuccess = true;
+            
+            // If basic torch worked, apply the specific intensity (if supported)
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
+                try {
+                    // Use the passed intensity directly, not getCurrentActualLedIntensity()
+                    android.util.Log.d("FlashlightApp", "D1 DEBUG: turnOnFlashlightWithIntensity() using intensity: " + intensity + " (from saved state)");
+                    // Use the actual device's max strength level (Samsung devices often use 1-99, not 1-100)
+                    int strengthLevel = Math.max(1, Math.min(maxTorchStrength, Math.round(intensity * maxTorchStrength)));
+                    TorchController.setStrength(cameraManager, cameraId, strengthLevel);
+                    // Track the intensity that was applied
+                    currentActualLedIntensity = intensity;
+                    // Intensity control is working - no need to show diagnostic message
+                } catch (Exception strengthException) {
+                    // Log the exact error for debugging
+                    android.util.Log.e("FlashlightApp", "Intensity control failed: " + strengthException.getClass().getSimpleName() + ": " + strengthException.getMessage(), strengthException);
+                    // Intensity control not supported - silently use basic flashlight (LED still works, screen brightness provides feedback)
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            showToast("Flashlight error: " + e.getMessage());
+            return; // Don't update UI if flashlight failed
+        }
+        
+        // Update UI only if basic flashlight succeeded
+        if (torchSuccess) {
+            isFlashlightOn = true;
+            // D3 FIX: Only update toggle if it's actually different to prevent recursive listener
+            if (!lightToggle.isChecked()) {
+                Log.d(DEBUG_TAG, "🎯 D3 FIX: Setting toggle to ON (was OFF)");
+                lightToggle.setChecked(true);
+            } else {
+                Log.d(DEBUG_TAG, "🎯 D3 FIX: Toggle already ON - skipping setChecked to prevent recursion");
+            }
+            // DON'T call getCurrentScreenBrightness() here - it will read wrong slider
+            // Keep current screen brightness unchanged when light turns on
+            updateLayoutMode(); // Update layout based on new flashlight state
+            updateSyncedIntensityLabel(); // Update label based on new flashlight state
+        }
+        Log.d(DEBUG_TAG, "<-- Exiting turnOnFlashlightWithIntensity()");
     }
 
     private void turnOffFlashlight() throws CameraAccessException {
