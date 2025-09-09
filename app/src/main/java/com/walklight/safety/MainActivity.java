@@ -117,6 +117,10 @@ public class MainActivity extends AppCompatActivity {
             
             Log.d(STATE_DEBUG_TAG, "🎯 RECREATION: saved=" + wasLightOn + ", toggle=" + currentToggleState + ", intensity=" + savedIntensity);
             
+            // UGLY HACK: Temporarily disable listener to prevent Android's automatic state restoration from triggering it
+            Log.d(STATE_DEBUG_TAG, "🎯 UGLY HACK: Disabling toggle listener during recreation");
+            lightToggle.setOnCheckedChangeListener(null);
+            
             if (wasLightOn != currentToggleState) {
                 Log.d(STATE_DEBUG_TAG, "🎯 SYNCING: toggle to " + wasLightOn + " with intensity " + savedIntensity);
                 try {
@@ -134,6 +138,12 @@ public class MainActivity extends AppCompatActivity {
             } else {
                 Log.d(STATE_DEBUG_TAG, "🎯 MATCH: toggle already correct");
             }
+            
+            // Re-enable listener AFTER Android finishes state restoration using post()
+            lightToggle.post(() -> {
+                lightToggle.setOnCheckedChangeListener(this::onLightToggleChanged);
+                Log.d(STATE_DEBUG_TAG, "🎯 UGLY HACK: Re-enabled toggle listener after state restoration");
+            });
         } else {
             // Real app launch - auto-start as normal
             Log.d(STATE_DEBUG_TAG, "🎯 FRESH LAUNCH: auto-starting");
