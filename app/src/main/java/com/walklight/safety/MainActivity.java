@@ -1072,6 +1072,9 @@ public class MainActivity extends AppCompatActivity {
         Log.d(DEBUG_TAG, "--> Entering onMultiWindowModeChanged(isInMultiWindowMode=" + isInMultiWindowMode + ")");
         super.onMultiWindowModeChanged(isInMultiWindowMode);
         
+        // TEST LOGGING: Track flag state before reset
+        Log.d(STATE_DEBUG_TAG, "🎯 MULTI-WINDOW CALLBACK: BEFORE reset - isEnteringMultiWindow=" + isEnteringMultiWindow);
+        
         // D3 FIX: Reset flag when multi-window transition completes
         if (isEnteringMultiWindow) {
             Log.d(STATE_DEBUG_TAG, "🎯 TRANSITION COMPLETE: Resetting isEnteringMultiWindow = false");
@@ -1079,6 +1082,9 @@ public class MainActivity extends AppCompatActivity {
         } else {
             Log.d(STATE_DEBUG_TAG, "🎯 TRANSITION COMPLETE: Flag was already false");
         }
+        
+        // TEST LOGGING: Track flag state after reset
+        Log.d(STATE_DEBUG_TAG, "🎯 MULTI-WINDOW CALLBACK: AFTER reset - isEnteringMultiWindow=" + isEnteringMultiWindow);
         
         android.util.Log.d("FlashlightLifecycle", "=== onMultiWindowModeChanged() ===");
         android.util.Log.d("FlashlightLifecycle", "New multi-window mode: " + isInMultiWindowMode);
