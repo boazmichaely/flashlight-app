@@ -6,7 +6,7 @@
     <string name="light_intensity">Light</string>
     <string name="light_toggle">Light</string>
     <string name="screen_brightness">Screen</string>
-    <string name="sync_controls">Link to screen</string>
+    <string name="sync_controls">Link</string>
     <string name="about_title">Walklight - Safety light</string>
     <string name="about_version">Version %s</string>
     <string name="settings_title">Settings</string>

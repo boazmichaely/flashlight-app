@@ -1,0 +1,4 @@
+<resources>
+    <!-- Larger screens (400dp+) get the full text -->
+    <string name="sync_controls">Link to screen</string>
+</resources>
